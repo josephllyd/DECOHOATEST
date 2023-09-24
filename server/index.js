@@ -54,7 +54,7 @@ import jwt from 'jsonwebtoken';
 dotenv.config();
 
 app.use(cors({
-    origin:["https://deploy-mern-1whq.vercel.app"],
+    origin:["decohoatest-client.vercel.app"],
     methods:["POST", "GET"],
     credentials: true
   }
