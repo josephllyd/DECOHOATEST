@@ -1,4 +1,4 @@
-import User from "../models/User.js";
+/*import UserInfo from "../models/User.js";
 
 export const getUser = async (req, res) => {
   try {
@@ -8,4 +8,4 @@ export const getUser = async (req, res) => {
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
-};
+}; */

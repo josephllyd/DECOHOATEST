@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Box,
-  Divider,
   Drawer,
   IconButton,
   List,
@@ -16,27 +15,24 @@ import {
   SettingsOutlined,
   ChevronLeft,
   ChevronRightOutlined,
-  HomeOutlined,
-  ShoppingCartOutlined,
-  Groups2Outlined,
-  ReceiptLongOutlined,
-  PublicOutlined,
-  PointOfSaleOutlined,
-  TodayOutlined,
-  CalendarMonthOutlined,
-  AdminPanelSettingsOutlined,
-  TrendingUpOutlined,
-  PieChartOutlined,
+  HouseOutlined,
+  DashboardCustomizeOutlined,
+  MoneyOffOutlined,
+  CarRentalOutlined,
+  PeopleAltOutlined,
+  Person2Outlined,
+  NewspaperOutlined,
+  SupportAgentOutlined,
 } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import FlexBetween from "./FlexBetween";
-import profileImage from "assets/profile.jpeg";
+//import profileImage from "assets/profile.jpeg";
 
 const navItems = [
   {
     text: "Dashboard",
-    icon: <HomeOutlined />,
+    icon: <DashboardCustomizeOutlined />,
   },
   {
     text: "Properties",
@@ -44,31 +40,27 @@ const navItems = [
   },
   {
     text: "Properties",
-    icon: <ShoppingCartOutlined />,
+    icon: <HouseOutlined />,
   },
   {
     text: "Finance",
-    icon: <Groups2Outlined />,
+    icon: <MoneyOffOutlined />,
   },
   {
     text: "Vehicle",
-    icon: <ReceiptLongOutlined />,
-  },
-  {
-    text: "Geography",
-    icon: <PublicOutlined />,
+    icon: <CarRentalOutlined />,
   },
   {
     text: "Members",
     icon: null,
   },
   {
-    text: "Overview",
-    icon: <PointOfSaleOutlined />,
+    text: "Profile",
+    icon: <Person2Outlined />,
   },
   {
     text: "Members",
-    icon: <TodayOutlined />,
+    icon: <PeopleAltOutlined />,
   },
   {
     text: "Management",
@@ -76,15 +68,15 @@ const navItems = [
   },
   {
     text: "Updates",
-    icon: <AdminPanelSettingsOutlined />,
+    icon: <NewspaperOutlined />,
   },
   {
     text: "Support",
-    icon: <TrendingUpOutlined />,
+    icon: <SupportAgentOutlined />,
   },
   {
     text: "Settings",
-    icon: <TrendingUpOutlined />,
+    icon: <SettingsOutlined />,
   },
 ];
 
@@ -188,8 +180,6 @@ const Sidebar = ({
               })}
             </List>
           </Box>
-
-         
         </Drawer>
       )}
     </Box>

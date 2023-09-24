@@ -19,6 +19,10 @@ const Navbar = ( {
 }) => {
     const dispatch = useDispatch();
     const theme = useTheme();
+    const logOut = () => {
+        window.localStorage.clear();
+        window.location.href = "./signin";
+      };
     return <AppBar
         sx={{
             position: "static",
@@ -56,6 +60,11 @@ const Navbar = ( {
                 </IconButton>
                 <IconButton>
                     <SettingsOutlined sx={{ fontSize: "25px"}} />
+                </IconButton>
+
+                {/* Log Out Button */}
+                <IconButton onClick={logOut}>
+                    Log Out
                 </IconButton>
             </FlexBetween>
         </Toolbar>

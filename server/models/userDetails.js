@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+/* import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema(
   {
@@ -31,8 +31,32 @@ const UserSchema = new mongoose.Schema(
       default: "admin",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
+  { collection : "User" }
 );
 
 const User = mongoose.model("User", UserSchema);
-export default User;
+export default User; */
+
+import mongoose from "mongoose";
+
+const UserDetailsScehma = new mongoose.Schema(
+  {
+    fname: String,
+    lname: String,
+    email: { 
+      type: String, 
+      unique: true },
+    password: {
+      type: String,
+      required: true,
+      min: 5,
+    },
+    userType: String,
+  },
+  {
+    collection: "UserInfo",
+  }
+);
+
+mongoose.model("UserInfo", UserDetailsScehma);
