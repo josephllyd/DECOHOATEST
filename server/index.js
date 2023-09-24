@@ -48,15 +48,45 @@ const app = express();
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
-dotenv.config();
-
-app.use(cors());
-app.use(express.json());
-
 import './models/userDetails.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken'; 
+dotenv.config();
 
+app.use(cors({
+    origin:["https://deploy-mern-1whq.vercel.app"],
+    methods:["POST", "GET"],
+    credentials: true
+  }
+));
+app.use(express.json());
+
+
+const JWT_SECRET =
+  "hvdvay6ert72839289()aiyg8t87qt72393293883uhefiuh78ttq3ifi78272jbkj?[]]pou89ywe";
+
+const mongoUrl =
+  "mongodb+srv://dbUser:255-2636@cluster0.rhrq2pl.mongodb.net/?retryWrites=true&w=majority";
+
+mongoose
+  .connect(mongoUrl, {
+    useNewUrlParser: true,
+  })
+  .then(() => {
+    console.log("Connected to database");
+  })
+  .catch((e) => console.log(e));
+
+  app.listen(5001, () => {
+    console.log("Server Started");
+  });
+
+  app.get("/", (req, res) => {
+    res.json("Hello");
+  })
+
+
+/*
 const { MONGO_URL, JWT_SECRET } = process.env;
 
 mongoose
@@ -70,7 +100,7 @@ mongoose
 
 app.listen(5000, () => {
   console.log("Server Started");
-});
+}); */
 
   
   app.post("/post", async(req, res) => {
