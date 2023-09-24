@@ -9,7 +9,7 @@ export default class Dashboard extends Component {
   }
 
   componentDidMount() {
-    fetch("http://localhost:5000/userData", {
+    fetch("decohoatest-server.vercel.app/userData",  {
       method: "POST",
       crossDomain: true,
       headers: {

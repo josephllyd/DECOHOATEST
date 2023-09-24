@@ -23,7 +23,7 @@ export default class Login extends Component {
     }
   
     console.log(email, password);
-    fetch("http://localhost:5000/login", {
+    fetch("decohoatest-server.vercel.app/login", {
       method: "POST",
       crossDomain: true,
       headers: {

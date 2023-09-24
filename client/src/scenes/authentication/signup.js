@@ -39,7 +39,7 @@ export default class SignUp extends Component {
   
     // All checks passed, proceed with registration
     console.log(fname, lname, email, password, cpassword);
-    fetch("http://localhost:5000/signup", {
+    fetch("decohoatest-server.vercel.app/signup", {
       method: "POST",
       crossDomain: true,
       headers: {
