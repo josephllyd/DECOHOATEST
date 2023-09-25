@@ -54,14 +54,14 @@ import jwt from 'jsonwebtoken';
 dotenv.config();
 
 app.use(cors({
-    origin:["decohoatest-client.vercel.app"],
+    origin:["https://decohoatest-client.vercel.app", "http://localhost:3000"],
     methods:["POST", "GET"],
     credentials: true
   }
 ));
 app.use(express.json());
 
-
+ /*
 const JWT_SECRET =
   "hvdvay6ert72839289()aiyg8t87qt72393293883uhefiuh78ttq3ifi78272jbkj?[]]pou89ywe";
 
@@ -81,13 +81,13 @@ mongoose
     console.log("Server Started");
   });
 
-  app.get("/", (req, res) => {
+app.get("/", (req, res) => {
     res.json("Hello");
-  })
+  })  */
 
 
-/*
 const { MONGO_URL, JWT_SECRET } = process.env;
+const PORT = process.env.PORT || 5000; // Use the provided port or default to 5000
 
 mongoose
   .connect(MONGO_URL, {
@@ -98,9 +98,12 @@ mongoose
   })
   .catch((e) => console.log(e));
 
-app.listen(5000, () => {
-  console.log("Server Started");
-}); */
+app.listen(PORT, () => { // Use the PORT variable here
+  console.log(`Server Started on port ${PORT}`);
+});
+
+
+
 
   
   app.post("/post", async(req, res) => {

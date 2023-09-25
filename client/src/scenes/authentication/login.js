@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import logoImage from "../../assets/homelogo.png";
 import "../../assets/unsplash_uB2iZgZSQtQ.png";
 
+
 export default class Login extends Component {
   constructor(props) {
     super(props);
@@ -12,6 +13,7 @@ export default class Login extends Component {
     };
     this.handleSubmit = this.handleSubmit.bind(this);
   }
+
   handleSubmit(e) {
     e.preventDefault();
   
@@ -23,9 +25,29 @@ export default class Login extends Component {
     }
   
     console.log(email, password);
-    fetch("decohoatest-server.vercel.app/login", {
+
+    // Get the current hostname
+    const currentHostname = window.location.hostname;
+
+    // Define the base URL for your API
+    let baseUrl = "";
+
+    // Check the hostname to determine the environment
+    if (currentHostname === "localhost") {
+      baseUrl = "http://localhost:5000"; // Local environment
+    } else {
+      baseUrl = "http://decohoatest-client.vercel.app"; // Vercel environment
+    }
+
+    // Define the endpoint for the login route
+    const loginEndpoint = "/login";
+
+    // Combine the base URL and endpoint to get the complete URL
+    const loginUrl = `${baseUrl}${loginEndpoint}`;
+
+    // Create the fetch request
+    fetch(loginUrl, {
       method: "POST",
-      crossDomain: true,
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -48,8 +70,14 @@ export default class Login extends Component {
           // Handle incorrect password or user not found here
           alert("Wrong email or password!");
         }
+      })
+      .catch((error) => {
+        // Handle any errors that occurred during the request
+        console.error("Error during fetch:", error);
       });
   }
+
+
   
 
   render() {

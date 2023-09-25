@@ -37,11 +37,29 @@ export default class SignUp extends Component {
       return; // Return early to prevent further execution
     }
   
+    // Get the current hostname
+    const currentHostname = window.location.hostname;
+
+    // Define the base URL for your API
+    let baseUrl = "";
+
+    // Check the hostname to determine the environment
+    if (currentHostname === "localhost") {
+      baseUrl = "http://localhost:5000"; // Local environment
+    } else {
+      baseUrl = "http://decohoatest-client.vercel.app"; // Vercel environment
+    }
+
+    // Define the endpoint for the sign-up route
+    const signupEndpoint = "/signup";
+
+    // Combine the base URL and endpoint to get the complete URL
+    const signupUrl = `${baseUrl}${signupEndpoint}`;
+
     // All checks passed, proceed with registration
     console.log(fname, lname, email, password, cpassword);
-    fetch("decohoatest-server.vercel.app/signup", {
+    fetch(signupUrl, {
       method: "POST",
-      crossDomain: true,
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -58,7 +76,7 @@ export default class SignUp extends Component {
       .then((res) => res.json())
       .then((data) => {
         console.log(data, "userRegister");
-        if (data.status == "ok") {
+        if (data.status === "ok") {
           alert("Registration Successful");
           window.location.href = "./dashboard";
         } else {
@@ -66,7 +84,6 @@ export default class SignUp extends Component {
         }
       });
   }
-  
 
   render() {
     return (
