@@ -76,7 +76,7 @@ const Home = () => {
 
     
       <div className="footer">
-        Copyright © The Odin Project by Joseph Lloyd Marumas 2022
+        Copyright © The Deco Homeowners' Association System by Mercado Family 2022
       </div>
     </div>
   );

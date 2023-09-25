@@ -36,11 +36,11 @@ export default class Login extends Component {
     if (currentHostname === "localhost") {
       baseUrl = "http://localhost:5000"; // Local environment
     } else {
-      baseUrl = "https://decohoatest-client.vercel.app"; // Vercel environment
+      baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
     }
 
     // Define the endpoint for the login route
-    const loginEndpoint = "/signup";
+    const loginEndpoint = "/login";
 
     // Combine the base URL and endpoint to get the complete URL
     const loginUrl = `${baseUrl}${loginEndpoint}`;
