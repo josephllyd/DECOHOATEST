@@ -40,7 +40,7 @@ export default class Login extends Component {
     }
 
     // Define the endpoint for the login route
-    const loginEndpoint = "/login";
+    const loginEndpoint = "/signup";
 
     // Combine the base URL and endpoint to get the complete URL
     const loginUrl = `${baseUrl}${loginEndpoint}`;
