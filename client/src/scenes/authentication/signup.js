@@ -47,7 +47,7 @@ export default class SignUp extends Component {
     if (currentHostname === "localhost") {
       baseUrl = "http://localhost:5000"; // Local environment
     } else {
-      baseUrl = "http://decohoatest-client.vercel.app"; // Vercel environment
+      baseUrl = "https://decohoatest-client.vercel.app"; // Vercel environment
     }
 
     // Define the endpoint for the sign-up route

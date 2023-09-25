@@ -36,7 +36,7 @@ export default class Login extends Component {
     if (currentHostname === "localhost") {
       baseUrl = "http://localhost:5000"; // Local environment
     } else {
-      baseUrl = "http://decohoatest-client.vercel.app"; // Vercel environment
+      baseUrl = "https://decohoatest-client.vercel.app"; // Vercel environment
     }
 
     // Define the endpoint for the login route
@@ -48,7 +48,7 @@ export default class Login extends Component {
     // Create the fetch request
     fetch(loginUrl, {
       method: "POST",
-      headers: {
+      headers: {  
         "Content-Type": "application/json",
         Accept: "application/json",
         "Access-Control-Allow-Origin": "*",
