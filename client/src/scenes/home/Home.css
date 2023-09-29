@@ -1,4 +1,6 @@
-
+body{
+    background-color: #adb5bd;
+}
 
   
   .hero-header {
@@ -100,6 +102,7 @@
   
   .content-random {
     background-color: #ECEDE7;
+    border-radius: 30px;
   }
   
   .random-title {
@@ -154,27 +157,116 @@
   }
   
   .inspi-q {
+      border-radius: 30px;
       background: #FFFFFF;
       flex: 1;
       display: flex;
+      flex-grow: 1;
       flex-direction: column;
-      padding: 70px;
-      padding-left: 150px;
-      padding-right: 150px;
+      
+
+  }
+
+  .inspi-q__inside{
+    width: 1400px;
+    padding: 30px 0 0 0;
+  }
+
+  .AboutDECO{
+    width: 1400px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-left: 50px;
+    padding-right: 50px;
+    margin: 32px;
   }
   
   .quote {
-      font-size: 36px;
+      width: 306px;
+      text-align: left;
       color: #1f2937;
-      font-style: italic;
-      font-weight: 5;
+      font-size: 50px;
+      font-weight: 900;
+      display: flex;
+      justify-content: flex-start;
+      align-items: baseline;
   }
+
   
   .thor-name {
-      text-align: end;
+      text-align: left;
       color: #1f2937;
-      font-style: bold;
-      font-weight: bolder;
+      width: 306px;
+      font-size: 10px;
+      font-weight: bold;
+      display: flex;
+      align-items: flex-end;
+  }
+
+  .border-inspi {
+    width: 1460px;
+    border-bottom: #080F1C solid;
+    display: flex;
+    margin: 30px 30px 30px 30px;
+  }
+
+  .inside-border {
+    display: flex;
+    justify-content: space-evenly;
+    margin: 20px;
+  }
+
+  .number-1 {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      color: #1f2937;
+      font-size: 50px;
+      font-weight: 900;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+  }
+
+  .size {
+    font-size: 20px;
+  }
+
+  .number-2 {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    color: #1f2937;
+    font-size: 50px;
+    font-weight: 900;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .number-3 {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    color: #1f2937;
+    font-size: 50px;
+    font-weight: 900;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .number-4 {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    color: #1f2937;
+    font-size: 50px;
+    font-weight: 900;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
   }
   
   .content-call {
@@ -199,6 +291,7 @@
   }
   
   .footer {
+      border-radius: 30px;
       color: #080F1C;
       padding: 50px;
       background: #E1DBCF;

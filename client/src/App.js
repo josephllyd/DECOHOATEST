@@ -11,6 +11,7 @@ import "./App.css";
 import Home from "scenes/home/Home";
 import Login from "scenes/authentication/login";
 import SignUp from "scenes/authentication/signup";
+import ForgotPassword from "scenes/authentication/forgotPassword";
 
 function App() {
   const isLoggedIn = window.localStorage.getItem("loggedIn");
@@ -28,6 +29,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/signin" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
+              <Route path="/forgotPassword" element={<ForgotPassword />} />
               {/* Redirect to login when trying to access the dashboard */}
               <Route path="/dashboard" element={<Navigate to="/signin" />} />
             </Routes>

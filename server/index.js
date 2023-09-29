@@ -52,6 +52,7 @@ import './models/userDetails.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken'; 
 dotenv.config();
+import "./models/properties.js"
 
 app.use(cors({
     origin:["https://decohoatest-client.vercel.app", "http://localhost:3000"],
@@ -61,33 +62,10 @@ app.use(cors({
 ));
 app.use(express.json());
 
- /*
-const JWT_SECRET =
-  "hvdvay6ert72839289()aiyg8t87qt72393293883uhefiuh78ttq3ifi78272jbkj?[]]pou89ywe";
-
-const mongoUrl =
-  "mongodb+srv://dbUser:255-2636@cluster0.rhrq2pl.mongodb.net/?retryWrites=true&w=majority";
-
-mongoose
-  .connect(mongoUrl, {
-    useNewUrlParser: true,
-  })
-  .then(() => {
-    console.log("Connected to database");
-  })
-  .catch((e) => console.log(e));
-
-  app.listen(5001, () => {
-    console.log("Server Started");
-  });
-
-app.get("/", (req, res) => {
-    res.json("Hello");
-  })  */
 
 
 const { MONGO_URL, JWT_SECRET } = process.env;
-const PORT = process.env.PORT || 5000; // Use the provided port or default to 5000
+const PORT = process.env.PORT || 5000; 
 
 mongoose
   .connect(MONGO_URL, {
@@ -98,14 +76,11 @@ mongoose
   })
   .catch((e) => console.log(e));
 
-app.listen(PORT, () => { // Use the PORT variable here
+app.listen(PORT, () => { 
   console.log(`Server Started on port ${PORT}`);
 });
 
 
-
-
-  
   app.post("/post", async(req, res) => {
     console.log(req.body);
     const {data} = req.body;
@@ -195,138 +170,4 @@ app.post("/userData", async (req, res) => {
 
   export default app;
 
- /*
-app.post('/signup', async (req, res) => {
-  const {fname, lname, email, password, userType } = req.body;
-
-  try {
-    const oldUser = await User.findOne({ email });
-
-    if (oldUser) {
-      return res.json({ error: 'User Exists' });
-    }
-
-    // Hash the password before storing it
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    await User.create({
-      fname,
-      lname,
-      email,
-      password: hashedPassword,
-      userType,
-    });
-    res.send({ status: 'ok' });
-  } catch (error) {
-    res.send({ status: 'error' });
-  }
-});
-
-
-app.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-
-  const user = await User.findOne({ email });
-  if (!user) {
-    return res.json({ error: 'User Not found' });
-  }
-  if (await bcrypt.compare(password, user.password)) {
-    // Define your JWT_SECRET variable, which is missing in your code
-    const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-
-    const token = jwt.sign({ email: user.email }, JWT_SECRET, {
-      expiresIn: '15m',
-    });
-
-    // You should return the token as a response
-    return res.json({ status: 'ok', data: token });
-  }
-  res.json({ status: 'error', error: 'Invalid Password' });
-});
-
-
  
-const express = require("express");
-const app = express();
-const mongoose = require("mongoose");
-app.use(express.json());
-const cors = require("cors");
-app.use(cors());
-const bcrypt = require("bcryptjs");
-app.set("view engine", "ejs");
-app.use(express.urlencoded({ extended: false }));
-
-const jwt = require("jsonwebtoken");
-var nodemailer = require("nodemailer");
-
-const JWT_SECRET =
-  "hvdvay6ert72839289()aiyg8t87qt72393293883uhefiuh78ttq3ifi78272jbkj?[]]pou89ywe";
-
-const mongoUrl =
-  "mongodb+srv://dbUser:255-2636@cluster0.rhrq2pl.mongodb.net/?retryWrites=true&w=majority";
-
-mongoose
-  .connect(mongoUrl, {
-    useNewUrlParser: true,
-  })
-  .then(() => {
-    console.log("Connected to database");
-  })
-  .catch((e) => console.log(e));
-
-require("./userDetails");
-require("./imageDetails");
-
-const User = mongoose.model("UserInfo");
-const Images = mongoose.model("ImageDetails");
-app.post("/signup", async (req, res) => {
-  const { fname, lname, email, password, userType } = req.body;
-
-  const encryptedPassword = await bcrypt.hash(password, 10);
-  try {
-    const oldUser = await User.findOne({ email });
-
-    if (oldUser) {
-      return res.json({ error: "User Exists" });
-    }
-    await User.create({
-      fname,
-      lname,
-      email,
-      password: encryptedPassword,
-      userType,
-    });
-    res.send({ status: "ok" });
-  } catch (error) {
-    res.send({ status: "error" });
-  }
-});
-
-app.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-
-  const user = await User.findOne({ email });
-  if (!user) {
-    return res.json({ error: "User Not found" });
-  }
-  if (await bcrypt.compare(password, user.password)) {
-    const token = jwt.sign({ email: user.email }, JWT_SECRET, {
-      expiresIn: "15m",
-    });
-
-    if (res.status(201)) {
-      return res.json({ status: "ok", data: token });
-    } else {
-      return res.json({ error: "error" });
-    }
-  }
-  res.json({ status: "error", error: "InvAlid Password" });
-});
-
-
-
-app.listen(5000, () => {
-  console.log("Server Started");
-});
-
-*/

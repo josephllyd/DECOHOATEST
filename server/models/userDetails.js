@@ -54,9 +54,8 @@ const UserDetailsScehma = new mongoose.Schema(
     },
     userType: String,
   },
-  {
-    collection: "UserInfo",
-  }
+  {collection: "UserInfo"},
+  { timestamps: true}
 );
 
 mongoose.model("UserInfo", UserDetailsScehma);
