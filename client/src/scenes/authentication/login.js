@@ -4,21 +4,35 @@ import logoImage from "../../assets/homelogo.png";
 import "../../assets/unsplash_uB2iZgZSQtQ.png";
 import ForgotPassword from "./forgotPassword";
 
-
 export default class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
       email: "",
       password: "",
+      rememberMe: false
     };
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  componentDidMount() {
+    // Check if email and password are stored in localStorage
+    const storedEmail = localStorage.getItem("email");
+    const storedPassword = localStorage.getItem("password");
+
+    if (storedEmail && storedPassword) {
+      this.setState({
+        email: storedEmail,
+        password: storedPassword,
+        rememberMe: true,
+      });
+    }
   }
 
   handleSubmit(e) {
     e.preventDefault();
   
-    const { email, password } = this.state; 
+    const { email, password, rememberMe } = this.state; 
 
     if (!email || !password) {
       alert("Please fill in both email and password fields.");
@@ -26,6 +40,17 @@ export default class Login extends Component {
     }
   
     console.log(email, password);
+
+    if (rememberMe) {
+      // Store email and password in localStorage
+      localStorage.setItem("email", email);
+      localStorage.setItem("password", password);
+    } else {
+      // Remove email and password from localStorage
+      localStorage.removeItem("email");
+      localStorage.removeItem("password");
+    }
+
     const currentHostname = window.location.hostname;
     let baseUrl = "";
     if (currentHostname === "localhost") {
@@ -112,18 +137,20 @@ export default class Login extends Component {
               />
             </div>
   
-            <div className="mb-3">
-              <div className="custom-control custom-checkbox">
-                <input
-                  type="checkbox"
-                  className="custom-control-input"
-                  id="customCheck1"
-                />
-                <label className="custom-control-label" htmlFor="customCheck1">
-                  Remember me
-                </label>
+              <div className="mb-3">
+                <div className="custom-control custom-checkbox">
+                  <input
+                    type="checkbox"
+                    className="custom-control-input"
+                    id="customCheck1"
+                    checked={this.state.rememberMe}
+                    onChange={(e) => this.setState({ rememberMe: e.target.checked })}
+                  />
+                  <label className="custom-control-label" htmlFor="customCheck1">
+                    Remember me
+                  </label>
+                </div>
               </div>
-            </div>
   
             <div className="d-grid">
               <button type="submit" className="btn" style={{background: `#F2643D`}}>
