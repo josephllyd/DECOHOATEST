@@ -18,45 +18,34 @@ export default class SignUp extends Component {
   handleSubmit(e) {
     e.preventDefault();
     const { fname, lname, email, password, cpassword } = this.state;
-  
-    // Check if any of the required fields are empty
     if (!fname || !lname || !email || !password || !cpassword) {
       alert("All fields are required");
-      return; // Return early to prevent further execution
+      return; 
     }
   
-    // Check if the password is at least 6 characters long
     if (password.length < 6) {
       alert("Passwords must be at least 6 characters");
-      return; // Return early to prevent further execution
+      return; 
     }
-  
     // Check if the passwords match
     if (password !== cpassword) {
       alert("Passwords do not match");
-      return; // Return early to prevent further execution
+      return; 
     }
   
     // Get the current hostname
     const currentHostname = window.location.hostname;
-
-    // Define the base URL for your API
     let baseUrl = "";
 
-    // Check the hostname to determine the environment
     if (currentHostname === "localhost") {
       baseUrl = "http://localhost:5000"; // Local environment
     } else {
       baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
     }
 
-    // Define the endpoint for the sign-up route
+
     const signupEndpoint = "/signup";
-
-    // Combine the base URL and endpoint to get the complete URL
     const signupUrl = `${baseUrl}${signupEndpoint}`;
-
-    // All checks passed, proceed with registration
     console.log(fname, lname, email, password, cpassword);
     fetch(signupUrl, {
       method: "POST",

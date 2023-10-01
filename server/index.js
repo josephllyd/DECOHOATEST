@@ -1,48 +1,3 @@
-/*import express from 'express';
-import bodyParser from 'body-parser';
-import mongoose from 'mongoose';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import helmet from 'helmet';
-import morgan from 'morgan';
-import bcrypt from 'bcryptjs'; // Import bcrypt for password hashing
-import jwt from 'jsonwebtoken'; // Import jwt for token generation
-import * as User from './models/User.js';
-
-
-import propertiesRoutes from './routes/properties.js';
-import generalRoutes from './routes/general.js';
-import membersRoutes from './routes/members.js';
-import updatesRoutes from './routes/updates.js';
-
-dotenv.config();
-const app = express();
-app.use(express.json());
-app.use(helmet());
-app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));
-app.use(morgan('common'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors());
-
-app.use('/general', generalRoutes);
-app.use('/properties', propertiesRoutes);
-app.use('/members', membersRoutes);
-app.use('/updates', updatesRoutes);
-
-const PORT = process.env.PORT || 9000;
-
-mongoose
-  .connect(process.env.MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    app.listen(PORT, () => console.log(`Connected to database! Server Port: ${PORT}`));
-  })
-  .catch((error) => console.log(`${error} did not connect`));
-*/
-
 import express from 'express';
 const app = express();
 import mongoose from 'mongoose';
@@ -51,19 +6,22 @@ import dotenv from 'dotenv';
 import './models/userDetails.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken'; 
+import nodemailer from "nodemailer";
 dotenv.config();
 import "./models/properties.js"
+app.set("view engine", "ejs");
+app.use(express.urlencoded({extended: false}));
 
 app.use(cors({
-    origin:["https://decohoatest-client.vercel.app", "http://localhost:3000"],
+    origin:["https://decohoatest-client.vercel.app", 
+      "http://localhost:3000"
+    ],
     methods:["POST", "GET"],
     credentials: true
   }
 ));
+
 app.use(express.json());
-
-
-
 const { MONGO_URL, JWT_SECRET } = process.env;
 const PORT = process.env.PORT || 5000; 
 
@@ -131,7 +89,7 @@ app.post("/login", async (req, res) => {
   }
   if (await bcrypt.compare(password, user.password)) {
     const token = jwt.sign({ email: user.email }, JWT_SECRET, {
-      expiresIn: "15m",
+      expiresIn: "10m",
     });
 
     if (res.status(201)) {
@@ -168,6 +126,102 @@ app.post("/userData", async (req, res) => {
   } catch (error) { }
 });
 
-  export default app;
+app.post("/forgot-password", async (req, res) => {
+  const { email } = req.body;
+  try {
+    const oldUser = await User.findOne({ email });
+    if (!oldUser) {
+      return res.json({ status: "User Not Exists!!" });
+    }
+    const secret = JWT_SECRET + oldUser.password;
+    const token = jwt.sign({ email: oldUser.email, id: oldUser._id }, secret, {
+      expiresIn: "10m",
+    });
+
+    const vercelEnvironment = 'https://decohoatest-server.vercel.app';
+    const localEnvironment = 'http://localhost:5000';
+    const link =
+      process.env.NODE_ENV === 'production'
+        ? `${vercelEnvironment}/reset-password/${oldUser._id}/${token}`
+        : `${localEnvironment}/reset-password/${oldUser._id}/${token}`;
+        
+   // const link = `http://localhost:5000/reset-password/${oldUser._id}/${token}`;
+    var transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "marumasjoseph@gmail.com",
+        pass: "hxbfrsiprvwyzeqv",
+      },
+    });
+
+    var mailOptions = {
+      from: "youremail@gmail.com",
+      to: email,
+      subject: "DecoHOA Password Reset",
+      text: link,
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Email sent: " + info.response);
+      }
+    }); 
+    console.log(link);
+  } catch (error) { }
+});
+
+app.get("/reset-password/:id/:token", async (req, res) => {
+  const { id, token } = req.params;
+  console.log(req.params);
+  const oldUser = await User.findOne({ _id: id });
+  if (!oldUser) {
+    return res.json({ status: "User Not Exists!!" });
+  }
+  const secret = JWT_SECRET + oldUser.password;
+  try {
+    const verify = jwt.verify(token, secret);
+    res.render("index", { email: verify.email, status: "Token expired or Not Verified" });
+  } catch (error) {
+    console.log(error);
+    res.send("Not Verified");
+  }
+});
+
+app.post("/reset-password/:id/:token", async (req, res) => {
+  const { id, token } = req.params;
+  const { password } = req.body;
+
+  const oldUser = await User.findOne({ _id: id });
+  if (!oldUser) {
+    return res.json({ status: "User Not Exists!!" });
+  }
+
+  const secret = JWT_SECRET + oldUser.password;
+  try {
+    const verify = jwt.verify(token, secret);
+    const encryptedPassword = await bcrypt.hash(password, 10);
+
+    await User.updateOne(
+      {
+        _id: id,
+      },
+      {
+        $set: {
+          password: encryptedPassword,
+        },
+      }
+    );
+    //res.json({status: "Password Updated"})
+    res.render("index", { email: verify.email, status: "verified" });
+  } catch (error) {
+    console.error(error);
+    res.json(  "Something Went Wrong" );
+  }
+});
+
+
+export default app;
 
  

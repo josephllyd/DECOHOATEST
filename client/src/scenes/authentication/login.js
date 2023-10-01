@@ -1,7 +1,8 @@
-import React, { Component, useState } from "react";
+import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import logoImage from "../../assets/homelogo.png";
 import "../../assets/unsplash_uB2iZgZSQtQ.png";
+import ForgotPassword from "./forgotPassword";
 
 
 export default class Login extends Component {
@@ -25,24 +26,15 @@ export default class Login extends Component {
     }
   
     console.log(email, password);
-
-    // Get the current hostname
     const currentHostname = window.location.hostname;
-
-    // Define the base URL for your API
     let baseUrl = "";
-
-    // Check the hostname to determine the environment
     if (currentHostname === "localhost") {
       baseUrl = "http://localhost:5000"; // Local environment
     } else {
       baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
     }
-
-    // Define the endpoint for the login route
+ 
     const loginEndpoint = "/login";
-
-    // Combine the base URL and endpoint to get the complete URL
     const loginUrl = `${baseUrl}${loginEndpoint}`;
 
     // Create the fetch request
@@ -67,18 +59,14 @@ export default class Login extends Component {
           window.localStorage.setItem("loggedIn", true);
           window.location.href = "./dashboard";
         } else {
-          // Handle incorrect password or user not found here
           alert("Wrong email or password!");
         }
       })
       .catch((error) => {
-        // Handle any errors that occurred during the request
         console.error("Error during fetch:", error);
       });
   }
 
-
-  
 
   render() {
     return (
@@ -146,7 +134,7 @@ export default class Login extends Component {
               Dont have an account? <a href="/signup">Sign Up</a>
             </p>
             <p className="forgot-password text-right">
-               <a href="/forgotPassword">Forgot Password?</a>
+               <a href="/forgotPassword"  element={<ForgotPassword />}>Forgot Password?</a>
             </p>
           </form>
         </div>
