@@ -134,18 +134,45 @@ app.post("/forgot-password", async (req, res) => {
       return res.json({ status: "User Not Exists!!" });
     }
     const secret = JWT_SECRET + oldUser.password;
-    const token = jwt.sign({ email: oldUser.email, id: oldUser._id }, secret, {
-      expiresIn: "10m",
+    const token = jwt.sign(
+      { email: oldUser.email, id: oldUser._id }, 
+      secret, {
+        expiresIn: "10m",
     });
 
+     /* const currentHostname = window.location.hostname;
+    const link = "";
+    if (currentHostname === "localhost") {
+      link =  `http://localhost:5000/reset-password/${oldUser._id}/${token}`; // Local environment
+    } else {
+      link =  `https://decohoatest-server.vercel.app/reset-password/${oldUser._id}/${token}` ; // Vercel environment
+    }  
+    
+    
+     
     const vercelEnvironment = 'https://decohoatest-server.vercel.app';
     const localEnvironment = 'http://localhost:5000';
     const link =
-      process.env.NODE_ENV === 'production'
-        ? `${vercelEnvironment}/reset-password/${oldUser._id}/${token}`
-        : `${localEnvironment}/reset-password/${oldUser._id}/${token}`;
-        
-   // const link = `http://localhost:5000/reset-password/${oldUser._id}/${token}`;
+      currentHostname === "localhost"
+        ? `${localEnvironment}/reset-password/${oldUser._id}/${token}`
+        : `${vercelEnvironment}/reset-password/${oldUser._id}/${token}`;  
+  
+
+        const currentHostname = req.headers.host; // Use the request's host header to determine the environment
+        const isLocalhost = currentHostname === "localhost";
+        const baseUrl = isLocalhost
+          ? "http://localhost:5000" // Local environment
+          : "https://decohoatest-server.vercel.app"; // Vercel environment
+    
+        const link = `${baseUrl}/reset-password/${oldUser._id}/${token}`;
+  */
+        const vercelEnvironment = 'https://decohoatest-server.vercel.app';
+        const localEnvironment = 'http://localhost:5000';
+        const link =
+          process.env.NODE_ENV === 'production'
+            ? `${vercelEnvironment}/reset-password/${oldUser._id}/${token}`
+            : `${localEnvironment}/reset-password/${oldUser._id}/${token}`;
+    //const link = `http://localhost:5000/reset-password/${oldUser._id}/${token}`;
     var transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
