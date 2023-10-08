@@ -315,6 +315,21 @@ app.get("/getUsers", async (req, res) => {
   }
 });
 
+app.get("/searchProperties", async (req, res) => {
+  try {
+    const { category } = req.query; // Get the category from the query parameters
+
+    // Use Mongoose to find properties that match the category
+    const properties = await Property.find({ category });
+
+    // Return the results as JSON
+    res.status(200).json({ status: "ok", properties });
+  } catch (error) {
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
+
+
 export default app;
 
  

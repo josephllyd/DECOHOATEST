@@ -20,9 +20,19 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TablePagination, // Import TablePagination
+  TableSortLabel,
+  TablePagination,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  useTheme,
+  InputBase,
+  IconButton, // Import TablePagination
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import FlexBetween from "components/FlexBetween";
+import { Search } from "@mui/icons-material";
 
 const Properties = () => {
   const [isAddPropertyDialogOpen, setIsAddPropertyDialogOpen] = useState(false);
@@ -33,6 +43,11 @@ const Properties = () => {
   const [properties, setProperties] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [sortColumn, setSortColumn] = useState(null);
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [searchQuery, setSearchQuery] = useState(""); 
+  const [currentRows, setCurrentRows] = useState([]);
+  const [selectedProperty, setSelectedProperty] = useState(null);
 
   useEffect(() => {
     fetchProperties();
@@ -116,47 +131,192 @@ const Properties = () => {
 
   const indexOfLastRow = (page + 1) * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-  const currentRows = properties.slice(indexOfFirstRow, indexOfLastRow);
+  //const currentRows = properties.slice(indexOfFirstRow, indexOfLastRow);
+
+    //sorting function
+    const sortProperties = (column, order) => {
+      let sortedProperties = [...properties];
+      sortedProperties.sort((a, b) => {
+        const valueA = column === 'price' ? parseFloat(a[column]) : a[column];
+        const valueB = column === 'price' ? parseFloat(b[column]) : b[column];
+
+        if (valueA < valueB) return order === 'asc' ? -1 : 1;
+        if (valueA > valueB) return order === 'asc' ? 1 : -1;
+        return 0;
+      });
+      return sortedProperties;
+    };
+
+
+    const handleSort = (column) => {
+      if (column === sortColumn) {
+        // Toggle sort order if the same column is clicked
+        const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
+        setSortOrder(newSortOrder);
+      } else {
+        // Set new sorting column and default to ascending order
+        setSortColumn(column);
+        setSortOrder("asc");
+      }
+    };
+
+   // const currentRows = sortedProperties.slice(indexOfFirstRow, indexOfLastRow);
+
+   useEffect(() => {
+    const sortedAndFilteredProperties = handleSearch();
+    setCurrentRows(sortedAndFilteredProperties.slice(indexOfFirstRow, indexOfLastRow));
+  }, [searchQuery, sortColumn, sortOrder]);
+
+    const handleSearch = () => {
+      const filteredProperties = properties.filter((property) => {
+        const lowerCaseQuery = searchQuery.toLowerCase();
+        const priceString = property.price ? property.price.toString() : ''; // Convert price to string or use an empty string if it's undefined
+        return (
+          (property.name && property.name.toLowerCase().includes(lowerCaseQuery)) ||
+          (property.owner && property.owner.toLowerCase().includes(lowerCaseQuery)) ||
+          (priceString && priceString.includes(lowerCaseQuery)) ||
+          (property.description && property.description.toLowerCase().includes(lowerCaseQuery)) ||
+          (property.category && property.category.toLowerCase().includes(lowerCaseQuery))
+        );
+      });
+      // Sort the filtered properties
+      const sortedProperties = sortProperties(sortColumn, sortOrder);
+
+      // Return the sorted and filtered properties
+      return sortedProperties.filter((property) => filteredProperties.includes(property));
+    };
+  
+   // const sortedAndFilteredProperties = handleSearch();
+  
+   const sortedProperties = sortProperties(sortColumn, sortOrder);
+   // const currentRows = sortedAndFilteredProperties.slice(indexOfFirstRow, indexOfLastRow) 
+   //   || sortedProperties.slice(indexOfFirstRow, indexOfLastRow);
+    const theme = useTheme();
+
+    const handleRowClick = (property) => {
+      setSelectedProperty(property);
+    };
+  
+    const handleClosePropertyOptions = () => {
+      setSelectedProperty(null);
+    };
 
   return (
     <div style={{ flex: 1, padding: "20px", fontSize: "20px" }}>
-      <Fab
-        variant="extended"
-        size="small"
-        color="primary"
-        onClick={openAddPropertyDialog}
-        style={{ background: `#F2643D` }}
+      <div style={{  display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center"}}
       >
-        <AddIcon /> Property
-      </Fab>
-      <br/><br/>
+        <Fab
+          variant="extended"
+          size="small"
+          color="primary"
+          onClick={openAddPropertyDialog}
+          style={{ background: `#F2643D` }}
+        >
+          <AddIcon /> Property
+        </Fab>
+        <FlexBetween
+          backgroundColor={theme.palette.background.alt}
+          borderRadius="9px"
+          gap="3rem"
+          padding="0.1rem 1.5rem"
+        >
+          <InputBase
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+            <IconButton>
+              <Search/>
+            </IconButton>
+        </FlexBetween>
+      </div>
+      <br/>
       {/* Table to display properties */}
-      <TableContainer component={Card}  style={{ background: "none" }}>
+      <TableContainer component={Card} style={{ background: "none" }}>
         <Table>
           <TableHead>
             <TableRow style={{ background: "#333" }}>
-              <TableCell style={{ fontWeight: 'bold', color: 'white' }}>Name</TableCell>
-              <TableCell style={{ fontWeight: 'bold', color: 'white' }}>Price</TableCell>
-              <TableCell style={{ fontWeight: 'bold', color: 'white' }}>Description</TableCell>
-              <TableCell style={{ fontWeight: 'bold', color: 'white' }}>Category</TableCell>
+              <TableCell
+                style={{ fontWeight: 'bold', color: 'white' }}
+                onClick={() => handleSort("name")}
+              >
+                <TableSortLabel
+                  active={sortColumn === "name"}
+                  direction={sortOrder}
+                >
+                  Name
+                </TableSortLabel>
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: 'bold', color: 'white' }}
+                onClick={() => handleSort("owner")}
+              >
+                <TableSortLabel
+                  active={sortColumn === "owner"}
+                  direction={sortOrder}
+                >
+                  Owner Id
+                </TableSortLabel>
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: 'bold', color: 'white' }}
+                onClick={() => handleSort("price")}
+              >
+                <TableSortLabel
+                  active={sortColumn === "price"}
+                  direction={sortOrder}
+                >
+                  Price
+                </TableSortLabel>
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: 'bold', color: 'white' }}
+                onClick={() => handleSort("description")}
+              >
+                <TableSortLabel
+                  active={sortColumn === "description"}
+                  direction={sortOrder}
+                >
+                  Description
+                </TableSortLabel>
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: 'bold', color: 'white' }}
+                onClick={() => handleSort("category")}
+              >
+                <TableSortLabel
+                  active={sortColumn === "category"}
+                  direction={sortOrder}
+                >
+                  Category
+                </TableSortLabel>
+              </TableCell>
+              
             </TableRow>
           </TableHead>
           <TableBody>
             {currentRows.map((property) => (
-              <TableRow key={property._id}>
-                <TableCell>{property.name}</TableCell>
-                <TableCell>{property.price}</TableCell>
-                <TableCell>{property.description}</TableCell>
-                <TableCell>{property.category}</TableCell>
-              </TableRow>
-            ))}
+                <TableRow
+                  key={property._id}
+                  onClick={() => handleRowClick(property)} // Handle row click
+                  style={{ cursor: "pointer" }} // Change cursor to pointer
+                >
+                  <TableCell>{property.name}</TableCell>
+                  <TableCell>{property.owner}</TableCell>
+                  <TableCell>Php {property.price.toLocaleString()}</TableCell>
+                  <TableCell>{property.description}</TableCell>
+                  <TableCell>{property.category}</TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
 
       {/* Pagination */}
       <TablePagination
-        rowsPerPageOptions={[10, 20, 30]}
+        rowsPerPageOptions={[100, 50, 30, 20, 10]}
         component="div"
         count={properties.length}
         rowsPerPage={rowsPerPage}
@@ -167,6 +327,31 @@ const Properties = () => {
           setPage(0);
         }}
       />
+
+      {/* Property Options Dialog */}
+      <Dialog
+        open={selectedProperty !== null}
+        onClose={handleClosePropertyOptions}
+      >
+        <DialogTitle>Property Details</DialogTitle>
+        <DialogContent>
+          {/* Display property options here */}
+          {selectedProperty && (
+            <div>
+              <Typography variant="h6">Name: {selectedProperty.name}</Typography>
+              <Typography>Owner: {selectedProperty.owner}</Typography>
+              <Typography>Price: Php {selectedProperty.price.toLocaleString()}</Typography>
+              <Typography>Description: {selectedProperty.description}</Typography>
+              <Typography>Category: {selectedProperty.category}</Typography>
+              {/* Add more property details as needed */}
+              <Button onClick={handleClosePropertyOptions} color="primary">
+                Close
+              </Button>
+              {/* Add more options/buttons as needed */}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Add Property Dialog */}
       <Dialog open={isAddPropertyDialogOpen} onClose={closeAddPropertyDialog}>
@@ -200,15 +385,20 @@ const Properties = () => {
               fullWidth
               required
             />
-            <TextField
-              label="Category"
-              type="text"
-              name="category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              fullWidth
-              required
-            />
+            <FormControl fullWidth required>
+              <InputLabel>Category</InputLabel>
+              <Select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                <MenuItem value="Townhouse Unit">TownHouse</MenuItem>
+                <MenuItem value="2 Bedroom Unit">2 Bedroom Unit</MenuItem>
+                <MenuItem value="3 Bedroom Unit">3 Bedroom Unit</MenuItem>
+                <MenuItem value="1 Bedroom Unit">1 Bedroom Unit</MenuItem>
+                <MenuItem value="Studio Unit">Studio Unit</MenuItem>
+                {/* Add more options as needed */}
+              </Select>
+            </FormControl>
             <DialogActions>
               <Button onClick={closeAddPropertyDialog} color="primary">
                 Cancel

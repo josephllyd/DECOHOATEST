@@ -33,7 +33,7 @@ export default class Members extends Component {
   render() {
     return (
       <div  style={{ flex: 1, padding: "20px", fontSize: "20px" }}>
-        <h1>Users</h1>
+        <h2>Members</h2>
         <TableContainer component={Card}  style={{ background: "none" }}>
         <Table>
           <TableHead>
