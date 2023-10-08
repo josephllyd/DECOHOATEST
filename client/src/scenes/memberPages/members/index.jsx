@@ -1,10 +1,12 @@
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import React, { Component } from "react";
+import {Card} from "@mui/material";
 
 export default class Members extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userData: "",
+      users: [],
     };
   }
 
@@ -17,41 +19,46 @@ export default class Members extends Component {
       baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
     }
 
-    const userDataEndpoint = "/userData";
-    const userDataUrl = `${baseUrl}${userDataEndpoint}`;
+    const getUsersEndpoint = "/getUsers";
+    const getUsersUrl = `${baseUrl}${getUsersEndpoint}`;
 
-    fetch(userDataUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({
-        token: window.localStorage.getItem("token"),
-      }),
-    })
+    fetch(getUsersUrl)
       .then((res) => res.json())
       .then((data) => {
-        console.log(data, "userData");
-        this.setState({ userData: data.data });
-        if (data.data === 'token expired') {
-          alert("Token expired! Log in again.");
-          window.localStorage.clear();
-          window.location.href = "./signin";
-        }
+        console.log(data.users, "users");
+        this.setState({ users: data.users });
       });
   }
 
-  logOut = () => {
-    window.localStorage.clear();
-    window.location.href = "./signin";
-  }
   render() {
     return (
-        <div style={{ flex: 1, padding: "40px", fontSize: '20px' }}>
-            Welcome to Members Page {this.state.userData.fname}! 
-        </div>
+      <div  style={{ flex: 1, padding: "20px", fontSize: "20px" }}>
+        <h1>Users</h1>
+        <TableContainer component={Card}  style={{ background: "none" }}>
+        <Table>
+          <TableHead>
+            <TableRow style={{ background: "#333" }}>
+              <TableCell style={{ fontWeight: 'bold', color: 'white' }}>First Name</TableCell>
+              <TableCell style={{ fontWeight: 'bold', color: 'white' }}>Last Name</TableCell>
+              <TableCell style={{ fontWeight: 'bold', color: 'white' }}>Email</TableCell>
+              <TableCell style={{ fontWeight: 'bold', color: 'white' }}>User Type</TableCell>
+            </TableRow>
+          </TableHead>
+            <TableBody>
+              {this.state.users.map((user, index) => (
+                <TableRow key={index}>
+                  <TableCell>{user.fname}</TableCell>
+                  <TableCell>{user.lname}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.userType}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+        </Table>
+      </TableContainer>
+
+    
+      </div>
     );
   }
 }

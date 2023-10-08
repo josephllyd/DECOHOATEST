@@ -12,6 +12,8 @@ import "./models/properties.js"
 app.set("view engine", "ejs");
 app.use(express.urlencoded({extended: false}));
 
+
+
 app.use(cors({
     origin:["https://decohoatest-client.vercel.app", 
       "http://localhost:3000"
@@ -89,7 +91,7 @@ app.post("/login", async (req, res) => {
   }
   if (await bcrypt.compare(password, user.password)) {
     const token = jwt.sign({ email: user.email }, JWT_SECRET, {
-      expiresIn: "10m",
+      expiresIn: "60m",
     });
 
     if (res.status(201)) {
@@ -106,7 +108,7 @@ app.post("/userData", async (req, res) => {
   try {
     const user = jwt.verify(token, JWT_SECRET, (err, res) => {
       if (err) {
-        return "token expired";
+        return "Token expired";
       }
       return res;
     });
@@ -248,6 +250,70 @@ app.post("/reset-password/:id/:token", async (req, res) => {
   }
 });
 
+
+
+
+// Import your Property model
+const Property = mongoose.model('Properties');
+// Middleware to extract user information from JWT
+const authenticateUser = (req, res, next) => {
+  const { token } = req.body;
+  if (token) {
+    jwt.verify(token, JWT_SECRET, (err, decodedToken) => {
+      if (err) {
+        return res.status(401).json({ error: "Token expired or invalid" });
+      }
+      // Attach user information to the request
+      req.user = decodedToken;
+      next();
+    });
+  } else {
+    res.status(401).json({ error: "Token not provided" });
+  }
+};
+
+// Apply the middleware to the /addProperty route
+app.post("/addProperty", authenticateUser, async (req, res) => {
+  const { name, price, description, category, token } = req.body;
+  try {
+    // Verify the user's token to get their email
+    const { email } = jwt.verify(token, JWT_SECRET);
+    const user = await User.findOne({ email });
+
+    // Create a new property with the owner ID from the user
+    const property = await Property.create({
+      name,
+      price,
+      description,
+      category,
+      owner: user._id, // Use user._id to get the user's ObjectId
+    });
+
+    // Send a response indicating success
+    res.status(201).json({ status: "ok", property });
+  } catch (error) {
+    // Handle errors
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
+
+app.get("/getProperties", async (req, res) => {
+  try {
+    const properties = await Property.find();
+    res.status(200).json({ status: "ok", properties });
+  } catch (error) {
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
+
+app.get("/getUsers", async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json({ status: "ok", users });
+  } catch (error) {
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
 
 export default app;
 

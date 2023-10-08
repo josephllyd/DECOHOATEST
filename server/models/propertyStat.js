@@ -13,11 +13,6 @@ const PropertyStatSchema = new mongoose.Schema(
         totalUnits: Number,
       }
     ],
-    dailyData: {
-      date: String,
-      totalSales: Number,
-      totatUnits: Number,
-    }
   },
   {collection: "PropertyStat"},
   { timestamps: true}

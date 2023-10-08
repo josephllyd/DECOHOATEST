@@ -1,15 +1,18 @@
 import mongoose from "mongoose";
 
-const PropertiesSchema = new mongoose.Schema(
+const PropertySchema = new mongoose.Schema(
   {
-   name: String,
-   price: Number,
-   description: String,
-   category: String,
-   owner: String
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "UserInfo" // Reference to the User collection
+    },
+    name: String,
+    price: Number,
+    description: String,
+    category: String,
   },
-  {collection: "Properties"},
-  { timestamps: true}
+  { collection: "Properties" },
+  { timestamps: true }
 );
 
-mongoose.model("Properties", PropertiesSchema);
+mongoose.model("Properties", PropertySchema);
