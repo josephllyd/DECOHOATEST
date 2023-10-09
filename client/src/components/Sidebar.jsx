@@ -23,10 +23,12 @@ import {
   Person2Outlined,
   NewspaperOutlined,
   SupportAgentOutlined,
+  MoneyOutlined,
 } from "@mui/icons-material";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import FlexBetween from "./FlexBetween";
+import logoImage from "../assets/homelogo.png"
 //import profileImage from "assets/profile.jpeg";
 
 const navItems = [
@@ -44,7 +46,7 @@ const navItems = [
   },
   {
     text: "Finance",
-    icon: <MoneyOffOutlined />,
+    icon: <MoneyOutlined />,
   },
   {
     text: "Vehicle",
@@ -119,9 +121,16 @@ const Sidebar = ({
             <Box m="1.5rem 2rem 2rem 3rem">
               <FlexBetween color={theme.palette.secondary.main}>
                 <Box display="flex" alignItems="center" gap="0.5rem">
-                  <Typography variant="h4" fontWeight="bold">
-                    DECO HOA
-                  </Typography>
+                  <Link to='/dashboard'>
+                    <Box
+                      component="img"
+                      alt="DECOHOA"
+                      src={logoImage}
+                      height="40px"
+                      //width="160px"
+                      sx={{ objectFit: "contain" }}
+                    />
+                  </Link>
                 </Box>
                 {!isNonMobile && (
                   <IconButton onClick={() => setIsSidebarOpen(!isSidebarOpen)}>

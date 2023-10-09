@@ -2265,6 +2265,121 @@ export const dataAffiliateStat = [
       __v: 36729,
     },
   ];
+
+  export const dataProperties = [
+    {
+      _id: "63701d24f03239c72c00018e",
+      name: "Bayside Villa",
+      price: 7500000,
+      description: "Luxurious waterfront villa with stunning views.",
+      category: "Villa",
+    },
+    {
+      _id: "63701d24f03239c72c00018f",
+      name: "Hilltop Mansion",
+      price: 10000000,
+      description: "A grand mansion perched on a scenic hilltop.",
+      category: "House",
+     
+    },
+    {
+      _id: "63701d24f03239c72c000190",
+      name: "Modern Condo",
+      price: 4200000,
+      description: "Sleek and modern condominium in a prime location.",
+      category: "Condo",
+    
+    },
+    {
+      _id: "63701d24f03239c72c000191",
+      name: "Riverside Retreat",
+      price: 5500000,
+      description: "A charming riverside home with a serene atmosphere.",
+      category: "House",
+ 
+    },
+    {
+      _id: "63701d24f03239867500012a",
+      name: "Coastal Cottage",
+      price: 3800000,
+      description: "A cozy cottage by the sea with a private beach access.",
+      category: "House",
+   
+    },
+    {
+      _id: "63701d24f03239867500012b",
+      name: "Lakeview Retreat",
+      price: 6700000,
+      description: "A retreat with breathtaking lake views and amenities.",
+      category: "House",
+    },
+    {
+      _id: "63701d24f03239867500012c",
+      name: "Urban Penthouse",
+      price: 8500000,
+      description: "Luxurious penthouse in the heart of the city.",
+      category: "Penthouse",
+    },
+    {
+      _id: "63701d24f03239867500012d",
+      name: "Mountain Chalet",
+      price: 5200000,
+      description: "A charming chalet nestled in the mountains.",
+      category: "House",
+    },
+  ]
+
+  export const dataPropertyStat = [
+    {
+      productId: "63701d24f03239c72c00018e",
+      yearlySalesTotal: 2500000,
+      yearlyTotalSoldUnits: 2,
+      year: 2023,
+      monthlyData: [
+        {
+          month: "January",
+          totalSales: 150000,
+          totalUnits: 1,
+        },
+        {
+          month: "February",
+          totalSales: 200000,
+          totalUnits: 1,
+        },
+        {
+          month: "March",
+          totalSales: 180000,
+          totalUnits: 1,
+        },
+        // Add more monthly data as needed...
+      ],
+    },
+    {
+      productId: "63701d24f03239c72c00018f",
+      yearlySalesTotal: 6000000,
+      yearlyTotalSoldUnits: 3,
+      year: 2023,
+      monthlyData: [
+        {
+          month: "January",
+          totalSales: 300000,
+          totalUnits: 1,
+        },
+        {
+          month: "February",
+          totalSales: 250000,
+          totalUnits: 1,
+        },
+        {
+          month: "March",
+          totalSales: 200000,
+          totalUnits: 1,
+        },
+        // Add more monthly data as needed...
+      ],
+        // Add more daily data as needed...
+    },
+  ]
   
   export const dataProduct = [
     {

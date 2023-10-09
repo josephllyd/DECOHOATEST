@@ -1,17 +1,18 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
   LightModeOutlined,
   DarkModeOutlined,
   Menu as MenuIcon,
   Search,
-  SettingsOutlined,
-  ArrowDropDownOutlined,
+  Person3Outlined,
 } from "@mui/icons-material";
 import FlexBetween from 'components/FlexBetween';
 import { useDispatch } from 'react-redux';
 import { setMode } from 'state';
 import profileImage from "assets/profile.jpeg"
 import { AppBar, IconButton, InputBase, Toolbar, useTheme } from '@mui/material';
+import { Link } from 'react-router-dom';
+
 
 const Navbar = ( {
     isSidebarOpen, 
@@ -19,10 +20,6 @@ const Navbar = ( {
 }) => {
     const dispatch = useDispatch();
     const theme = useTheme();
-    const logOut = () => {
-        window.localStorage.clear();
-        window.location.href = "./signin";
-      };
     return <AppBar
         sx={{
             position: "static",
@@ -35,17 +32,6 @@ const Navbar = ( {
             <FlexBetween>
                 <IconButton onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
                     <MenuIcon/>
-                    <FlexBetween
-                        backgroundColor={theme.palette.background.alt}
-                        borderRadius="9px"
-                        gap="3rem"
-                        padding="0.1rem 1.5rem"
-                    >
-                        <InputBase placeholder="Search..." />
-                        <IconButton>
-                            <Search/>
-                        </IconButton>
-                    </FlexBetween>
                 </IconButton>
             </FlexBetween>
 
@@ -58,14 +44,11 @@ const Navbar = ( {
                         <LightModeOutlined sx={{ fontSize: "25px"}}/>
                     )}
                 </IconButton>
-                <IconButton>
-                    <SettingsOutlined sx={{ fontSize: "25px"}} />
-                </IconButton>
-
-                {/* Log Out Button */}
-                <IconButton onClick={logOut}>
-                    Log Out
-                </IconButton>
+                <Link to="/profile"> 
+                    <IconButton>
+                        <Person3Outlined sx={{ fontSize: "25px"}} />
+                    </IconButton>
+                </Link>
             </FlexBetween>
         </Toolbar>
     </AppBar>

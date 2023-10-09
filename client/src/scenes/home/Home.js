@@ -101,6 +101,7 @@ const Home = () => {
           </div>
         </div>
         <div className="footer">
+        <div className="footer">
         Copyright © The Deco Homeowners' Association System by Mercado Family 2022
       </div>
     </div>
