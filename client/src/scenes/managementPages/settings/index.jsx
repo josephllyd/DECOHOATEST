@@ -1,11 +1,18 @@
+import { IconButton } from "@mui/material";
+import FlexBetween from "components/FlexBetween";
 import React, { Component } from "react";
 
-export default class Dashboard extends Component {
+export default class Settings extends Component {
   constructor(props) {
     super(props);
     this.state = {
       userData: "",
     };
+  }
+  
+  logOut = () => {
+    window.localStorage.clear();
+    window.location.href = "./signin";
   }
 
   componentDidMount() {
@@ -43,17 +50,18 @@ export default class Dashboard extends Component {
       });
   }
 
-  logOut = () => {
-    window.localStorage.clear();
-    window.location.href = "./signin";
-  }
   render() {
     return (
-      <div style={{ flex: 1, padding: "40px", fontSize: '20px' }}>
-        Welcome {this.state.userData.fname} ! <br />
-        Email: <h1>{this.state.userData.email}</h1>
-        <br />
-      </div>
+        <FlexBetween>
+            <div style={{ flex: 1, padding: "40px", fontSize: '20px' }}>
+                Welcome to Settings Page {this.state.userData.fname}! 
+                <br/><br/>
+                <IconButton onClick={this.logOut} style={{ textAlign:'left'}}>
+                    Log Out
+                </IconButton>
+            </div>
+            
+        </FlexBetween>
     );
   }
 }

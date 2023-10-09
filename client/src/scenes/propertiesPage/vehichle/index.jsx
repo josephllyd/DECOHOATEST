@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-export default class Dashboard extends Component {
+export default class Vehicle extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -49,11 +49,9 @@ export default class Dashboard extends Component {
   }
   render() {
     return (
-      <div style={{ flex: 1, padding: "40px", fontSize: '20px' }}>
-        Welcome {this.state.userData.fname} ! <br />
-        Email: <h1>{this.state.userData.email}</h1>
-        <br />
-      </div>
+        <div style={{ flex: 1, padding: "40px", fontSize: '20px' }}>
+            Welcome to Vehicles Page {this.state.userData.fname}! 
+        </div>
     );
   }
 }

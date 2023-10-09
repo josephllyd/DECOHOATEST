@@ -1,8 +1,8 @@
-import React, { Component, useState } from "react";
+import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import logoImage from "../../assets/homelogo.png";
 import "../../assets/unsplash_uB2iZgZSQtQ.png";
-
+import ForgotPassword from "./forgotPassword";
 
 export default class Login extends Component {
   constructor(props) {
@@ -10,14 +10,29 @@ export default class Login extends Component {
     this.state = {
       email: "",
       password: "",
+      rememberMe: false
     };
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  componentDidMount() {
+    // Check if email and password are stored in localStorage
+    const storedEmail = localStorage.getItem("email");
+    const storedPassword = localStorage.getItem("password");
+
+    if (storedEmail && storedPassword) {
+      this.setState({
+        email: storedEmail,
+        password: storedPassword,
+        rememberMe: true,
+      });
+    }
   }
 
   handleSubmit(e) {
     e.preventDefault();
   
-    const { email, password } = this.state; 
+    const { email, password, rememberMe } = this.state; 
 
     if (!email || !password) {
       alert("Please fill in both email and password fields.");
@@ -26,23 +41,25 @@ export default class Login extends Component {
   
     console.log(email, password);
 
-    // Get the current hostname
+    if (rememberMe) {
+      // Store email and password in localStorage
+      localStorage.setItem("email", email);
+      localStorage.setItem("password", password);
+    } else {
+      // Remove email and password from localStorage
+      localStorage.removeItem("email");
+      localStorage.removeItem("password");
+    }
+
     const currentHostname = window.location.hostname;
-
-    // Define the base URL for your API
     let baseUrl = "";
-
-    // Check the hostname to determine the environment
     if (currentHostname === "localhost") {
       baseUrl = "http://localhost:5000"; // Local environment
     } else {
       baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
     }
-
-    // Define the endpoint for the login route
+ 
     const loginEndpoint = "/login";
-
-    // Combine the base URL and endpoint to get the complete URL
     const loginUrl = `${baseUrl}${loginEndpoint}`;
 
     // Create the fetch request
@@ -67,18 +84,14 @@ export default class Login extends Component {
           window.localStorage.setItem("loggedIn", true);
           window.location.href = "./dashboard";
         } else {
-          // Handle incorrect password or user not found here
           alert("Wrong email or password!");
         }
       })
       .catch((error) => {
-        // Handle any errors that occurred during the request
         console.error("Error during fetch:", error);
       });
   }
 
-
-  
 
   render() {
     return (
@@ -124,18 +137,20 @@ export default class Login extends Component {
               />
             </div>
   
-            <div className="mb-3">
-              <div className="custom-control custom-checkbox">
-                <input
-                  type="checkbox"
-                  className="custom-control-input"
-                  id="customCheck1"
-                />
-                <label className="custom-control-label" htmlFor="customCheck1">
-                  Remember me
-                </label>
+              <div className="mb-3">
+                <div className="custom-control custom-checkbox">
+                  <input
+                    type="checkbox"
+                    className="custom-control-input"
+                    id="customCheck1"
+                    checked={this.state.rememberMe}
+                    onChange={(e) => this.setState({ rememberMe: e.target.checked })}
+                  />
+                  <label className="custom-control-label" htmlFor="customCheck1">
+                    Remember me
+                  </label>
+                </div>
               </div>
-            </div>
   
             <div className="d-grid">
               <button type="submit" className="btn" style={{background: `#F2643D`}}>
@@ -146,7 +161,7 @@ export default class Login extends Component {
               Dont have an account? <a href="/signup">Sign Up</a>
             </p>
             <p className="forgot-password text-right">
-               <a href="/forgotPassword">Forgot Password?</a>
+               <a href="/forgotPassword"  element={<ForgotPassword />}>Forgot Password?</a>
             </p>
           </form>
         </div>
