@@ -28,11 +28,29 @@ import {
   MenuItem,
   useTheme,
   InputBase,
-  IconButton, // Import TablePagination
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemAvatar,
+  Avatar,
+  ListItemText, // Import TablePagination
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import FlexBetween from "components/FlexBetween";
-import { Search } from "@mui/icons-material";
+import { PersonPinCircleRounded, Search } from "@mui/icons-material";
+import { styled } from '@mui/material/styles';
+import CloseIcon from '@mui/icons-material/Close';
+
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2),
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1),
+  },
+}));
 
 const Properties = () => {
   const [isAddPropertyDialogOpen, setIsAddPropertyDialogOpen] = useState(false);
@@ -48,6 +66,31 @@ const Properties = () => {
   const [searchQuery, setSearchQuery] = useState(""); 
   const [currentRows, setCurrentRows] = useState([]);
   const [selectedProperty, setSelectedProperty] = useState(null);
+  const [open, setOpen] = React.useState(false);
+  
+
+
+  const handleOption1Click = () => {
+    setOpen(true);
+    //alert("Option 1 clicked");
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleOption2Click = () => {
+    // Handle Option 2 click here
+    // You can perform any action you want for Option 2
+    // For example, display a message or perform an operation
+    alert("Option 2 clicked");
+  };
+
+  const handleOption3Click = () => {
+    // Handle Option 3 click here
+    // You can perform any action you want for Option 3
+    // For example, display a message or perform an operation
+    alert("Option 3 clicked");
+  };
 
   useEffect(() => {
     fetchProperties();
@@ -293,7 +336,6 @@ const Properties = () => {
                   Category
                 </TableSortLabel>
               </TableCell>
-              
             </TableRow>
           </TableHead>
           <TableBody>
@@ -333,25 +375,65 @@ const Properties = () => {
         open={selectedProperty !== null}
         onClose={handleClosePropertyOptions}
       >
-        <DialogTitle>Property Details</DialogTitle>
-        <DialogContent>
-          {/* Display property options here */}
-          {selectedProperty && (
-            <div>
-              <Typography variant="h6">Name: {selectedProperty.name}</Typography>
-              <Typography>Owner: {selectedProperty.owner}</Typography>
-              <Typography>Price: Php {selectedProperty.price.toLocaleString()}</Typography>
-              <Typography>Description: {selectedProperty.description}</Typography>
-              <Typography>Category: {selectedProperty.category}</Typography>
-              {/* Add more property details as needed */}
-              <Button onClick={handleClosePropertyOptions} color="primary">
-                Close
-              </Button>
-              {/* Add more options/buttons as needed */}
-            </div>
-          )}
-        </DialogContent>
+        <DialogTitle>Property Option</DialogTitle>
+        <List sx={{ pt: 0 }}>
+          <ListItem disableGutters>
+            <ListItemButton onClick={handleOption1Click}>
+              <ListItemText primary="View Property" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disableGutters>
+            <ListItemButton onClick={handleOption2Click}>
+              <ListItemText primary="Delete Property" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disableGutters>
+            <ListItemButton onClick={handleOption3Click}>
+              <ListItemText primary="Generate Report" />
+            </ListItemButton>
+          </ListItem>
+        </List>
       </Dialog>
+
+      <BootstrapDialog
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+      >
+        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+           Property Details
+        </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent>
+            {selectedProperty ? (
+              <div>
+                <Typography variant="h6">Name: {selectedProperty.name}</Typography>
+                <Typography>Owner: {selectedProperty.owner}</Typography>
+                <Typography>Price: Php {selectedProperty.price.toLocaleString()}</Typography>
+                <Typography>Description: {selectedProperty.description}</Typography>
+                <Typography>Category: {selectedProperty.category}</Typography>
+              </div>
+            ) : (
+              <Typography>No property selected</Typography>
+            )}
+          </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleClose}>
+            Close
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
 
       {/* Add Property Dialog */}
       <Dialog open={isAddPropertyDialogOpen} onClose={closeAddPropertyDialog}>
