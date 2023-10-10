@@ -41,6 +41,7 @@ import FlexBetween from "components/FlexBetween";
 import { PersonPinCircleRounded, Search } from "@mui/icons-material";
 import { styled } from '@mui/material/styles';
 import CloseIcon from '@mui/icons-material/Close';
+import jsPDF from "jspdf";
 
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -67,29 +68,30 @@ const Properties = () => {
   const [currentRows, setCurrentRows] = useState([]);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [open, setOpen] = React.useState(false);
-  
+  const [isEditPropertyDialogOpen, setIsEditPropertyDialogOpen] = useState(false);
+  const [editedName, setEditedName] = useState("");
+  const [editedPrice, setEditedPrice] = useState("");
+  const [editedDescription, setEditedDescription] = useState("");
+  const [editedCategory, setEditedCategory] = useState("");
+  const theme = useTheme();
 
+  const handleRowClick = (property) => {
+    setSelectedProperty(property);
+  };
+
+  const handleClosePropertyOptions = () => {
+    setSelectedProperty(null);
+  };
 
   const handleOption1Click = () => {
     setOpen(true);
-    //alert("Option 1 clicked");
   };
   const handleClose = () => {
     setOpen(false);
   };
 
-  const handleOption2Click = () => {
-    // Handle Option 2 click here
-    // You can perform any action you want for Option 2
-    // For example, display a message or perform an operation
-    alert("Option 2 clicked");
-  };
-
   const handleOption3Click = () => {
-    // Handle Option 3 click here
-    // You can perform any action you want for Option 3
-    // For example, display a message or perform an operation
-    alert("Option 3 clicked");
+    generatePDFReport();
   };
 
   useEffect(() => {
@@ -137,40 +139,88 @@ const Properties = () => {
       },
       body: JSON.stringify(newProperty),
     })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === "ok") {
-          alert("Property added successfully");
-          // Fetch properties again to update the list
-          fetchProperties();
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "ok") {
+            alert("Property added successfully");
+            fetchProperties();
+          } else {
+            alert("Failed to add property");
+          }
+      });
+   };
+
+    const fetchProperties = () => {
+      const currentHostname = window.location.hostname;
+      let baseUrl = "";
+      if (currentHostname === "localhost") {
+        baseUrl = "http://localhost:5000"; // Local environment
+      } else {
+        baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
+      }
+
+      const getPropertiesEndpoint = "/getProperties";
+      const getPropertiesUrl = `${baseUrl}${getPropertiesEndpoint}`;
+
+      fetch(getPropertiesUrl)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data.properties, "properties");
+          setProperties(data.properties); // Use setProperties to update the state
+        })
+        .catch((error) => {
+          console.error("Error fetching properties:", error);
+        });
+    };
+
+  
+
+    const handleDeleteProperty = () => {
+      if (!selectedProperty) {
+        return;
+      }
+    
+      // Show a confirmation dialog
+      const confirmation = window.confirm("Are you sure you want to delete this property?");
+    
+      if (confirmation) {
+        const propertyId = selectedProperty._id; // Assuming _id is the property's unique identifier
+    
+        const currentHostname = window.location.hostname;
+        let baseUrl = "";
+        if (currentHostname === "localhost") {
+          baseUrl = "http://localhost:5000"; // Local environment
         } else {
-          alert("Failed to add property");
+          baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
         }
-      });
-  };
-
-  const fetchProperties = () => {
-    const currentHostname = window.location.hostname;
-    let baseUrl = "";
-    if (currentHostname === "localhost") {
-      baseUrl = "http://localhost:5000"; // Local environment
-    } else {
-      baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
-    }
-
-    const getPropertiesEndpoint = "/getProperties";
-    const getPropertiesUrl = `${baseUrl}${getPropertiesEndpoint}`;
-
-    fetch(getPropertiesUrl)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data.properties, "properties");
-        setProperties(data.properties); // Use setProperties to update the state
-      })
-      .catch((error) => {
-        console.error("Error fetching properties:", error);
-      });
-  };
+    
+        const deletePropertyEndpoint = `/deleteProperty/${propertyId}`;
+        const deletePropertyUrl = `${baseUrl}${deletePropertyEndpoint}`;
+    
+        fetch(deletePropertyUrl, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.status === "ok") {
+              alert("Property deleted successfully");
+              setSelectedProperty(null);
+              fetchProperties();
+            } else {
+              alert("Failed to delete property");
+            }
+          })
+          .catch((error) => {
+            console.error("Error deleting property:", error);
+          });
+      }
+    };
+    
 
   const indexOfLastRow = (page + 1) * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
@@ -222,27 +272,103 @@ const Properties = () => {
           (property.category && property.category.toLowerCase().includes(lowerCaseQuery))
         );
       });
-      // Sort the filtered properties
       const sortedProperties = sortProperties(sortColumn, sortOrder);
-
-      // Return the sorted and filtered properties
       return sortedProperties.filter((property) => filteredProperties.includes(property));
     };
-  
-   // const sortedAndFilteredProperties = handleSearch();
-  
+
+    const generatePDFReport = () => {
+      if (!selectedProperty) {
+        return;
+      }
+    
+      const doc = new jsPDF();
+      doc.text(`Property Report for ${selectedProperty.name}`, 10, 10);
+      doc.text(`Owner: ${selectedProperty.owner}`, 10, 20);
+      doc.text(`Price: Php ${selectedProperty.price.toLocaleString()}`, 10, 30);
+      doc.text(`Description: ${selectedProperty.description}`, 10, 40);
+      doc.text(`Category: ${selectedProperty.category}`, 10, 50);
+    
+      // Save the PDF with a unique name, e.g., property_report_123.pdf
+      const fileName = `property_report_${selectedProperty._id}.pdf`;
+      doc.save(fileName);
+    };
+    
    const sortedProperties = sortProperties(sortColumn, sortOrder);
    // const currentRows = sortedAndFilteredProperties.slice(indexOfFirstRow, indexOfLastRow) 
    //   || sortedProperties.slice(indexOfFirstRow, indexOfLastRow);
-    const theme = useTheme();
 
-    const handleRowClick = (property) => {
-      setSelectedProperty(property);
-    };
-  
-    const handleClosePropertyOptions = () => {
-      setSelectedProperty(null);
-    };
+      const openEditPropertyDialog = () => {
+        setIsEditPropertyDialogOpen(true);
+      
+        // Populate edited property details with selected property's data
+        if (selectedProperty) {
+          setEditedName(selectedProperty.name);
+          setEditedPrice(selectedProperty.price);
+          setEditedDescription(selectedProperty.description);
+          setEditedCategory(selectedProperty.category);
+        }
+      };
+      
+      // Step 5: Close the Edit Property dialog
+      const closeEditPropertyDialog = () => {
+        setIsEditPropertyDialogOpen(false);
+      };
+      
+      // Step 6: Handle the submission of edited property details
+      const handleEditPropertySubmit = (e) => {
+        e.preventDefault();
+      
+        const editedProperty = {
+          name: editedName,
+          price: editedPrice,
+          description: editedDescription,
+          category: editedCategory,
+          token: localStorage.getItem("token"),
+        };
+      
+        const currentHostname = window.location.hostname;
+        let baseUrl = "";
+        if (currentHostname === "localhost") {
+          baseUrl = "http://localhost:5000"; // Local environment
+        } else {
+          baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
+        }
+      
+        const propertyId = selectedProperty._id; // Assuming _id is the property's unique identifier
+        const editPropertyEndpoint = `/editProperty/${propertyId}`;
+        const editPropertyUrl = `${baseUrl}${editPropertyEndpoint}`;
+      
+        fetch(editPropertyUrl, {
+          method: "PUT", // Use PUT request to update the property
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+          body: JSON.stringify(editedProperty),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.status === "ok") {
+              alert("Property edited successfully");
+              // Update the property details in the frontend (state)
+              const updatedProperties = properties.map((property) => {
+                if (property._id === propertyId) {
+                  return {
+                    ...property,
+                    ...editedProperty,
+                  };
+                }
+                return property;
+              });
+              setProperties(updatedProperties);
+              closeEditPropertyDialog();
+            } else {
+              alert("Failed to edit property");
+            }
+          });
+      };
+      
 
   return (
     <div style={{ flex: 1, padding: "20px", fontSize: "20px" }}>
@@ -375,7 +501,7 @@ const Properties = () => {
         open={selectedProperty !== null}
         onClose={handleClosePropertyOptions}
       >
-        <DialogTitle>Property Option</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 'bold' }}>Property Options</DialogTitle>
         <List sx={{ pt: 0 }}>
           <ListItem disableGutters>
             <ListItemButton onClick={handleOption1Click}>
@@ -383,7 +509,12 @@ const Properties = () => {
             </ListItemButton>
           </ListItem>
           <ListItem disableGutters>
-            <ListItemButton onClick={handleOption2Click}>
+            <ListItemButton onClick={openEditPropertyDialog}>
+              <ListItemText primary="Edit Property" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disableGutters>
+            <ListItemButton onClick={handleDeleteProperty}>
               <ListItemText primary="Delete Property" />
             </ListItemButton>
           </ListItem>
@@ -394,6 +525,67 @@ const Properties = () => {
           </ListItem>
         </List>
       </Dialog>
+
+      {/*Edit property diaglog*/}
+      <Dialog
+        open={isEditPropertyDialogOpen}
+        onClose={closeEditPropertyDialog}
+      >
+        <DialogTitle sx={{ fontWeight: 'bold' }}>Edit Property</DialogTitle>
+        <DialogContent>
+          <form onSubmit={handleEditPropertySubmit}>
+            <TextField
+              label="Name"
+              type="text"
+              name="name"
+              value={editedName}
+              onChange={(e) => setEditedName(e.target.value)}
+              fullWidth
+              required
+            />
+            <TextField
+              label="Price"
+              type="number"
+              name="price"
+              value={editedPrice}
+              onChange={(e) => setEditedPrice(e.target.value)}
+              fullWidth
+              required
+            />
+            <TextField
+              label="Description"
+              type="text"
+              name="description"
+              value={editedDescription}
+              onChange={(e) => setEditedDescription(e.target.value)}
+              fullWidth
+              required
+            />
+            <FormControl fullWidth required>
+              <InputLabel>Category</InputLabel>
+              <Select
+                value={editedCategory}
+                onChange={(e) => setEditedCategory(e.target.value)}
+              >
+                <MenuItem value="Townhouse Unit">TownHouse</MenuItem>
+                <MenuItem value="2 Bedroom Unit">2 Bedroom Unit</MenuItem>
+                <MenuItem value="3 Bedroom Unit">3 Bedroom Unit</MenuItem>
+                <MenuItem value="1 Bedroom Unit">1 Bedroom Unit</MenuItem>
+                <MenuItem value="Studio Unit">Studio Unit</MenuItem>
+              </Select>
+            </FormControl>
+            <DialogActions>
+              <Button onClick={closeEditPropertyDialog} color="primary">
+                Cancel
+              </Button>
+              <Button type="submit" color="primary">
+                Save Changes
+              </Button>
+            </DialogActions>
+          </form>
+        </DialogContent>
+      </Dialog>
+
 
       <BootstrapDialog
         onClose={handleClose}
@@ -437,7 +629,7 @@ const Properties = () => {
 
       {/* Add Property Dialog */}
       <Dialog open={isAddPropertyDialogOpen} onClose={closeAddPropertyDialog}>
-        <DialogTitle>Add Property</DialogTitle>
+      <DialogTitle sx={{ fontWeight: 'bold' }}>Add Property</DialogTitle>
         <DialogContent>
           <form onSubmit={handleSubmit}>
             <TextField

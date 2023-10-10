@@ -18,7 +18,7 @@ app.use(cors({
     origin:["https://decohoatest-client.vercel.app", 
       "http://localhost:3000"
     ],
-    methods:["POST", "GET"],
+    methods:["POST", "GET", "DELETE", "PUT"],
     credentials: true
   }
 ));
@@ -91,7 +91,7 @@ app.post("/login", async (req, res) => {
   }
   if (await bcrypt.compare(password, user.password)) {
     const token = jwt.sign({ email: user.email }, JWT_SECRET, {
-      expiresIn: "60m",
+      expiresIn: "1d",
     });
 
     if (res.status(201)) {
@@ -211,6 +211,9 @@ app.get("/reset-password/:id/:token", async (req, res) => {
   const secret = JWT_SECRET + oldUser.password;
   try {
     const verify = jwt.verify(token, secret);
+    if (!verify) {
+      return res.send("Token expired or Not Verified");
+    }
     res.render("index", { email: verify.email, status: "Token expired or Not Verified" });
   } catch (error) {
     console.log(error);
@@ -221,17 +224,17 @@ app.get("/reset-password/:id/:token", async (req, res) => {
 app.post("/reset-password/:id/:token", async (req, res) => {
   const { id, token } = req.params;
   const { password } = req.body;
-
   const oldUser = await User.findOne({ _id: id });
   if (!oldUser) {
     return res.json({ status: "User Not Exists!!" });
   }
-
   const secret = JWT_SECRET + oldUser.password;
   try {
     const verify = jwt.verify(token, secret);
+    if (!verify) {
+      return res.json({ status: "Token expired or invalid" });
+    }
     const encryptedPassword = await bcrypt.hash(password, 10);
-
     await User.updateOne(
       {
         _id: id,
@@ -242,13 +245,13 @@ app.post("/reset-password/:id/:token", async (req, res) => {
         },
       }
     );
-    //res.json({status: "Password Updated"})
     res.render("index", { email: verify.email, status: "verified" });
   } catch (error) {
     console.error(error);
-    res.json(  "Something Went Wrong" );
+    res.json("Something Went Wrong");
   }
 });
+
 
 
 
@@ -306,14 +309,48 @@ app.get("/getProperties", async (req, res) => {
   }
 });
 
+app.delete("/deleteProperty/:propertyId", async (req, res) => {
+  const { propertyId } = req.params;
+  try {
+    const deletedProperty = await Property.findByIdAndDelete(propertyId);
+    if (!deletedProperty) {
+      return res.status(404).json({ status: "Property not found" });
+    }
+    res.status(200).json({ status: "ok", property: deletedProperty });
+  } catch (error) {
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
+
+
+
+// Add this route for deleting properties
+/*app.delete("/deleteProperty/:propertyId", async (req, res) => {
+  const { propertyId } = req.params;
+  try {
+    const deletedProperty = await Property.findByIdAndDelete(propertyId);
+    if (!deletedProperty) {
+      return res.status(404).json({ status: "Property not found" });
+    }
+    res.status(200).json({ status: "ok", property: deletedProperty });
+  } catch (error) {
+    res.status(500).json({ status: "error", error: error.message });
+  }
+}); */
+
+
 app.get("/getUsers", async (req, res) => {
   try {
     const users = await User.find();
+    if (!users) {
+      return res.status(404).json({ status: "No users found or Token expired!" });
+    }
     res.status(200).json({ status: "ok", users });
   } catch (error) {
     res.status(500).json({ status: "error", error: error.message });
   }
 });
+
 
 app.get("/searchProperties", async (req, res) => {
   try {
@@ -328,6 +365,40 @@ app.get("/searchProperties", async (req, res) => {
     res.status(500).json({ status: "error", error: error.message });
   }
 });
+
+app.put("/editProperty/:propertyId", authenticateUser, async (req, res) => {
+  const { propertyId } = req.params;
+  const { name, price, description, category, token } = req.body;
+
+  try {
+    // Verify the user's token to get their email
+    const { email } = jwt.verify(token, JWT_SECRET);
+    const user = await User.findOne({ email });
+
+    // Find the property by ID and owner
+    const property = await Property.findOne({ _id: propertyId, owner: user._id });
+
+    if (!property) {
+      return res.status(404).json({ status: "Property not found" });
+    }
+
+    // Update the property details
+    property.name = name;
+    property.price = price;
+    property.description = description;
+    property.category = category;
+
+    // Save the updated property
+    await property.save();
+
+    // Send a response indicating success
+    res.status(200).json({ status: "ok", property });
+  } catch (error) {
+    // Handle errors
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
+
 
 
 export default app;
