@@ -14,15 +14,13 @@ app.set("view engine", "ejs");
 app.use(express.urlencoded({extended: false}));
 import multer from 'multer';
 
-
-app.use(cors({
-    origin:["https://decohoatest-client.vercel.app", 
-      "http://localhost:3000"
-    ],
-    methods:["POST", "GET", "DELETE", "PUT"],
+const corsOptions = {
+    origin: ["https://decohoatest-client.vercel.app", "http://localhost:3000"],
+    methods: ["POST", "GET", "DELETE", "PUT"],
     credentials: true
-  }
-));
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 const { MONGO_URL, JWT_SECRET } = process.env;
