@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from "react";
 import {
-  Box,
   Card,
-  CardActions,
-  CardContent,
-  Collapse,
   Button,
   Typography,
-  Rating,
   Fab,
   Dialog,
   DialogTitle,
@@ -32,8 +27,6 @@ import {
   List,
   ListItem,
   ListItemButton,
-  ListItemAvatar,
-  Avatar,
   ListItemText, // Import TablePagination
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
@@ -73,6 +66,7 @@ const Properties = () => {
   const [editedPrice, setEditedPrice] = useState("");
   const [editedDescription, setEditedDescription] = useState("");
   const [editedCategory, setEditedCategory] = useState("");
+  const [image, setImage] = useState(null);
   const theme = useTheme();
 
   const handleRowClick = (property) => {
@@ -104,23 +98,34 @@ const Properties = () => {
 
   const closeAddPropertyDialog = () => {
     setIsAddPropertyDialogOpen(false);
+    setName("");
+    setPrice("");
+    setCategory("");
+    setDescription("");
+    setCategory("");
+    setImage(null);
+  };
+
+  const handleImageChange = (e) => {
+    // Set the uploaded image in the state
+    setImage(e.target.files[0]);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!name || !price || !description || !category) {
-      alert("All fields are required");
+    if (!name || !price || !description || !category || !image) {
+      alert("All fields are required, including the image");
       return;
     }
-
-    const newProperty = {
-      name,
-      price,
-      description,
-      category,
-      token: localStorage.getItem("token"), // Get the user's token from local storage
-    };
-
+  
+    const formData = new FormData();
+    formData.append("image", image);
+    formData.append("name", name);
+    formData.append("price", price);
+    formData.append("description", description);
+    formData.append("category", category);
+    formData.append("token", localStorage.getItem("token"));
+  
     const currentHostname = window.location.hostname;
     let baseUrl = "";
     if (currentHostname === "localhost") {
@@ -133,22 +138,22 @@ const Properties = () => {
     fetch(addPropertyUrl, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
         Accept: "application/json",
         "Access-Control-Allow-Origin": "*",
       },
-      body: JSON.stringify(newProperty),
+      body: formData,
     })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.status === "ok") {
-            alert("Property added successfully");
-            fetchProperties();
-          } else {
-            alert("Failed to add property");
-          }
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "ok") {
+          alert("Property added successfully");
+          fetchProperties();
+        } else {
+          alert("Failed to add property");
+        }
       });
-   };
+  };
+  
 
     const fetchProperties = () => {
       const currentHostname = window.location.hostname;
@@ -317,6 +322,8 @@ const Properties = () => {
       // Step 6: Handle the submission of edited property details
       const handleEditPropertySubmit = (e) => {
         e.preventDefault();
+        const formData = new FormData();
+        formData.append("image", image);
       
         const editedProperty = {
           name: editedName,
@@ -368,9 +375,10 @@ const Properties = () => {
             }
           });
       };
-      
+
 
   return (
+    
     <div style={{ flex: 1, padding: "20px", fontSize: "20px" }}>
       <div style={{  display: "flex",
         justifyContent: "space-between",
@@ -381,7 +389,7 @@ const Properties = () => {
           size="small"
           color="primary"
           onClick={openAddPropertyDialog}
-          style={{ background: `#F2643D` }}
+          style={{ background: `#F2643D`, padding: '20px'}}
         >
           <AddIcon /> Property
         </Fab>
@@ -404,9 +412,20 @@ const Properties = () => {
       <br/>
       {/* Table to display properties */}
       <TableContainer component={Card} style={{ background: "none" }}>
-        <Table>
-          <TableHead>
+        <Table >
+          <TableHead onChange={fetchProperties}>
             <TableRow style={{ background: "#333" }}>
+              <TableCell
+                  style={{ fontWeight: 'bold', color: 'white' }}
+                  onClick={() => handleSort("category")}
+                >
+                  <TableSortLabel
+                    active={sortColumn === "category"}
+                    direction={sortOrder}
+                  >
+                    Category
+                  </TableSortLabel>
+              </TableCell>
               <TableCell
                 style={{ fontWeight: 'bold', color: 'white' }}
                 onClick={() => handleSort("name")}
@@ -451,17 +470,7 @@ const Properties = () => {
                   Description
                 </TableSortLabel>
               </TableCell>
-              <TableCell
-                style={{ fontWeight: 'bold', color: 'white' }}
-                onClick={() => handleSort("category")}
-              >
-                <TableSortLabel
-                  active={sortColumn === "category"}
-                  direction={sortOrder}
-                >
-                  Category
-                </TableSortLabel>
-              </TableCell>
+             
             </TableRow>
           </TableHead>
           <TableBody>
@@ -471,11 +480,12 @@ const Properties = () => {
                   onClick={() => handleRowClick(property)} // Handle row click
                   style={{ cursor: "pointer" }} // Change cursor to pointer
                 >
+                  <TableCell>{property.category}</TableCell>
                   <TableCell>{property.name}</TableCell>
                   <TableCell>{property.owner}</TableCell>
                   <TableCell>Php {property.price.toLocaleString()}</TableCell>
                   <TableCell>{property.description}</TableCell>
-                  <TableCell>{property.category}</TableCell>
+                  
                 </TableRow>
               ))}
           </TableBody>
@@ -500,8 +510,9 @@ const Properties = () => {
       <Dialog
         open={selectedProperty !== null}
         onClose={handleClosePropertyOptions}
+       
       >
-        <DialogTitle sx={{ fontWeight: 'bold' }}>Property Options</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 'bold' , padding: '20px'}}>Property Options</DialogTitle>
         <List sx={{ pt: 0 }}>
           <ListItem disableGutters>
             <ListItemButton onClick={handleOption1Click}>
@@ -534,6 +545,19 @@ const Properties = () => {
         <DialogTitle sx={{ fontWeight: 'bold' }}>Edit Property</DialogTitle>
         <DialogContent>
           <form onSubmit={handleEditPropertySubmit}>
+          <FormControl fullWidth required>
+              <InputLabel>Category</InputLabel>
+              <Select
+                value={editedCategory}
+                onChange={(e) => setEditedCategory(e.target.value)}
+              >
+                <MenuItem value="Townhouse Unit">TownHouse</MenuItem>
+                <MenuItem value="2 Bedroom Unit">2 Bedroom Unit</MenuItem>
+                <MenuItem value="3 Bedroom Unit">3 Bedroom Unit</MenuItem>
+                <MenuItem value="1 Bedroom Unit">1 Bedroom Unit</MenuItem>
+                <MenuItem value="Studio Unit">Studio Unit</MenuItem>
+              </Select>
+            </FormControl>
             <TextField
               label="Name"
               type="text"
@@ -561,19 +585,6 @@ const Properties = () => {
               fullWidth
               required
             />
-            <FormControl fullWidth required>
-              <InputLabel>Category</InputLabel>
-              <Select
-                value={editedCategory}
-                onChange={(e) => setEditedCategory(e.target.value)}
-              >
-                <MenuItem value="Townhouse Unit">TownHouse</MenuItem>
-                <MenuItem value="2 Bedroom Unit">2 Bedroom Unit</MenuItem>
-                <MenuItem value="3 Bedroom Unit">3 Bedroom Unit</MenuItem>
-                <MenuItem value="1 Bedroom Unit">1 Bedroom Unit</MenuItem>
-                <MenuItem value="Studio Unit">Studio Unit</MenuItem>
-              </Select>
-            </FormControl>
             <DialogActions>
               <Button onClick={closeEditPropertyDialog} color="primary">
                 Cancel
@@ -640,7 +651,7 @@ const Properties = () => {
               onChange={(e) => setName(e.target.value)}
               fullWidth
               required
-            />
+            /><br/><br/>
             <TextField
               label="Price"
               type="number"
@@ -649,7 +660,7 @@ const Properties = () => {
               onChange={(e) => setPrice(e.target.value)}
               fullWidth
               required
-            />
+            /><br/><br/>
             <TextField
               label="Description"
               type="text"
@@ -658,7 +669,7 @@ const Properties = () => {
               onChange={(e) => setDescription(e.target.value)}
               fullWidth
               required
-            />
+            /><br/><br/>
             <FormControl fullWidth required>
               <InputLabel>Category</InputLabel>
               <Select
@@ -672,12 +683,16 @@ const Properties = () => {
                 <MenuItem value="Studio Unit">Studio Unit</MenuItem>
                 {/* Add more options as needed */}
               </Select>
-            </FormControl>
+            </FormControl><br/><br/>
+            <InputLabel>Add image: </InputLabel><br/>
+            <input  label="Add image" type="file" 
+              onChange={handleImageChange} 
+            />
             <DialogActions>
               <Button onClick={closeAddPropertyDialog} color="primary">
                 Cancel
               </Button>
-              <Button type="submit" color="primary">
+              <Button type="submit" color="primary" variant="contained">
                 Add Property
               </Button>
             </DialogActions>

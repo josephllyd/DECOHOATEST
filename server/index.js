@@ -8,10 +8,11 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken'; 
 import nodemailer from "nodemailer";
 dotenv.config();
-import "./models/properties.js"
+import "./models/properties.js";
+import "./models/finance.js";
 app.set("view engine", "ejs");
 app.use(express.urlencoded({extended: false}));
-
+import multer from 'multer';
 
 
 app.use(cors({
@@ -141,33 +142,7 @@ app.post("/forgot-password", async (req, res) => {
       secret, {
         expiresIn: "10m",
     });
-
-     /* const currentHostname = window.location.hostname;
-    const link = "";
-    if (currentHostname === "localhost") {
-      link =  `http://localhost:5000/reset-password/${oldUser._id}/${token}`; // Local environment
-    } else {
-      link =  `https://decohoatest-server.vercel.app/reset-password/${oldUser._id}/${token}` ; // Vercel environment
-    }  
-    
-    
-     
-    const vercelEnvironment = 'https://decohoatest-server.vercel.app';
-    const localEnvironment = 'http://localhost:5000';
-    const link =
-      currentHostname === "localhost"
-        ? `${localEnvironment}/reset-password/${oldUser._id}/${token}`
-        : `${vercelEnvironment}/reset-password/${oldUser._id}/${token}`;  
   
-
-        const currentHostname = req.headers.host; // Use the request's host header to determine the environment
-        const isLocalhost = currentHostname === "localhost";
-        const baseUrl = isLocalhost
-          ? "http://localhost:5000" // Local environment
-          : "https://decohoatest-server.vercel.app"; // Vercel environment
-    
-        const link = `${baseUrl}/reset-password/${oldUser._id}/${token}`;
-  */
         const vercelEnvironment = 'https://decohoatest-server.vercel.app';
         const localEnvironment = 'http://localhost:5000';
         const link =
@@ -252,12 +227,10 @@ app.post("/reset-password/:id/:token", async (req, res) => {
   }
 });
 
-
-
-
-
 // Import your Property model
 const Property = mongoose.model('Properties');
+const upload = multer({ dest: 'uploads/' });
+
 // Middleware to extract user information from JWT
 const authenticateUser = (req, res, next) => {
   const { token } = req.body;
@@ -276,8 +249,10 @@ const authenticateUser = (req, res, next) => {
 };
 
 // Apply the middleware to the /addProperty route
-app.post("/addProperty", authenticateUser, async (req, res) => {
+app.post("/addProperty", authenticateUser, upload.single('image'), async (req, res) => {
   const { name, price, description, category, token } = req.body;
+  const image = req.file; // Extract the image from the request
+
   try {
     // Verify the user's token to get their email
     const { email } = jwt.verify(token, JWT_SECRET);
@@ -289,7 +264,8 @@ app.post("/addProperty", authenticateUser, async (req, res) => {
       price,
       description,
       category,
-      owner: user._id, // Use user._id to get the user's ObjectId
+      image: image.path, // Store the file path in the database
+      owner: user._id,
     });
 
     // Send a response indicating success
@@ -299,6 +275,7 @@ app.post("/addProperty", authenticateUser, async (req, res) => {
     res.status(500).json({ status: "error", error: error.message });
   }
 });
+
 
 app.get("/getProperties", async (req, res) => {
   try {
@@ -322,21 +299,6 @@ app.delete("/deleteProperty/:propertyId", async (req, res) => {
   }
 });
 
-
-
-// Add this route for deleting properties
-/*app.delete("/deleteProperty/:propertyId", async (req, res) => {
-  const { propertyId } = req.params;
-  try {
-    const deletedProperty = await Property.findByIdAndDelete(propertyId);
-    if (!deletedProperty) {
-      return res.status(404).json({ status: "Property not found" });
-    }
-    res.status(200).json({ status: "ok", property: deletedProperty });
-  } catch (error) {
-    res.status(500).json({ status: "error", error: error.message });
-  }
-}); */
 
 
 app.get("/getUsers", async (req, res) => {
@@ -399,6 +361,32 @@ app.put("/editProperty/:propertyId", authenticateUser, async (req, res) => {
   }
 });
 
+const Finance = mongoose.model('Finance');
+
+app.post("/addFinance", authenticateUser, async (req, res) => {
+  const { user, property, amount, paymentType, date, receipt } = req.body;
+  console.log("Incoming request data:", req.body);
+  try {
+    const { email } = jwt.verify(req.body.token, JWT_SECRET);
+    const foundUser = await User.findOne({ email });
+   
+    const finance = await Finance.create({
+      user, // Store the user's ID
+      property,
+      amount,
+      paymentType,
+      date,
+      receipt,
+      token: req.body.token,
+    });
+    console.log("Finance data added:", finance);
+
+    res.status(201).json({ status: "ok", finance });
+  } catch (error) {
+    console.error("Error adding finance:", error);
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
 
 
 export default app;

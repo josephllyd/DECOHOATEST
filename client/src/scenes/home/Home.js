@@ -65,8 +65,8 @@ const Home = () => {
                 <div className="number-3">468
                   <div className="size">Occupants</div>
                 </div>
-                <div className="number-4">789
-                  <div className="size">Lorem ipsum</div>
+                <div className="number-4">7
+                  <div className="size">Astonishing Facilities</div>
                 </div>
             </div>
         <div className="content-random"><br/>

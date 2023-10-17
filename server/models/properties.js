@@ -10,6 +10,7 @@ const PropertySchema = new mongoose.Schema(
     price: Number,
     description: String,
     category: String,
+    image: String 
   },
   { collection: "Properties" },
   { timestamps: true }
