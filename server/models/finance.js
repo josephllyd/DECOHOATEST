@@ -6,12 +6,12 @@ const FinanceSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "UserInfo" // Reference to the User collection
     },
+    name: String,
     property: String,
     amount: Number, // Total amount paid for the property
     paymentType: String, // Type of payment (e.g., cash, check, credit card)
     date: Date, // Date of the payment
     receipt: String, // This can be a file path or a URL to the uploaded receipt
-
   },
   { collection: "Finance" },
   { timestamps: true }

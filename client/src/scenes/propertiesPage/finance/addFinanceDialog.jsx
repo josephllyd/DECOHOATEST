@@ -1,94 +1,133 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
   Button,
+  TextField,
+  FormControl,
+  InputLabel,
   Select,
   MenuItem,
 } from "@mui/material";
 
-const AddFinanceDialog = ({ isOpen, onClose, handleSubmit, financeData, setFinanceData, users, properties }) => {
+const AddFinanceDialog = (props) => {
+  const {
+    isAddFinanceDialogOpen,
+    handleOpenAddFinanceDialog,
+    handleCloseAddFinanceDialog,
+    users,
+    user,
+    setUser,
+    name,
+    setName,
+    property,
+    setProperty,
+    paymentType,
+    setpaymentType,
+    amount,
+    setAmount,
+    date,
+    setDate,
+    receipt,
+    setReceipt,
+    handleImageChange,
+    handleSubmit,
+  } = props;
+
   return (
-    <Dialog open={isOpen} onClose={onClose}>
-      <DialogTitle sx={{ fontWeight: "bold" }}>Add Finance Report</DialogTitle>
-      <DialogContent>
-        <form onSubmit={handleSubmit}>
-          <Select
-            labelId="user-label"
-            id="user"
-            value={financeData.user}
-            onChange={(e) => setFinanceData({ ...financeData, user: e.target.value })}
-            fullWidth
-            required
-          >
-            {users.map((user) => (
-              <MenuItem key={user.id} value={user.id}>
-                {user.name}
-              </MenuItem>
-            ))}
-          </Select>
-          <Select
-            labelId="property-label"
-            id="property"
-            value={financeData.property}
-            onChange={(e) => setFinanceData({ ...financeData, property: e.target.value })}
-            fullWidth
-            required
-          >
-            {properties.map((property) => (
-              <MenuItem key={property.id} value={property.id}>
-                {property.name}
-              </MenuItem>
-            ))}
-          </Select>
-          <TextField
-            label="Amount"
-            type="number"
-            name="amount"
-            value={financeData.amount}
-            onChange={(e) => setFinanceData({ ...financeData, amount: e.target.value })}
-            fullWidth
-            required
-          />
-          <TextField
-            label="Payment Type"
-            type="text"
-            name="paymentType"
-            value={financeData.paymentType}
-            onChange={(e) => setFinanceData({ ...financeData, paymentType: e.target.value })}
-            fullWidth
-            required
-          />
-          <TextField
-            label="Date"
-            type="date"
-            name="date"
-            value={financeData.date}
-            onChange={(e) => setFinanceData({ ...financeData, date: e.target.value })}
-            fullWidth
-            required
-          />
-          <TextField
-            label="Receipt"
-            type="text"
-            name="receipt"
-            value={financeData.receipt}
-            onChange={(e) => setFinanceData({ ...financeData, receipt: e.target.value })}
-            fullWidth
-          />
-        </form>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="primary">
-          Cancel
-        </Button>
-        <Button type="submit" color="primary" onClick={handleSubmit}>
-          Add Finance Data
-        </Button>
-      </DialogActions>
+    <Dialog open={isAddFinanceDialogOpen} onClose={handleCloseAddFinanceDialog}>
+        <DialogTitle>Add Finance Data</DialogTitle>
+          <DialogContent>
+              <form onSubmit={handleSubmit}>
+                <TextField
+                  select
+                  label="User"
+                  name="user"
+                  SelectProps={{
+                    native: true,
+                  }}
+                  value={user._id} // Adjust the value
+                  onChange={(e) => setUser({ 
+                    _id: e.target.value, 
+                    name: e.currentTarget.textContent 
+                  })} // Adjust the setUser function
+                  fullWidth
+                  required
+                >
+                  <option value=""></option>
+                  {users.map((user) => (
+                    <option key={user._id} value={user._id}>
+                      {`${user.fname} ${user.lname}`}
+                    </option>
+                  ))}
+                </TextField><br/><br/>
+                <TextField
+                  label="Property Name"
+                  name="name"
+                  type="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  fullWidth required
+                /><br/><br/>
+                <FormControl fullWidth required>
+                  <InputLabel>Property Category</InputLabel>
+                  <Select
+                    value={property}
+                    onChange={(e) => setProperty(e.target.value)}
+                  >
+                    <MenuItem value="Townhouse Unit">TownHouse</MenuItem>
+                    <MenuItem value="2 Bedroom Unit">2 Bedroom Unit</MenuItem>
+                    <MenuItem value="3 Bedroom Unit">3 Bedroom Unit</MenuItem>
+                    <MenuItem value="1 Bedroom Unit">1 Bedroom Unit</MenuItem>
+                    <MenuItem value="Studio Unit">Studio Unit</MenuItem>
+                    {/* Add more options as needed */}
+                  </Select>
+                </FormControl><br/><br/>
+                <TextField
+                  label="Amount"
+                  name="amount"
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  fullWidth required
+                /><br/><br/>
+                <TextField
+                  label="Payment Type"
+                  name="paymentType"
+                  value={paymentType}
+                  onChange={(e) => setpaymentType(e.target.value)}
+                  fullWidth required
+                /><br/><br/>
+                <TextField
+                  label="Date"
+                  name="date"
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  fullWidth required
+                /><br/><br/>
+                <TextField
+                  label="Receipt"
+                  name="receipt"
+                  value={receipt}
+                  onChange={(e) => setReceipt(e.target.value)}
+                  fullWidth required
+                /><br/><br/>
+                <InputLabel>Upload receipt file: </InputLabel><br/>
+                <input  label="Add image" type="file" 
+                  onChange={handleImageChange} 
+                />
+          
+            <DialogActions>
+              <Button onClick={handleCloseAddFinanceDialog}>Cancel</Button>
+              <Button type="submit" variant="contained" color="primary">
+                Add 
+              </Button>
+            </DialogActions>
+            </form>
+          </DialogContent>
     </Dialog>
   );
 };

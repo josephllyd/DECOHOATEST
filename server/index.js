@@ -362,7 +362,7 @@ app.put("/editProperty/:propertyId", authenticateUser, async (req, res) => {
 const Finance = mongoose.model('Finance');
 
 app.post("/addFinance", authenticateUser, async (req, res) => {
-  const { user, property, amount, paymentType, date, receipt } = req.body;
+  const { user, name, property, amount, paymentType, date, receipt } = req.body;
   console.log("Incoming request data:", req.body);
   try {
     const { email } = jwt.verify(req.body.token, JWT_SECRET);
@@ -370,6 +370,7 @@ app.post("/addFinance", authenticateUser, async (req, res) => {
    
     const finance = await Finance.create({
       user, // Store the user's ID
+      name,
       property,
       amount,
       paymentType,
@@ -382,6 +383,15 @@ app.post("/addFinance", authenticateUser, async (req, res) => {
     res.status(201).json({ status: "ok", finance });
   } catch (error) {
     console.error("Error adding finance:", error);
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
+
+app.get("/getFinance", async (req, res) => {
+  try {
+    const finance = await Finance.find();
+    res.status(200).json({ status: "ok", finance });
+  } catch (error) {
     res.status(500).json({ status: "error", error: error.message });
   }
 });
