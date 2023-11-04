@@ -1,11 +1,18 @@
 import { InputLabel } from "@mui/material";
 import React, { useState } from "react";
 
-export default function UploadImage({imageURL, onImageChange }) {
-  
+export default function UploadImage({ imageURL, onImageChange }) {
   const [loading, setLoading] = useState(false);
   const [url, setUrl] = useState("");
   const [uploadedImage, setUploadedImage] = useState(null);
+
+  const getBaseUrl = () => {
+    if (window.location.hostname === "localhost") {
+      return "http://localhost:5000";
+    } else {
+      return "https://decohoatest-server.vercel.app";
+    }
+  };
 
   const convertBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -24,7 +31,7 @@ export default function UploadImage({imageURL, onImageChange }) {
 
   function uploadSingleImage(base64) {
     setLoading(true);
-    fetch("http://localhost:5000/uploadImage", {
+    fetch(`${getBaseUrl()}/uploadImage`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -33,13 +40,9 @@ export default function UploadImage({imageURL, onImageChange }) {
     })
       .then((res) => res.json())
       .then((data) => {
-        
-       setUrl(data.url);
-       setUploadedImage(data.url);
-       onImageChange(data.url);
-       console.log(data.url);
-       // props.onChange(data.url);
-       // onImageUpload(data.url); // Pass the URL to the parent component
+        setUrl(data.url);
+        setUploadedImage(data.url);
+        onImageChange(data.url);
         alert("Image uploaded Successfully");
       })
       .then(() => setLoading(false))
@@ -48,7 +51,7 @@ export default function UploadImage({imageURL, onImageChange }) {
 
   function uploadMultipleImages(images) {
     setLoading(true);
-    fetch("http://localhost:5000/uploadMultipleImages", {
+    fetch(`${getBaseUrl()}/uploadMultipleImages`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -83,38 +86,49 @@ export default function UploadImage({imageURL, onImageChange }) {
 
   function UploadInput() {
     return (
-      <div  style={{ flex: 1, fontSize: "20px" }}>
-           <InputLabel>Add image: </InputLabel><br/>
-            <input  style={{ fontSize: "20px" }} label="Add image" type="file" 
-              onChange={uploadImages} 
-            />
+      <div style={{ flex: 1, fontSize: "20px" }}>
+        <InputLabel>Add image: </InputLabel>
+        <br />
+        <input
+          style={{ fontSize: "20px" }}
+          label="Add image"
+          type="file"
+          onChange={uploadImages}
+        />
       </div>
     );
   }
 
   return (
-    <div  style={{ flex: 1, fontSize: "20px" }}>
+    <div style={{ flex: 1, fontSize: "20px" }}>
       <div>
-      <div>
-        {url && (
-          <div>
-            Access you file at{" "}
-            <a href={url} target="_blank" rel="noopener noreferrer">
-              {url}
-            </a>
-          </div>
-        )}
-      </div>
+        <div>
+          {url && (
+            <div>
+              Access your file at{" "}
+              <a href={url} target="_blank" rel="noopener noreferrer">
+                {url}
+              </a>
+            </div>
+          )}
+        </div>
         {uploadedImage && (
           <div>
-            <img src={uploadedImage} alt="uploaded" style={{ width: "100%", height: "auto" }} />
+            <img
+              src={uploadedImage}
+              alt="uploaded"
+              style={{ width: "100%", height: "auto" }}
+            />
           </div>
         )}
       </div>
       <div>
         {loading ? (
           <div className="flex items-center justify-center">
-            <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" alt="loading" />
+            <img
+              src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"
+              alt="loading"
+            />
           </div>
         ) : (
           <UploadInput />
