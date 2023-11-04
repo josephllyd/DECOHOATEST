@@ -31,7 +31,7 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import FlexBetween from "components/FlexBetween";
-import { PersonPinCircleRounded, Search } from "@mui/icons-material";
+import { Search } from "@mui/icons-material";
 import { styled } from '@mui/material/styles';
 import CloseIcon from '@mui/icons-material/Close';
 import jsPDF from "jspdf";
@@ -51,7 +51,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 const Properties = () => {
   const [isAddPropertyDialogOpen, setIsAddPropertyDialogOpen] = useState(false);
   const [users, setUsers] = useState([]);
-  const [user, setUser] = useState({ _id: "", name: "" }); 
+  //const [user, setUser] = useState({ _id: "", name: "" }); 
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
@@ -111,11 +111,6 @@ const Properties = () => {
     setDescription("");
     setCategory("");
     setImage("");
-  };
-
-  const handleImageChange = (e) => {
-    // Set the uploaded image in the state
-   // setImage(e.target.files[0]);
   };
 
   const handleSubmit = (e) => {
@@ -187,8 +182,6 @@ const Properties = () => {
         });
     };
 
-  
-
     const handleDeleteProperty = () => {
       if (!selectedProperty) {
         return;
@@ -235,26 +228,6 @@ const Properties = () => {
       }
     };
 
-
-  const indexOfLastRow = (page + 1) * rowsPerPage;
-  const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-  //const currentRows = properties.slice(indexOfFirstRow, indexOfLastRow);
-
-    //sorting function
-    const sortProperties = (column, order) => {
-      let sortedProperties = [...properties];
-      sortedProperties.sort((a, b) => {
-        const valueA = column === 'price' ? parseFloat(a[column]) : a[column];
-        const valueB = column === 'price' ? parseFloat(b[column]) : b[column];
-
-        if (valueA < valueB) return order === 'asc' ? -1 : 1;
-        if (valueA > valueB) return order === 'asc' ? 1 : -1;
-        return 0;
-      });
-      return sortedProperties;
-    };
-
-
     const handleSort = (column) => {
       if (column === sortColumn) {
         // Toggle sort order if the same column is clicked
@@ -266,8 +239,6 @@ const Properties = () => {
         setSortOrder("asc");
       }
     };
-
-   // const currentRows = sortedProperties.slice(indexOfFirstRow, indexOfLastRow);
 
    useEffect(() => {
     handleSearchAndSort();
@@ -307,36 +278,7 @@ const Properties = () => {
     setCurrentRows(currentRows);
   };
 
-  const handleSearch = () => {
-    let filteredProperties = [...properties];
-  
-    if (searchQuery) {
-      const lowerCaseQuery = searchQuery.toLowerCase();
-      filteredProperties = filteredProperties.filter((property) => {
-        const priceString = property.price ? property.price.toString() : '';
-        return (
-          (property.name && property.name.toLowerCase().includes(lowerCaseQuery)) ||
-          (property.owner && property.owner.toLowerCase().includes(lowerCaseQuery)) ||
-          (priceString && priceString.includes(lowerCaseQuery)) ||
-          (property.description && property.description.toLowerCase().includes(lowerCaseQuery)) ||
-          (property.category && property.category.toLowerCase().includes(lowerCaseQuery))
-        );
-      });
-    }
-  
-    if (sortColumn) {
-      filteredProperties.sort((a, b) => {
-        const valueA = a[sortColumn];
-        const valueB = b[sortColumn];
-        if (valueA < valueB) return sortOrder === 'asc' ? -1 : 1;
-        if (valueA > valueB) return sortOrder === 'asc' ? 1 : -1;
-        return 0;
-      });
-    }
-  
-    return filteredProperties.slice(indexOfFirstRow, indexOfLastRow);
-  };
-  
+
 
     const generatePDFReport = () => {
       if (!selectedProperty) {
@@ -353,18 +295,13 @@ const Properties = () => {
         : 'Price not available'
       }`, 10, 30);
       doc.text(`Description: ${selectedProperty.description}`, 10, 40);
-      doc.text(`Category: ${selectedProperty.category}`, 10, 50);
+      doc.text(`Property Category: ${selectedProperty.category}`, 10, 50);
     
       // Save the PDF with a unique name, e.g., property_report_123.pdf
       const fileName = `property_report_${selectedProperty._id}.pdf`;
       doc.save(fileName);
     };
     
-    
-   const sortedProperties = sortProperties(sortColumn, sortOrder);
-   // const currentRows = sortedAndFilteredProperties.slice(indexOfFirstRow, indexOfLastRow) 
-   //   || sortedProperties.slice(indexOfFirstRow, indexOfLastRow);
-
       const openEditPropertyDialog = () => {
         setIsEditPropertyDialogOpen(true);
       
@@ -488,7 +425,7 @@ const Properties = () => {
                     active={sortColumn === "category"}
                     direction={sortOrder}
                   >
-                    Category
+                   Property Type
                   </TableSortLabel>
               </TableCell>
               <TableCell
@@ -617,7 +554,7 @@ const Properties = () => {
         <DialogContent>
           <form onSubmit={handleEditPropertySubmit}>
           <FormControl fullWidth required>
-              <InputLabel>Category</InputLabel>
+              <InputLabel>Property Type</InputLabel>
               <Select
                 value={editedCategory}
                 onChange={(e) => setEditedCategory(e.target.value)}
@@ -716,7 +653,7 @@ const Properties = () => {
                 <Typography>Owner: {selectedProperty.owner}</Typography>
                 <Typography>Price: Php { selectedProperty.price ? `Php ${selectedProperty.price.toLocaleString()}` : 'Price not available'}</Typography>
                 <Typography>Description: {selectedProperty.description}</Typography>
-                <Typography>Category: {selectedProperty.category}</Typography>
+                <Typography>Property Type: {selectedProperty.category}</Typography>
               </div>
             ) : (
               <Typography>No property selected</Typography>
@@ -762,7 +699,7 @@ const Properties = () => {
               required
             /><br/><br/>
             <FormControl fullWidth required>
-              <InputLabel>Category</InputLabel>
+              <InputLabel>Property Type</InputLabel>
               <Select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}

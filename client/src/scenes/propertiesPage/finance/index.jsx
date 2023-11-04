@@ -8,7 +8,6 @@ import FinanceTable from "./financeTable";
 import { fetchFinance, addFinance } from "api/financeApi";
 import { fetchUsers } from "api/usersApi";
 
-
 const Finance = () => {
   const theme = useTheme();
   const [isAddFinanceDialogOpen, setIsAddFinanceDialogOpen] = useState(false);
@@ -28,7 +27,6 @@ const Finance = () => {
     setIsAddFinanceDialogOpen(true);
   };
 
-  
   const handleCloseAddFinanceDialog = () => {
     setIsAddFinanceDialogOpen(false);
     setUser({ _id: "", name: "" });
@@ -93,7 +91,6 @@ const Finance = () => {
         setReceipt={setReceipt}
         image={image}
         setImage={setImage}
-       // handleImageChange={handleImageChange}
         addFinance={addFinance}
       />
       <FinanceTable 

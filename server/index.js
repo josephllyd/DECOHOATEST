@@ -407,10 +407,60 @@ app.get("/getFinance", async (req, res) => {
   }
 });
 
+app.delete("/deleteFinance/:financeId", async (req, res) => {
+  const { financeId } = req.params;
+  try {
+    const deletedFinance = await Finance.findByIdAndDelete(financeId);
+    if (!deletedFinance) {
+      return res.status(404).json({ status: "Finance not found" });
+    }
+    res.status(200).json({ status: "ok", finance: deletedFinance });
+  } catch (error) {
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
 
-//app.use(cors());
-//app.use(express.json({ limit: "25mb" }));
-//app.use(express.urlencoded({ limit: "25mb" }));
+app.get("/searchFinance", async (req, res) => {
+  try {
+    const { category } = req.query; // Get the category from the query parameters
+    const finance = await Finance.find({ category });
+    res.status(200).json({ status: "ok", finance });
+  } catch (error) {
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
+
+app.put("/editFinance/:financeId", authenticateUser, async (req, res) => {
+  const { financeId } = req.params;
+  const { fUser, name, property, amount, paymentType, date, receipt, image, token } = req.body;
+
+  try {
+    const { email } = jwt.verify(token, JWT_SECRET);
+    const user = await User.findOne({ email });
+
+    const finance = await Finance.findOne({ _id: financeId, owner: user._id });
+
+    if (!finance) {
+      return res.status(404).json({ status: "Finance not found" });
+    }
+
+    finance.user = fUser; 
+    finance.name = name;
+    finance.property = property;
+    finance.amount = amount;
+    finance.paymentType = paymentType;
+    finance.date = date;
+    finance.receipt = receipt;
+    finance.image = image;
+
+    await finance.save();
+
+    res.status(200).json({ status: "ok", finance });
+  } catch (error) {
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
+
 
 import { v2 as cloudinary } from "cloudinary";
 
@@ -469,45 +519,6 @@ app.post("/uploadMultipleImages", (req, res) => {
     .then((urls) => res.json({ urls })) // Return a JSON response with the URLs
     .catch((err) => res.status(500).json({ error: err.message })); // Return a JSON error response
 });
-
-
-
-/*
-const Images = mongoose.model("ImageDetails");
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "../src/images/"));
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now();
-    cb(null, uniqueSuffix + file.originalname);
-  },
-});
-
-const upload = multer({ storage: storage });
-
-app.post("/upload-image", upload.single("image"), async (req, res) => {
-  console.log(req.body);
-  const imageName = req.file.filename;
-
-  try {
-    await Images.create({ image: imageName });
-    res.json({ status: "ok" });
-  } catch (error) {
-    res.json({ status: error });
-  }
-});
-
-app.get("/get-image", async (req, res) => {
-  try {
-    const data = await Images.find({});
-    res.send({ status: "ok", data: data });
-  } catch (error) {
-    res.json({ status: error });
-  }
-});
-*/
 
 export default app;
 
