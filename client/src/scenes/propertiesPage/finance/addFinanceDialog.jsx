@@ -11,11 +11,11 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
+import UploadImage from "components/UploadImage";
 
 const AddFinanceDialog = (props) => {
   const {
     isAddFinanceDialogOpen,
-    handleOpenAddFinanceDialog,
     handleCloseAddFinanceDialog,
     users,
     user,
@@ -32,15 +32,17 @@ const AddFinanceDialog = (props) => {
     setDate,
     receipt,
     setReceipt,
+    image,
+    setImage,
     handleImageChange,
-    handleSubmit,
+    addFinance,
   } = props;
 
   return (
     <Dialog open={isAddFinanceDialogOpen} onClose={handleCloseAddFinanceDialog}>
         <DialogTitle>Add Finance Data</DialogTitle>
           <DialogContent>
-              <form onSubmit={handleSubmit}>
+            <form onSubmit={(e) => addFinance(e, user, name, property, amount, paymentType, date, receipt, image)}>
                 <TextField
                   select
                   label="User"
@@ -109,15 +111,15 @@ const AddFinanceDialog = (props) => {
                   fullWidth required
                 /><br/><br/>
                 <TextField
-                  label="Receipt"
+                  label="Receipt Name"
                   name="receipt"
                   value={receipt}
                   onChange={(e) => setReceipt(e.target.value)}
                   fullWidth required
                 /><br/><br/>
-                <InputLabel>Upload receipt file: </InputLabel><br/>
-                <input  label="Add image" type="file" 
-                  onChange={handleImageChange} 
+                <UploadImage  
+                    value={image}
+                    onImageChange={(url) => setImage(url)}
                 />
           
             <DialogActions>

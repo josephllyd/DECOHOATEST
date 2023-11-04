@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import fetchData from "../../../api/vehiclesApi";
+//import { Input, InputLabel } from "@mui/material";
+import UploadImage from "../../../components/UploadImage";
 
 export default class Vehicle extends Component {
   constructor(props) {
@@ -25,7 +27,10 @@ export default class Vehicle extends Component {
     return (
       <div style={{ flex: 1, padding: "40px", fontSize: '20px' }}>
         Welcome to Vehicles Page {this.state.userData.fname}! 
+
+        <UploadImage/>
       </div>
+      
     );
   }
 }

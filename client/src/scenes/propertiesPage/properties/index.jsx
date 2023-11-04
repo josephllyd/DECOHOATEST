@@ -35,6 +35,8 @@ import { PersonPinCircleRounded, Search } from "@mui/icons-material";
 import { styled } from '@mui/material/styles';
 import CloseIcon from '@mui/icons-material/Close';
 import jsPDF from "jspdf";
+import UploadImage from "components/UploadImage";
+import { fetchUsers } from "api/usersApi";
 
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -48,10 +50,13 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 
 const Properties = () => {
   const [isAddPropertyDialogOpen, setIsAddPropertyDialogOpen] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [user, setUser] = useState({ _id: "", name: "" }); 
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
+  const [image, setImage] = useState("");
   const [properties, setProperties] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -66,7 +71,8 @@ const Properties = () => {
   const [editedPrice, setEditedPrice] = useState("");
   const [editedDescription, setEditedDescription] = useState("");
   const [editedCategory, setEditedCategory] = useState("");
-  const [image, setImage] = useState(null);
+  const [editedImage, setEditedImage] = useState("");
+  
   const theme = useTheme();
 
   const handleRowClick = (property) => {
@@ -90,6 +96,7 @@ const Properties = () => {
 
   useEffect(() => {
     fetchProperties();
+    fetchUsers(setUsers);
   }, []);
 
   const openAddPropertyDialog = () => {
@@ -103,29 +110,30 @@ const Properties = () => {
     setCategory("");
     setDescription("");
     setCategory("");
-    setImage(null);
+    setImage("");
   };
 
   const handleImageChange = (e) => {
     // Set the uploaded image in the state
-    setImage(e.target.files[0]);
+   // setImage(e.target.files[0]);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!name || !price || !description || !category || !image) {
-      alert("All fields are required, including the image");
+    if (!name || !price || !description || !category) {
+      alert("All fields are required");
       return;
     }
-  
-    const formData = new FormData();
-    formData.append("image", image);
-    formData.append("name", name);
-    formData.append("price", price);
-    formData.append("description", description);
-    formData.append("category", category);
-    formData.append("token", localStorage.getItem("token"));
-  
+
+    const newProperty = {
+      name,
+      price,
+      description,
+      category,
+      image,
+      token: localStorage.getItem("token"), // Get the user's token from local storage
+    };
+
     const currentHostname = window.location.hostname;
     let baseUrl = "";
     if (currentHostname === "localhost") {
@@ -138,22 +146,23 @@ const Properties = () => {
     fetch(addPropertyUrl, {
       method: "POST",
       headers: {
+        "Content-Type": "application/json",
         Accept: "application/json",
         "Access-Control-Allow-Origin": "*",
       },
-      body: formData,
+      body: JSON.stringify(newProperty),
     })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === "ok") {
-          alert("Property added successfully");
-          fetchProperties();
-        } else {
-          alert("Failed to add property");
-        }
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "ok") {
+            alert("Property added successfully");
+            fetchProperties();
+          } else {
+            alert("Failed to add property");
+          }
       });
-  };
-  
+   };
+
 
     const fetchProperties = () => {
       const currentHostname = window.location.hostname;
@@ -225,7 +234,7 @@ const Properties = () => {
           });
       }
     };
-    
+
 
   const indexOfLastRow = (page + 1) * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
@@ -261,14 +270,16 @@ const Properties = () => {
    // const currentRows = sortedProperties.slice(indexOfFirstRow, indexOfLastRow);
 
    useEffect(() => {
-    const sortedAndFilteredProperties = handleSearch();
-    setCurrentRows(sortedAndFilteredProperties.slice(indexOfFirstRow, indexOfLastRow));
-  }, [searchQuery, sortColumn, sortOrder]);
+    handleSearchAndSort();
+  }, [searchQuery, sortColumn, sortOrder, page, rowsPerPage, properties]);
 
-    const handleSearch = () => {
-      const filteredProperties = properties.filter((property) => {
-        const lowerCaseQuery = searchQuery.toLowerCase();
-        const priceString = property.price ? property.price.toString() : ''; // Convert price to string or use an empty string if it's undefined
+  const handleSearchAndSort = () => {
+    let filteredProperties = [...properties];
+
+    if (searchQuery) {
+      const lowerCaseQuery = searchQuery.toLowerCase();
+      filteredProperties = filteredProperties.filter((property) => {
+        const priceString = property.price ? property.price.toString() : '';
         return (
           (property.name && property.name.toLowerCase().includes(lowerCaseQuery)) ||
           (property.owner && property.owner.toLowerCase().includes(lowerCaseQuery)) ||
@@ -277,9 +288,55 @@ const Properties = () => {
           (property.category && property.category.toLowerCase().includes(lowerCaseQuery))
         );
       });
-      const sortedProperties = sortProperties(sortColumn, sortOrder);
-      return sortedProperties.filter((property) => filteredProperties.includes(property));
-    };
+    }
+
+    if (sortColumn) {
+      filteredProperties.sort((a, b) => {
+        const valueA = a[sortColumn];
+        const valueB = b[sortColumn];
+        if (valueA < valueB) return sortOrder === 'asc' ? -1 : 1;
+        if (valueA > valueB) return sortOrder === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+
+    const indexOfLastRow = (page + 1) * rowsPerPage;
+    const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+    const currentRows = filteredProperties.slice(indexOfFirstRow, indexOfLastRow);
+
+    setCurrentRows(currentRows);
+  };
+
+  const handleSearch = () => {
+    let filteredProperties = [...properties];
+  
+    if (searchQuery) {
+      const lowerCaseQuery = searchQuery.toLowerCase();
+      filteredProperties = filteredProperties.filter((property) => {
+        const priceString = property.price ? property.price.toString() : '';
+        return (
+          (property.name && property.name.toLowerCase().includes(lowerCaseQuery)) ||
+          (property.owner && property.owner.toLowerCase().includes(lowerCaseQuery)) ||
+          (priceString && priceString.includes(lowerCaseQuery)) ||
+          (property.description && property.description.toLowerCase().includes(lowerCaseQuery)) ||
+          (property.category && property.category.toLowerCase().includes(lowerCaseQuery))
+        );
+      });
+    }
+  
+    if (sortColumn) {
+      filteredProperties.sort((a, b) => {
+        const valueA = a[sortColumn];
+        const valueB = b[sortColumn];
+        if (valueA < valueB) return sortOrder === 'asc' ? -1 : 1;
+        if (valueA > valueB) return sortOrder === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+  
+    return filteredProperties.slice(indexOfFirstRow, indexOfLastRow);
+  };
+  
 
     const generatePDFReport = () => {
       if (!selectedProperty) {
@@ -287,9 +344,14 @@ const Properties = () => {
       }
     
       const doc = new jsPDF();
+      doc.addImage(`${selectedProperty.image}`, `JPEG`, 15, 60, 180, 180);
       doc.text(`Property Report for ${selectedProperty.name}`, 10, 10);
       doc.text(`Owner: ${selectedProperty.owner}`, 10, 20);
-      doc.text(`Price: Php ${selectedProperty.price.toLocaleString()}`, 10, 30);
+      doc.text(`Price: ${
+        selectedProperty.price 
+        ? `Php ${selectedProperty.price.toLocaleString()}` 
+        : 'Price not available'
+      }`, 10, 30);
       doc.text(`Description: ${selectedProperty.description}`, 10, 40);
       doc.text(`Category: ${selectedProperty.category}`, 10, 50);
     
@@ -297,6 +359,7 @@ const Properties = () => {
       const fileName = `property_report_${selectedProperty._id}.pdf`;
       doc.save(fileName);
     };
+    
     
    const sortedProperties = sortProperties(sortColumn, sortOrder);
    // const currentRows = sortedAndFilteredProperties.slice(indexOfFirstRow, indexOfLastRow) 
@@ -311,6 +374,7 @@ const Properties = () => {
           setEditedPrice(selectedProperty.price);
           setEditedDescription(selectedProperty.description);
           setEditedCategory(selectedProperty.category);
+          setEditedImage(selectedProperty.image);
         }
       };
       
@@ -330,6 +394,7 @@ const Properties = () => {
           price: editedPrice,
           description: editedDescription,
           category: editedCategory,
+          image: editedImage,
           token: localStorage.getItem("token"),
         };
       
@@ -434,7 +499,7 @@ const Properties = () => {
                   active={sortColumn === "name"}
                   direction={sortOrder}
                 >
-                  Name
+                  Property Name
                 </TableSortLabel>
               </TableCell>
               <TableCell
@@ -445,7 +510,7 @@ const Properties = () => {
                   active={sortColumn === "owner"}
                   direction={sortOrder}
                 >
-                  Owner Id
+                  Owner Name
                 </TableSortLabel>
               </TableCell>
               <TableCell
@@ -482,8 +547,14 @@ const Properties = () => {
                 >
                   <TableCell>{property.category}</TableCell>
                   <TableCell>{property.name}</TableCell>
-                  <TableCell>{property.owner}</TableCell>
-                  <TableCell>Php {property.price.toLocaleString()}</TableCell>
+                  <TableCell>
+                    {users.map((user) => (
+                      <span key={user._id}>
+                        {user._id === property.owner ? `${user.fname} ${user.lname}` : null}
+                      </span>
+                    ))}
+                  </TableCell>
+                  <TableCell>Php {property.price ? `Php ${property.price.toLocaleString()}` : ""}</TableCell>
                   <TableCell>{property.description}</TableCell>
                   
                 </TableRow>
@@ -492,7 +563,7 @@ const Properties = () => {
         </Table>
       </TableContainer>
 
-      {/* Pagination */}
+      {/* Pagination  */}
       <TablePagination
         rowsPerPageOptions={[100, 50, 30, 20, 10]}
         component="div"
@@ -504,7 +575,7 @@ const Properties = () => {
           setRowsPerPage(parseInt(event.target.value, 10));
           setPage(0);
         }}
-      />
+      /> 
 
       {/* Property Options Dialog */}
       <Dialog
@@ -585,6 +656,10 @@ const Properties = () => {
               fullWidth
               required
             />
+               <UploadImage  
+                value={editedImage}
+                onImageChange={(url) => setEditedImage(url)}
+              />
             <DialogActions>
               <Button onClick={closeEditPropertyDialog} color="primary">
                 Cancel
@@ -621,9 +696,25 @@ const Properties = () => {
         <DialogContent>
             {selectedProperty ? (
               <div>
+                <Typography>
+                 {/*} <img src={selectedProperty.image} alt="uploaded" style={{ width: "100%", height: "auto" }} /> */}
+                  { selectedProperty.image ? (
+                    <img
+                      src={selectedProperty.image}
+                      alt="uploaded"
+                      style={{ width: "100%", height: "auto" }}
+                    />
+                  ) : (
+                    <img
+                      src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cHJvcGVydHl8ZW58MHx8MHx8fDA%3D" // Replace this with the path to your alternative image
+                      alt="property"
+                      style={{ width: "100%", height: "auto" }}
+                    />
+                  )}
+                </Typography>
                 <Typography variant="h6">Name: {selectedProperty.name}</Typography>
                 <Typography>Owner: {selectedProperty.owner}</Typography>
-                <Typography>Price: Php {selectedProperty.price.toLocaleString()}</Typography>
+                <Typography>Price: Php { selectedProperty.price ? `Php ${selectedProperty.price.toLocaleString()}` : 'Price not available'}</Typography>
                 <Typography>Description: {selectedProperty.description}</Typography>
                 <Typography>Category: {selectedProperty.category}</Typography>
               </div>
@@ -684,10 +775,10 @@ const Properties = () => {
                 {/* Add more options as needed */}
               </Select>
             </FormControl><br/><br/>
-            <InputLabel>Add image: </InputLabel><br/>
-            <input  label="Add image" type="file" 
-              onChange={handleImageChange} 
-            />
+              <UploadImage  
+                value={image}
+                onImageChange={(url) => setImage(url)}
+              />
             <DialogActions>
               <Button onClick={closeAddPropertyDialog} color="primary">
                 Cancel

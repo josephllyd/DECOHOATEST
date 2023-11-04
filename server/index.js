@@ -10,9 +10,12 @@ import nodemailer from "nodemailer";
 dotenv.config();
 import "./models/properties.js";
 import "./models/finance.js";
-app.set("view engine", "ejs");
-app.use(express.urlencoded({extended: false}));
-import multer from 'multer';
+import "./models/imageDetails.js"
+//import { uploadImage, uploadMultipleImages } from './uploadImage.cjs';
+import bodyParser from 'body-parser';
+//app.set("view engine", "ejs");
+//app.use(express.urlencoded({extended: false}));
+//import multer from 'multer';
 
 const corsOptions = {
     origin: ["https://decohoatest-client.vercel.app", "http://localhost:3000"],
@@ -23,8 +26,12 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(express.json());
+
+//app.use(express.json({ limit: "25mb" }));
+//app.use(express.urlencoded({ limit: "25mb" }));
+
 const { MONGO_URL, JWT_SECRET } = process.env;
-const PORT = process.env.PORT || 5000; 
+const PORT = process.env.PORT || 5001; 
 
 mongoose
   .connect(MONGO_URL, {
@@ -227,7 +234,6 @@ app.post("/reset-password/:id/:token", async (req, res) => {
 
 // Import your Property model
 const Property = mongoose.model('Properties');
-const upload = multer({ dest: 'uploads/' });
 
 // Middleware to extract user information from JWT
 const authenticateUser = (req, res, next) => {
@@ -247,22 +253,25 @@ const authenticateUser = (req, res, next) => {
 };
 
 // Apply the middleware to the /addProperty route
-app.post("/addProperty", authenticateUser, upload.single('image'), async (req, res) => {
-  const { name, price, description, category, token } = req.body;
-  const image = req.file; // Extract the image from the request
+app.post("/addProperty", authenticateUser,
+//, upload.single('image'), 
+async (req, res) => {
+  const { name, price, description, category, image, token } = req.body;
+ // const image = req.file; // Extract the image from the request
 
   try {
     // Verify the user's token to get their email
     const { email } = jwt.verify(token, JWT_SECRET);
     const user = await User.findOne({ email });
 
+    
     // Create a new property with the owner ID from the user
     const property = await Property.create({
       name,
       price,
       description,
       category,
-      image: image.path, // Store the file path in the database
+      image,
       owner: user._id,
     });
 
@@ -328,7 +337,7 @@ app.get("/searchProperties", async (req, res) => {
 
 app.put("/editProperty/:propertyId", authenticateUser, async (req, res) => {
   const { propertyId } = req.params;
-  const { name, price, description, category, token } = req.body;
+  const { name, price, description, category, image, token } = req.body;
 
   try {
     // Verify the user's token to get their email
@@ -347,6 +356,7 @@ app.put("/editProperty/:propertyId", authenticateUser, async (req, res) => {
     property.price = price;
     property.description = description;
     property.category = category;
+    property.image = image;
 
     // Save the updated property
     await property.save();
@@ -362,7 +372,7 @@ app.put("/editProperty/:propertyId", authenticateUser, async (req, res) => {
 const Finance = mongoose.model('Finance');
 
 app.post("/addFinance", authenticateUser, async (req, res) => {
-  const { user, name, property, amount, paymentType, date, receipt } = req.body;
+  const { user, name, property, amount, paymentType, date, receipt, image } = req.body;
   console.log("Incoming request data:", req.body);
   try {
     const { email } = jwt.verify(req.body.token, JWT_SECRET);
@@ -376,6 +386,7 @@ app.post("/addFinance", authenticateUser, async (req, res) => {
       paymentType,
       date,
       receipt,
+      image,
       token: req.body.token,
     });
     console.log("Finance data added:", finance);
@@ -396,6 +407,107 @@ app.get("/getFinance", async (req, res) => {
   }
 });
 
+
+//app.use(cors());
+//app.use(express.json({ limit: "25mb" }));
+//app.use(express.urlencoded({ limit: "25mb" }));
+
+import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true
+});
+
+const opts = {
+  overwrite: true,
+  invalidate: true,
+  resource_type: "auto",
+};
+
+const uploadImage = (image) => {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.upload(image, opts, (error, result) => {
+      if (result && result.secure_url) {
+        console.log(result.secure_url);
+        return resolve(result.secure_url);
+      }
+      console.log(error.message);
+      return reject({ message: error.message });
+    });
+  });
+};
+
+const uploadMultipleImages = (images) => {
+  return new Promise((resolve, reject) => {
+    const uploads = images.map((base) => uploadImage(base));
+    Promise.all(uploads)
+      .then((values) => resolve(values))
+      .catch((err) => reject(err));
+  });
+};
+ 
+app.use(bodyParser.json());
+
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  next();
+});
+
+app.post("/uploadImage", (req, res) => {
+  // Implement the uploadImage function to handle the image upload
+  uploadImage(req.body.image)
+    .then((url) => res.json({ url })) // Return a JSON response with the URL
+    .catch((err) => res.status(500).json({ error: err.message })); // Return a JSON error response
+});
+
+app.post("/uploadMultipleImages", (req, res) => {
+  // Implement the uploadMultipleImages function to handle multiple image uploads
+  uploadMultipleImages(req.body.images)
+    .then((urls) => res.json({ urls })) // Return a JSON response with the URLs
+    .catch((err) => res.status(500).json({ error: err.message })); // Return a JSON error response
+});
+
+
+
+/*
+const Images = mongoose.model("ImageDetails");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, "../src/images/"));
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now();
+    cb(null, uniqueSuffix + file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+app.post("/upload-image", upload.single("image"), async (req, res) => {
+  console.log(req.body);
+  const imageName = req.file.filename;
+
+  try {
+    await Images.create({ image: imageName });
+    res.json({ status: "ok" });
+  } catch (error) {
+    res.json({ status: error });
+  }
+});
+
+app.get("/get-image", async (req, res) => {
+  try {
+    const data = await Images.find({});
+    res.send({ status: "ok", data: data });
+  } catch (error) {
+    res.json({ status: error });
+  }
+});
+*/
 
 export default app;
 
