@@ -1,16 +1,16 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
-import React, { Component } from "react";
-import {Card} from "@mui/material";
+import { Fab, IconButton, InputBase, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Card } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import FlexBetween from "components/FlexBetween";
+import { Search } from "@mui/icons-material";
+import { useTheme } from '@mui/material/styles';
 
-export default class Members extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      users: [],
-    };
-  }
+const Members = () => {
+  const theme = useTheme();
+  const [users, setUsers] = useState([]);
 
-  componentDidMount() {
+  useEffect(() => {
     const currentHostname = window.location.hostname;
     let baseUrl = "";
     if (currentHostname === "localhost") {
@@ -26,15 +26,34 @@ export default class Members extends Component {
       .then((res) => res.json())
       .then((data) => {
         console.log(data.users, "users");
-        this.setState({ users: data.users });
+        setUsers(data.users);
       });
-  }
+  }, []);
 
-  render() {
-    return (
-      <div  style={{ flex: 1, padding: "20px", fontSize: "20px" }}>
-        <h2>Members</h2>
-        <TableContainer component={Card}  style={{ background: "none" }}>
+  return (
+    <div style={{ flex: 1, padding: "20px", fontSize: "20px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Fab variant="extended" size="small" color="primary" style={{ background: `#F2643D`, padding: "20px" }} onClick={() => { }}>
+          <AddIcon /> Finance
+        </Fab>
+        <FlexBetween
+          backgroundColor={theme.palette.background.alt}
+          borderRadius="9px"
+          gap="3rem"
+          padding="0.1rem 1.5rem"
+        >
+          <InputBase
+            placeholder="Search..."
+            value={{}}
+            onChange={() => { }}
+          />
+          <IconButton>
+            <Search />
+          </IconButton>
+        </FlexBetween>
+      </div>
+      <br />
+      <TableContainer component={Card} style={{ background: "none" }}>
         <Table>
           <TableHead>
             <TableRow style={{ background: "#333" }}>
@@ -44,21 +63,20 @@ export default class Members extends Component {
               <TableCell style={{ fontWeight: 'bold', color: 'white' }}>User Type</TableCell>
             </TableRow>
           </TableHead>
-            <TableBody>
-              {this.state.users.map((user, index) => (
-                <TableRow key={index}>
-                  <TableCell>{user.fname}</TableCell>
-                  <TableCell>{user.lname}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.userType}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
+          <TableBody>
+            {users.map((user, index) => (
+              <TableRow key={index}>
+                <TableCell>{user.fname}</TableCell>
+                <TableCell>{user.lname}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>{user.userType}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
         </Table>
       </TableContainer>
+    </div>
+  );
+};
 
-    
-      </div>
-    );
-  }
-}
+export default Members;
