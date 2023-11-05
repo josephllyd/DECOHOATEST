@@ -60,7 +60,7 @@ const addFinance = async (
   }
 };
 
-const fetchFinance = (setFinance) => {
+const fetchFinance = async (setFinance) => {
   const currentHostname = window.location.hostname;
   let baseUrl = "";
   if (currentHostname === "localhost") {
@@ -83,4 +83,144 @@ const fetchFinance = (setFinance) => {
     });
 };
 
-export {fetchFinance, addFinance};
+const handleEditFinanceSubmit = (
+  e,
+  finance,
+  selectedFinance,
+  editedUser,
+  editedName,
+  editedProperty,
+  editedAmount,
+  editedPaymentType,
+  editedDate,
+  editedReceipt,
+  editedImage,
+  setFinance,
+  closeEditFinanceDialog
+) => {
+ // e.preventDefault();
+  const formData = new FormData();
+  formData.append("image", editedImage);
+
+  const editedFinance = {
+    user: editedUser._id, 
+    name: editedName,
+    property: editedProperty,
+    amount: editedAmount,
+    paymentType: editedPaymentType,
+    date: editedDate,
+    receipt: editedReceipt,
+    image: editedImage,
+    token: localStorage.getItem("token"),
+  };
+
+  const currentHostname = window.location.hostname;
+  let baseUrl = "";
+  if (currentHostname === "localhost") {
+    baseUrl = "http://localhost:5000"; // Local environment
+  } else {
+    baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
+  }
+
+  const financeId = selectedFinance._id; // Assuming _id is the finance's unique identifier
+  const editFinanceEndpoint = `/editFinance/${financeId}`;
+  const editFinanceUrl = `${baseUrl}${editFinanceEndpoint}`;
+
+  fetch(editFinanceUrl, {
+    method: "PUT", // Use PUT request to update the finance
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
+    body: JSON.stringify(editedFinance),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.status === "ok") {
+        alert("Finance edited successfully");
+        // Update the finance details in the frontend (state)
+       {/* const updatedFinance = {
+          fUser: editedUser,
+          name: editedName,
+          property: editedProperty,
+          amount: editedAmount,
+          paymentType: editedPaymentType,
+          date: editedDate,
+          receipt: editedReceipt,
+          image: editedImage,
+          _id: financeId,
+        }; */}
+        const updatedFinances = finance.map((financeItem) => { // 'finance' is not defined here
+          if (financeItem._id === financeId) {
+            return {
+              ...financeItem,
+              ...editedFinance,
+            };
+          }
+          return financeItem;
+        });
+        setFinance(updatedFinances); // 'setFinance' is not defined here
+        closeEditFinanceDialog(); // 'closeEditFinanceDialog' is not defined here
+      } else {
+        alert("Failed to edit finance");
+      }
+    })
+    .catch((error) => {
+      console.error("Error editing finance:", error);
+      alert("An error occurred while editing finance");
+    });
+};
+
+const deleteFinance = (selectedFinance, setSelectedFinance, fetchFinance, setFinance) => {
+  if (!selectedFinance) {
+    return;
+  }
+
+  const confirmation = window.confirm("Are you sure you want to delete this finance?");
+
+  if (confirmation) {
+    const financeId = selectedFinance._id;
+
+    const currentHostname = window.location.hostname;
+    let baseUrl = "";
+    if (currentHostname === "localhost") {
+      baseUrl = "http://localhost:5000";
+    } else {
+      baseUrl = "https://decohoatest-server.vercel.app";
+    }
+
+    const deleteFinanceEndpoint = `/deleteFinance/${financeId}`;
+    const deleteFinanceUrl = `${baseUrl}${deleteFinanceEndpoint}`;
+
+    fetch(deleteFinanceUrl, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "ok") {
+          alert("Finance deleted successfully");
+          setSelectedFinance(null);
+          fetchFinance(setFinance); // Assuming you have a fetchFinance function to update the finance list
+        } else {
+          alert("Failed to delete finance");
+        }
+      })
+      .catch((error) => {
+        console.error("Error deleting finance:", error);
+      });
+  }
+};
+
+
+export {
+  fetchFinance,
+  addFinance,
+  handleEditFinanceSubmit,
+  deleteFinance, // Add the deleteFinance function to the export list
+};

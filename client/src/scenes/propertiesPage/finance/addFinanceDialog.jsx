@@ -12,6 +12,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import UploadImage from "components/UploadImage";
+import { fetchUsers } from "api/usersApi";
 
 const AddFinanceDialog = (props) => {
   const {

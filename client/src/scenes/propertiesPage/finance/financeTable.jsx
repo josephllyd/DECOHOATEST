@@ -10,10 +10,13 @@ import {
   Card,
   TablePagination 
 } from "@mui/material";
+import FinanceOptionsDialog from "./financeOptionsDialog";
+import { fetchFinance } from "api/financeApi";
 
 const FinanceTable = ({ finance, users }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [selectedFinance, setSelectedFinance] = useState(null);
 
   const handlePageChange = (event, newPage) => {
     setPage(newPage);
@@ -25,6 +28,14 @@ const FinanceTable = ({ finance, users }) => {
   };
 
   const displayedFinance = finance.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
+  const openFinanceOptionsDialog = (selectedFinance) => {
+    setSelectedFinance(selectedFinance);
+  };
+
+  const handleCloseFinanceOptions = () => {
+    setSelectedFinance(null);
+  };
 
   return (
     <div>
@@ -43,7 +54,9 @@ const FinanceTable = ({ finance, users }) => {
             </TableHead>
             <TableBody>
               {displayedFinance.map((finance, index) => (
-                <TableRow key={index}>
+                 <TableRow key={index} 
+                    onClick={() => openFinanceOptionsDialog(finance)}
+                    style={{ cursor: "pointer" }}>
                   <TableCell>
                     {users.find((user) => user._id === finance.user)?.fname}{" "}
                     {users.find((user) => user._id === finance.user)?.lname}
@@ -67,7 +80,13 @@ const FinanceTable = ({ finance, users }) => {
         onPageChange={handlePageChange}
         onRowsPerPageChange={handleRowsPerPageChange}
         rowsPerPageOptions={[10, 20, 30, 50, 100]}
-      />             
+      />
+      <FinanceOptionsDialog
+        selectedFinance={selectedFinance}
+        setSelectedFinance = {setSelectedFinance}
+        onCloseFinanceOptions={handleCloseFinanceOptions}
+        fetchFinance={fetchFinance} 
+      />
     </div>
   );
 };

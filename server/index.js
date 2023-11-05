@@ -416,19 +416,19 @@ app.get("/searchFinance", async (req, res) => {
 
 app.put("/editFinance/:financeId", authenticateUser, async (req, res) => {
   const { financeId } = req.params;
-  const { fUser, name, property, amount, paymentType, date, receipt, image, token } = req.body;
+  const { user: userFinance, name, property, amount, paymentType, date, receipt, image, token } = req.body;
 
   try {
     const { email } = jwt.verify(token, JWT_SECRET);
-    const user = await User.findOne({ email });
+    const currentUser = await User.findOne({ email });
 
-    const finance = await Finance.findOne({ _id: financeId, owner: user._id });
+    const finance = await Finance.findOne({ _id: financeId, owner: currentUser._id });
 
     if (!finance) {
       return res.status(404).json({ status: "Finance not found" });
     }
 
-    finance.user = fUser; 
+    finance.user = userFinance;
     finance.name = name;
     finance.property = property;
     finance.amount = amount;
@@ -444,6 +444,7 @@ app.put("/editFinance/:financeId", authenticateUser, async (req, res) => {
     res.status(500).json({ status: "error", error: error.message });
   }
 });
+
 
 
 import { v2 as cloudinary } from "cloudinary";
