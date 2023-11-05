@@ -43,16 +43,39 @@ const Finance = () => {
       fetchUsers(setUsers);
     }, []);
 
+
+    const [sortColumn, setSortColumn] = useState(null);
+    const [sortOrder, setSortOrder] = useState("asc");
+    
+  
+    // Function to handle sorting
+    const handleSort = (column) => {
+      if (column === sortColumn) {
+        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+      } else {
+        setSortColumn(column);
+        setSortOrder("asc");
+      }
+    };
+  
+    // Function to filter the finance data based on search query
+    const filteredFinance = finance.filter((item) => {
+    return (
+      (item.category && item.category.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (item.name && item.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (item.owner && item.owner.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (item.price && item.price.toString().toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+  });
+
+
   return (
     <div style={{ flex: 1, padding: "40px", fontSize: "20px" }}>
-      <div style={{
-          display: "flex", justifyContent: "space-between", alignItems: "center",
-        }}
-      >
-        <Fab
-          variant="extended" size="small" color="primary"
-          onClick={handleOpenAddFinanceDialog}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center",}}>
+        <Fab variant="extended" size="small" color="primary"  
           style={{ background: `#F2643D`, padding: "20px" }}
+          onClick={handleOpenAddFinanceDialog}
         >
           <AddIcon /> Finance
         </Fab>
@@ -94,8 +117,13 @@ const Finance = () => {
         addFinance={addFinance}
       />
       <FinanceTable 
-        finance={finance}  
-        users={users} 
+       finance={filteredFinance}
+       users={users}
+       handleSort={handleSort}
+       sortColumn={sortColumn}
+       sortOrder={sortOrder}
+       searchQuery={searchQuery}
+       setSearchQuery={setSearchQuery}
       />
     </div>
   );

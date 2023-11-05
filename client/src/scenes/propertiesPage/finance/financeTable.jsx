@@ -1,4 +1,5 @@
 import React from "react";
+import { useState } from "react";
 import { 
   TableContainer, 
   Table, 
@@ -6,17 +7,33 @@ import {
   TableRow, 
   TableCell, 
   TableBody, 
-  Card 
+  Card,
+  TablePagination 
 } from "@mui/material";
 
 const FinanceTable = ({ finance, users }) => {
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const handlePageChange = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleRowsPerPageChange = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const displayedFinance = finance.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
   return (
+    <div>
     <TableContainer component={Card} style={{ background: "none" }}>
          <Table>
             <TableHead>
               <TableRow style={{ background: "#333" }}>
                 <TableCell style={{ fontWeight: "bold", color: "white" }}>Owner Name</TableCell>
-                <TableCell style={{ fontWeight: "bold", color: "white" }}>Propety Name</TableCell>
+                <TableCell style={{ fontWeight: "bold", color: "white" }}>Property Name</TableCell>
                 <TableCell style={{ fontWeight: "bold", color: "white" }}>Property Type</TableCell>
                 <TableCell style={{ fontWeight: "bold", color: "white" }}>Amount</TableCell>
                 <TableCell style={{ fontWeight: "bold", color: "white" }}>Payment Type</TableCell>
@@ -25,7 +42,7 @@ const FinanceTable = ({ finance, users }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {finance.map((finance, index) => (
+              {displayedFinance.map((finance, index) => (
                 <TableRow key={index}>
                   <TableCell>
                     {users.find((user) => user._id === finance.user)?.fname}{" "}
@@ -42,6 +59,16 @@ const FinanceTable = ({ finance, users }) => {
             </TableBody>
           </Table>
     </TableContainer>
+    <TablePagination
+        component="div"
+        count={finance.length}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        onPageChange={handlePageChange}
+        onRowsPerPageChange={handleRowsPerPageChange}
+        rowsPerPageOptions={[10, 20, 30, 50, 100]}
+      />             
+    </div>
   );
 };
 

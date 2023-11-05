@@ -3,19 +3,15 @@ const app = express();
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import './models/userDetails.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken'; 
 import nodemailer from "nodemailer";
-dotenv.config();
+import './models/userDetails.js';
 import "./models/properties.js";
 import "./models/finance.js";
 import "./models/imageDetails.js"
-//import { uploadImage, uploadMultipleImages } from './uploadImage.cjs';
 import bodyParser from 'body-parser';
-//app.set("view engine", "ejs");
-//app.use(express.urlencoded({extended: false}));
-//import multer from 'multer';
+dotenv.config();
 
 const corsOptions = {
     origin: ["https://decohoatest-client.vercel.app", "http://localhost:3000"],
@@ -24,11 +20,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
 app.use(express.json());
-
-//app.use(express.json({ limit: "25mb" }));
-//app.use(express.urlencoded({ limit: "25mb" }));
 
 const { MONGO_URL, JWT_SECRET } = process.env;
 const PORT = process.env.PORT || 5001; 
@@ -252,20 +244,13 @@ const authenticateUser = (req, res, next) => {
   }
 };
 
-// Apply the middleware to the /addProperty route
 app.post("/addProperty", authenticateUser,
-//, upload.single('image'), 
 async (req, res) => {
   const { name, price, description, category, image, token } = req.body;
- // const image = req.file; // Extract the image from the request
-
   try {
     // Verify the user's token to get their email
     const { email } = jwt.verify(token, JWT_SECRET);
     const user = await User.findOne({ email });
-
-    
-    // Create a new property with the owner ID from the user
     const property = await Property.create({
       name,
       price,
@@ -274,7 +259,6 @@ async (req, res) => {
       image,
       owner: user._id,
     });
-
     // Send a response indicating success
     res.status(201).json({ status: "ok", property });
   } catch (error) {

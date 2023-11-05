@@ -37,7 +37,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import jsPDF from "jspdf";
 import UploadImage from "components/UploadImage";
 import { fetchUsers } from "api/usersApi";
-
+//import { handleSubmit } from "api/propertiesApi";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -113,7 +113,11 @@ const Properties = () => {
     setImage("");
   };
 
-  const handleSubmit = (e) => {
+  {/* const handleSubmit = (e) => {
+    handleSubmit(name, price, description, category, image);
+  }; */}
+
+   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name || !price || !description || !category) {
       alert("All fields are required");
