@@ -98,7 +98,7 @@ const handleEditFinanceSubmit = (
   setFinance,
   closeEditFinanceDialog
 ) => {
- // e.preventDefault();
+  e.preventDefault();
   const formData = new FormData();
   formData.append("image", editedImage);
 

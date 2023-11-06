@@ -9,6 +9,7 @@ import { useTheme } from '@mui/material/styles';
 const Members = () => {
   const theme = useTheme();
   const [users, setUsers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const currentHostname = window.location.hostname;
@@ -34,7 +35,7 @@ const Members = () => {
     <div style={{ flex: 1, padding: "20px", fontSize: "20px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <Fab variant="extended" size="small" color="primary" style={{ background: `#F2643D`, padding: "20px" }} onClick={() => { }}>
-          <AddIcon /> Finance
+          <AddIcon /> Member
         </Fab>
         <FlexBetween
           backgroundColor={theme.palette.background.alt}
@@ -44,8 +45,8 @@ const Members = () => {
         >
           <InputBase
             placeholder="Search..."
-            value={{}}
-            onChange={() => { }}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
           <IconButton>
             <Search />

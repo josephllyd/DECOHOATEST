@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import fetchData from "../../../api/vehiclesApi";
 //import { Input, InputLabel } from "@mui/material";
 import UploadImage from "../../../components/UploadImage";
+import { Card } from "@mui/material";
 
 export default class Vehicle extends Component {
   constructor(props) {

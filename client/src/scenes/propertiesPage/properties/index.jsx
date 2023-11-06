@@ -27,7 +27,8 @@ import {
   List,
   ListItem,
   ListItemButton,
-  ListItemText, // Import TablePagination
+  ListItemText,
+  CardContent, // Import TablePagination
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import FlexBetween from "components/FlexBetween";
@@ -416,6 +417,8 @@ const Properties = () => {
         </FlexBetween>
       </div>
       <br/>
+
+      
       {/* Table to display properties */}
       <TableContainer component={Card} style={{ background: "none" }}>
         <Table >
