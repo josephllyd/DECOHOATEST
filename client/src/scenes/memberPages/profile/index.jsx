@@ -28,7 +28,8 @@ const Profile = () => {
   };
 
   return (
-    <div style={{ flex: 1, padding: "20px", fontSize: "20px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+    <div style={{ flex: 1, padding: "40px", fontSize: "20px", 
+      display: "flex", flexDirection: "column", alignItems: "center", alignContent:"center" }}>
       {userData && (
         <div style={{ fontSize: 15 }}>
           <CardMedia
@@ -52,12 +53,12 @@ const Profile = () => {
                 label="First Name"
                 value={selectedUser.fname}
                 onChange={(e) => setSelectedUser({ ...selectedUser, fname: e.target.value })}
-              />
+              /><br/><br/>
               <TextField
                 label="Last Name"
                 value={selectedUser.lname}
                 onChange={(e) => setSelectedUser({ ...selectedUser, lname: e.target.value })}
-              />
+              /><br/><br/>  
               <TextField
                 label="Email"
                 value={selectedUser.email}
