@@ -1,15 +1,43 @@
-import { Fab, IconButton, InputBase, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { Card } from "@mui/material";
+import {
+  Fab,
+  InputBase,
+  Card,
+  CardContent,
+  CardMedia,
+  Grid,
+  IconButton,
+  MenuItem,
+  Popover,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import FlexBetween from "components/FlexBetween";
 import { Search } from "@mui/icons-material";
-import { useTheme } from '@mui/material/styles';
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import { useTheme } from "@mui/material/styles";
+import { fetchUsers, handleEditUser, useUserData } from "api/usersApi";
 
 const Members = () => {
+  const userData = useUserData();
   const theme = useTheme();
   const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    fetchUsers(setUsers);
+  }, []);
+
+  const handleCardClick = (event, user) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedUser(user);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    setSelectedUser(null);
+  };
 
   useEffect(() => {
     const currentHostname = window.location.hostname;
@@ -71,7 +99,65 @@ const Members = () => {
         </FlexBetween>
       </div>
       <br />
-      <TableContainer component={Card} style={{ background: "none" }}>
+      <Grid container spacing={2}>
+        {handleSearch().map((user) => (
+          <Grid item key={user.id} xs={12} sm={4} md={2}>
+            <Card style={{ marginBottom: "20px", fontSize: 13 }}>
+              <CardMedia component="img" height="140" image={user.photo} alt="user photo" />
+              <CardContent style={{ fontSize: 13 }}>
+                <div>
+                  <strong>First Name: </strong> {user.fname}
+                </div>
+                <div>
+                  <strong>Last Name: </strong> {user.lname}
+                </div>
+                <div>
+                  <strong>Email: </strong> {user.email}
+                </div>
+              </CardContent>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px", paddingLeft: "13px" }}>
+                <div>
+                  <strong>Role: </strong> {user.role}
+                </div>
+                <IconButton onClick={(e) => handleCardClick(e, user)}>
+                  <MoreHorizIcon />
+                </IconButton>
+              </div>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+      <Popover
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+      >
+        {selectedUser && (
+          <div>
+            <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>Edit</MenuItem>
+            <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>Delete</MenuItem>
+            <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>Disable User</MenuItem>
+            <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>View User</MenuItem>
+          </div>
+        )}
+      </Popover>
+
+  
+    </div>
+  );
+};
+
+export default Members;
+
+   /* <TableContainer component={Card} style={{ background: "none" }}>
         <Table>
           <TableHead>
             <TableRow style={{ background: "#333" }}>
@@ -92,9 +178,4 @@ const Members = () => {
             ))}
           </TableBody>
         </Table>
-      </TableContainer>
-    </div>
-  );
-};
-
-export default Members;
+      </TableContainer> */
