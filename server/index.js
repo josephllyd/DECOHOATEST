@@ -224,6 +224,27 @@ app.post("/reset-password/:id/:token", async (req, res) => {
   }
 });
 
+app.put("/editUser/:userId", async (req, res) => {
+  const { userId } = req.params;
+  const newData = req.body;
+
+  try {
+    // Find the user by ID and update their data
+    const user = await User.findOneAndUpdate({ _id: userId }, newData, { new: true });
+
+    if (!user) {
+      return res.status(404).json({ status: "User not found" });
+    }
+
+    // Send a response indicating success
+    res.status(200).json({ status: "ok", user });
+  } catch (error) {
+    // Handle errors
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
+
+
 // Import your Property model
 const Property = mongoose.model('Properties');
 

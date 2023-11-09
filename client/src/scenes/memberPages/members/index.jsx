@@ -31,6 +31,23 @@ const Members = () => {
       });
   }, []);
 
+  const handleSearch = () => {
+    const filteredUsers = users.filter((user) => {
+      const firstName = user.fname ? user.fname.toLowerCase() : '';
+      const lastName = user.lname ? user.lname.toLowerCase() : '';
+      const email = user.email ? user.email.toLowerCase() : '';
+      const userType = user.userType ? user.userType.toLowerCase() : '';
+      return (
+        firstName.includes(searchQuery.toLowerCase()) ||
+        lastName.includes(searchQuery.toLowerCase()) ||
+        email.includes(searchQuery.toLowerCase()) ||
+        userType.includes(searchQuery.toLowerCase())
+      );
+    });
+    return filteredUsers;
+  };
+
+
   return (
     <div style={{ flex: 1, padding: "20px", fontSize: "20px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -48,7 +65,7 @@ const Members = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <IconButton>
+          <IconButton onClick={handleSearch}>
             <Search />
           </IconButton>
         </FlexBetween>
@@ -65,7 +82,7 @@ const Members = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((user, index) => (
+            {handleSearch().map((user, index) => (
               <TableRow key={index}>
                 <TableCell>{user.fname}</TableCell>
                 <TableCell>{user.lname}</TableCell>

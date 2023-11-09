@@ -1,57 +1,64 @@
-import React, { Component } from "react";
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardMedia, IconButton, InputBase } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import { useTheme } from "@mui/material/styles";
+import { fetchUsers, handleEditUser, useUserData } from "api/usersApi";
 
-export default class Profile extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      userData: "",
-    };
-  }
+const Profile = () => {
+  const userData = useUserData();
+  const theme = useTheme();
+  const [users, setUsers] = useState([]);
+  
 
-  componentDidMount() {
-    const currentHostname = window.location.hostname;
-    let baseUrl = "";
-    if (currentHostname === "localhost") {
-      baseUrl = "http://localhost:5000"; // Local environment
-    } else {
-      baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
-    }
+  useEffect(() => {
+    fetchUsers(setUsers); 
+  }, []);
 
-    const userDataEndpoint = "/userData";
-    const userDataUrl = `${baseUrl}${userDataEndpoint}`;
-
-    fetch(userDataUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({
-        token: window.localStorage.getItem("token"),
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data, "userData");
-        this.setState({ userData: data.data });
-        if (data.data === 'token expired') {
-          alert("Token expired! Log in again.");
-          window.localStorage.clear();
-          window.location.href = "./signin";
-        }
-      });
-  }
-
-  logOut = () => {
-    window.localStorage.clear();
-    window.location.href = "./signin";
-  }
-  render() {
-    return (
-        <div style={{ flex: 1, padding: "40px", fontSize: '20px' }}>
-            Welcome to Profiles Page {this.state.userData.fname}! 
+  return (
+    <div style={{ flex: 1, padding: "20px", fontSize: "20px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div
+          style={{
+            backgroundColor: theme.palette.background.alt,
+            borderRadius: "9px",
+            gap: "3rem",
+            padding: "0.1rem 1.5rem",
+          }}
+        >
         </div>
-    );
-  }
-}
+      </div>
+      <br />
+
+      {users.map((user) => (
+        <Card key={user.id} style={{ marginBottom: "20px" }}>
+          <CardMedia component="img" height="140" image={user.photo} alt="user photo" />
+          <CardContent>
+            <div>
+              <strong>First Name: </strong> {user.fname}
+            </div>
+            <div>
+              <strong>Last Name: </strong> {user.lname}
+            </div>
+            <div>
+              <strong>Email: </strong> {user.email}
+            </div>
+            <div>
+              <strong>Role: </strong> {user.role}
+            </div>
+            <IconButton
+              onClick={() => {
+                // Your user editing logic here
+                const newData = {}; // Define your updated data
+                handleEditUser(user.id, newData);
+              }}
+            >
+              <AddIcon /> Edit
+            </IconButton>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+};
+
+export default Profile;
