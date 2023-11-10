@@ -71,7 +71,7 @@ const Finance = () => {
 
 
   return (
-    <div style={{ flex: 1, padding: "40px", fontSize: "20px" }}>
+    <div style={{ flex: 1, padding: "20px", fontSize: "20px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center",}}>
         <Fab variant="extended" size="small" color="primary"  
           style={{ background: `#F2643D`, padding: "20px" }}

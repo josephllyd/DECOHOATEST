@@ -1,37 +1,158 @@
-import React, { Component } from "react";
-import fetchData from "../../../api/vehiclesApi";
-//import { Input, InputLabel } from "@mui/material";
-import UploadImage from "../../../components/UploadImage";
-import { Card } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import {
+  Fab,
+  InputBase,
+  Card,
+  CardContent,
+  CardMedia,
+  Grid,
+  IconButton,
+  MenuItem,
+  Popover,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import FlexBetween from "components/FlexBetween";
+import { Search } from "@mui/icons-material";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import { useTheme } from "@mui/material/styles";
+import { fetchUsers, handleEditUser, useUserData } from "api/usersApi";
 
-export default class Vehicle extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      userData: "",
-    };
-  }
+const Vehicle = () => {
+  const userData = useUserData();
+  const theme = useTheme();
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  componentDidMount() {
-    fetchData((data) => {
-      console.log(data, "userData");
-      this.setState({ userData: data.data });
-      if (data.data === 'token expired') {
-        alert("Token expired! Log in again.");
-        window.localStorage.clear();
-        window.location.href = "./signin";
-      }
+  useEffect(() => {
+    fetchUsers(setUsers);
+  }, []);
+
+  const handleCardClick = (event, user) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedUser(user);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    setSelectedUser(null);
+  };
+
+  useEffect(() => {
+    const currentHostname = window.location.hostname;
+    let baseUrl = "";
+    if (currentHostname === "localhost") {
+      baseUrl = "http://localhost:5000"; // Local environment
+    } else {
+      baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
+    }
+
+    const getUsersEndpoint = "/getUsers";
+    const getUsersUrl = `${baseUrl}${getUsersEndpoint}`;
+
+    fetch(getUsersUrl)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data.users, "users");
+        setUsers(data.users);
+      });
+  }, []);
+
+  const handleSearch = () => {
+    const filteredUsers = users.filter((user) => {
+      const firstName = user.fname ? user.fname.toLowerCase() : '';
+      const lastName = user.lname ? user.lname.toLowerCase() : '';
+      const email = user.email ? user.email.toLowerCase() : '';
+      const userType = user.userType ? user.userType.toLowerCase() : '';
+      return (
+        firstName.includes(searchQuery.toLowerCase()) ||
+        lastName.includes(searchQuery.toLowerCase()) ||
+        email.includes(searchQuery.toLowerCase()) ||
+        userType.includes(searchQuery.toLowerCase())
+      );
     });
-  }
+    return filteredUsers;
+  };
 
-  render() {
-    return (
-      <div style={{ flex: 1, padding: "40px", fontSize: '20px' }}>
-        Welcome to Vehicles Page {this.state.userData.fname}! 
 
-        <UploadImage/>
+  return (
+    <div style={{ flex: 1, padding: "20px", fontSize: "20px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Fab variant="extended" size="small" color="primary" style={{ background: `#F2643D`, padding: "20px" }} onClick={() => { }}>
+          <AddIcon /> Vehicle
+        </Fab>
+        <FlexBetween
+          backgroundColor={theme.palette.background.alt}
+          borderRadius="9px"
+          gap="3rem"
+          padding="0.1rem 1.5rem"
+        >
+          <InputBase
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <IconButton onClick={handleSearch}>
+            <Search />
+          </IconButton>
+        </FlexBetween>
       </div>
-      
-    );
-  }
-}
+      <br />
+      <Grid container spacing={2}>
+        {handleSearch().map((user) => (
+          <Grid item key={user.id} xs={12} sm={4} md={2}>
+            <Card style={{ marginBottom: "20px", fontSize: 13 }}>
+              <CardMedia component="img" height="140" image={user.photo} alt="user photo" />
+              <CardContent style={{ fontSize: 13 }}>
+                <div>
+                  <strong>First Name: </strong> {user.fname}
+                </div>
+                <div>
+                  <strong>Last Name: </strong> {user.lname}
+                </div>
+                <div>
+                  <strong>Email: </strong> {user.email}
+                </div>
+              </CardContent>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px", paddingLeft: "13px" }}>
+                <div>
+                  <strong>Role: </strong> {user.userType}
+                </div>
+                <IconButton onClick={(e) => handleCardClick(e, user)}>
+                  <MoreHorizIcon />
+                </IconButton>
+              </div>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+      <Popover
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+      >
+        {selectedUser && (
+          <div>
+            <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>Edit</MenuItem>
+            <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>Delete</MenuItem>
+            <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>Disable User</MenuItem>
+            <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>View User</MenuItem>
+          </div>
+        )}
+      </Popover>
+
+  
+    </div>
+  );
+};
+
+export default Vehicle;

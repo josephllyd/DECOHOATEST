@@ -117,7 +117,7 @@ const Members = () => {
               </CardContent>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px", paddingLeft: "13px" }}>
                 <div>
-                  <strong>Role: </strong> {user.role}
+                  <strong>Role: </strong> {user.userType}
                 </div>
                 <IconButton onClick={(e) => handleCardClick(e, user)}>
                   <MoreHorizIcon />

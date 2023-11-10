@@ -43,6 +43,7 @@ const Profile = () => {
           <strong>First Name: </strong>{userData.fname} <br />
           <strong>Last Name: </strong> {userData.lname} <br />
           <strong> Email: </strong> {userData.email} <br />
+          <strong> Role: </strong> {userData.role} <br />
           <Button variant="outlined" onClick={handleOpen} style={{ marginTop: "20px" }}>
             Edit
           </Button>

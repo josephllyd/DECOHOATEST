@@ -10,6 +10,9 @@ import './models/userDetails.js';
 import "./models/properties.js";
 import "./models/finance.js";
 import "./models/imageDetails.js"
+import "./models/vehicle.js"
+import "./models/updates.js"
+import "./models/support.js"
 import bodyParser from 'body-parser';
 dotenv.config();
 
@@ -465,6 +468,78 @@ app.put("/editFinance/:financeId", authenticateUser, async (req, res) => {
     res.status(500).json({ status: "error", error: error.message });
   }
 });
+
+const Vehicle = mongoose.model('Vehicle');
+
+app.post("/addVehicle", authenticateUser,
+async (req, res) => {
+  const {  vehicleName, parkingNo, plateNo, brand, description, image, token } = req.body;
+  try {
+    // Verify the user's token to get their email
+    const { email } = jwt.verify(token, JWT_SECRET);
+    const user = await User.findOne({ email });
+    const vehicles = await Vehicle.create({
+      vehicleName,
+      parkingNo,
+      plateNo,
+      brand,
+      description,
+      image,
+      owner: user._id,
+    });
+    // Send a response indicating success
+    res.status(201).json({ status: "ok", vehicles });
+  } catch (error) {
+    // Handle errors
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
+
+app.get("/getVehicle", async (req, res) => {
+  try {
+    const vehicles = await Vehicle.find();
+    res.status(200).json({ status: "ok", vehicles });
+  } catch (error) {
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
+
+
+const Updates = mongoose.model('Updates');
+
+app.post("/addUpdates", authenticateUser,
+async (req, res) => {
+  const { updateSubj, updateType, description, image, token } = req.body;
+  try {
+    // Verify the user's token to get their email
+    const { email } = jwt.verify(token, JWT_SECRET);
+    const user = await User.findOne({ email });
+    const updates = await Updates.create({
+      updateSubj,
+      updateType,
+      description,
+      image,
+      owner: user._id,
+    });
+    // Send a response indicating success
+    res.status(201).json({ status: "ok", updates });
+  } catch (error) {
+    // Handle errors
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
+
+app.get("/getUpdates", async (req, res) => {
+  try {
+    const updates = await Updates.find();
+    res.status(200).json({ status: "ok", updates });
+  } catch (error) {
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
+
+
+
 
 
 
