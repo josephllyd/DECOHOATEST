@@ -23,16 +23,40 @@ const Vehicle = () => {
   const userData = useUserData();
   const theme = useTheme();
   const [users, setUsers] = useState([]);
+  const [user, setUser] = useState({ _id: "", name: "" }); 
+  const [vehicleName, setVehicleName] = useState("");
+  const [parkingNo, setParkingNo] = useState("");
+  const [plateNo, setPlateNo] = useState("");
+  const [brand, setBrand] = useState("");
+  const [date, setDate] = useState("");
+  const [description, setDescription] = useState("");
+  const [image, setImage] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isAddVehicleDialogOpen, setIsAddVehicleDialogOpen] = useState(false);
+  const [vehicles, setVehicles] = useState([]); 
 
-  const [openDialog, setOpenDialog] = useState(false); 
-  const [vehicleData, setVehicleData] = useState({});
+  const handleOpenAddVehicleDialog = () => {
+    setIsAddVehicleDialogOpen(true);
+  };
+
+  const handleCloseAddVehicleDialog = () => {
+    setIsAddVehicleDialogOpen(false);
+    setUser({ _id: "", name: "" });
+    setVehicleName("");
+    setParkingNo("");
+    setPlateNo("");
+    setBrand("");
+    setDate("");
+    setDescription("");
+    setImage("");
+  };
+
 
   useEffect(() => {
-    fetchUsers(setUsers);
-    fetchVehicles();
+    //fetchUsers(setUsers);
+    fetchVehicles(setVehicles);
   }, []);
 
   const handleCardClick = (event, user) => {
@@ -65,44 +89,36 @@ const Vehicle = () => {
       });
   }, []);
 
-  const handleAddVehicleClick = () => {
-    setOpenDialog(true);
-  };
-
-  const handleDialogClose = () => {
-    setOpenDialog(false);
-  };
-
-  const handleAddVehicle = (newVehicleData) => {
-    // Call the API to add a new vehicle
-    addVehicle(newVehicleData);
-    // Close the dialog
-    setOpenDialog(false);
-  };
-
 
   const handleSearch = () => {
-    const filteredUsers = users.filter((user) => {
-      const firstName = user.fname ? user.fname.toLowerCase() : '';
-      const lastName = user.lname ? user.lname.toLowerCase() : '';
-      const email = user.email ? user.email.toLowerCase() : '';
-      const userType = user.userType ? user.userType.toLowerCase() : '';
+  
+    const filteredVehicle = vehicles.filter((vehicle) => {
+      const vehiclesName = vehicle.vehicleName ? vehicle.vehicleName.toLowerCase() : '';
+      const parkingsNumber = vehicle.parkingNo ? vehicle.parkingNo.toLowerCase() : '';
+      const plateNumber = vehicle.plateNo ? vehicle.plateNo.toLowerCase() : '';
+      const vehicleBrand = vehicle.brand ? vehicle.brand.toLowerCase() : '';
+      const vehicleDescription = vehicle.description ? vehicle.description.toLowerCase() : '';
+      const vehicleDate = vehicle.date ? vehicle.date.toLowerCase() : '';
       return (
-        firstName.includes(searchQuery.toLowerCase()) ||
-        lastName.includes(searchQuery.toLowerCase()) ||
-        email.includes(searchQuery.toLowerCase()) ||
-        userType.includes(searchQuery.toLowerCase())
+        vehiclesName.includes(searchQuery.toLowerCase()) ||
+        parkingsNumber.includes(searchQuery.toLowerCase()) ||
+        plateNumber.includes(searchQuery.toLowerCase()) ||
+        vehicleBrand.includes(searchQuery.toLowerCase()) ||
+        vehicleDescription.includes(searchQuery.toLowerCase()) ||
+        vehicleDate.includes(searchQuery.toLowerCase())
       );
     });
-    return filteredUsers;
-  };
+  
+    return filteredVehicle;
+  }; 
+  
 
 
   return (
     <div style={{ flex: 1, padding: "20px", fontSize: "20px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <Fab variant="extended" size="small" color="primary" style={{ background: `#F2643D`, padding: "20px" }}  
-            onClick={handleAddVehicleClick}>
+            onClick={handleOpenAddVehicleDialog}>
           <AddIcon /> Vehicle
         </Fab>
         <FlexBetween
@@ -123,33 +139,47 @@ const Vehicle = () => {
       </div>
       <br />
       <Grid container spacing={2}>
-        {handleSearch().map((user) => (
-          <Grid item key={user.id} xs={12} sm={4} md={2}>
-            <Card style={{ marginBottom: "20px", fontSize: 13 }}>
-              <CardMedia component="img" height="140" image={user.photo} alt="user photo" />
-              <CardContent style={{ fontSize: 13 }}>
-                <div>
-                  <strong>First Name: </strong> {user.fname}
+        {vehicles &&
+         handleSearch().map((vehicle, index) => (
+            <Grid item key={index} xs={12} sm={4} md={2}>
+              <Card style={{ marginBottom: "20px", fontSize: 13 }}>
+                <CardMedia
+                  component="img"
+                  height="140"
+                  src={vehicle.image}
+                  alt="vehicle photo"
+                  onClick={(e) => handleCardClick(e, vehicle)}
+                />
+                <CardContent style={{ fontSize: 13 }}>
+                  <div>
+                    <strong>Vehicle Name: </strong> {vehicle.vehicleName}
+                  </div>
+                  <div>
+                    <strong>Parking No: </strong> {vehicle.parkingNo}
+                  </div>
+                  <div>
+                    <strong>Plate No: </strong> {vehicle.plateNo}
+                  </div>
+                  <div>
+                    <strong>Brand: </strong> {vehicle.brand}
+                  </div>
+                  <div>
+                    <strong>Description: </strong> {vehicle.description}
+                  </div>
+                  <div>
+                    <strong>Date: </strong> {vehicle.date}
+                  </div>
+                </CardContent>
+                <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", padding: "5px", paddingLeft: "13px" }}>
+                  <IconButton onClick={(e) => handleCardClick(e, user)}>
+                    <MoreHorizIcon />
+                  </IconButton>
                 </div>
-                <div>
-                  <strong>Last Name: </strong> {user.lname}
-                </div>
-                <div>
-                  <strong>Email: </strong> {user.email}
-                </div>
-              </CardContent>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px", paddingLeft: "13px" }}>
-                <div>
-                  <strong>Role: </strong> {user.userType}
-                </div>
-                <IconButton onClick={(e) => handleCardClick(e, user)}>
-                  <MoreHorizIcon />
-                </IconButton>
-              </div>
-            </Card>
-          </Grid>
-        ))}
+              </Card>
+            </Grid>
+          ))}
       </Grid>
+
       <Popover
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
@@ -175,12 +205,28 @@ const Vehicle = () => {
 
        {/* Pop-up dialog for vehicle details */}
        <VehicleDialog
-        open={openDialog}
-        onClose={handleDialogClose}
-        onSave={handleAddVehicle}
+          isAddVehicleDialogOpen={isAddVehicleDialogOpen}
+          handleOpenAddVehicleDialog={handleOpenAddVehicleDialog}
+          handleCloseAddVehicleDialog={handleCloseAddVehicleDialog}
+          users={users}
+          user={user}
+          setUser={setUser}
+          vehicleName={vehicleName}
+          setVehicleName={setVehicleName}
+          parkingNo={parkingNo}
+          setParkingNo={setParkingNo}
+          plateNo={plateNo}
+          setPlateNo={setPlateNo}
+          brand={brand}
+          setBrand={setBrand}
+          description={description}
+          setDescription={setDescription}
+          date={date}
+          setDate={setDate}
+          image={image}
+          setImage={setImage}
+          addVehicle={addVehicle}
       />
-
-  
     </div>
   );
 };

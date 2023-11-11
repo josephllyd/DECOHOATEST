@@ -11,6 +11,7 @@ const VehicleSchema = new mongoose.Schema(
     plateNo: String,
     brand: String,
     description: String,
+    date: Date,
     image: String,
   },
   { 

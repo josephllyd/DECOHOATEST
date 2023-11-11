@@ -473,22 +473,23 @@ const Vehicle = mongoose.model('Vehicle');
 
 app.post("/addVehicle", authenticateUser,
 async (req, res) => {
-  const {  vehicleName, parkingNo, plateNo, brand, description, image, token } = req.body;
+  const {  vehicleName, parkingNo, plateNo, brand, description, date, image, token } = req.body;
   try {
     // Verify the user's token to get their email
     const { email } = jwt.verify(token, JWT_SECRET);
     const user = await User.findOne({ email });
-    const vehicles = await Vehicle.create({
+    const vehicle = await Vehicle.create({
       vehicleName,
       parkingNo,
       plateNo,
       brand,
       description,
+      date,
       image,
       owner: user._id,
     });
     // Send a response indicating success
-    res.status(201).json({ status: "ok", vehicles });
+    res.status(201).json({ status: "ok", vehicle });
   } catch (error) {
     // Handle errors
     res.status(500).json({ status: "error", error: error.message });
@@ -497,8 +498,8 @@ async (req, res) => {
 
 app.get("/getVehicle", async (req, res) => {
   try {
-    const vehicles = await Vehicle.find();
-    res.status(200).json({ status: "ok", vehicles });
+    const vehicle = await Vehicle.find();
+    res.status(200).json({ status: "ok", vehicle });
   } catch (error) {
     res.status(500).json({ status: "error", error: error.message });
   }

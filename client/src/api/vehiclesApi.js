@@ -27,31 +27,93 @@ const fetchData = (callback) => {
       });
   };
   
-  const fetchVehicles = (callback) => {
-    const currentHostname = window.location.hostname;
-    let baseUrl = "";
-    if (currentHostname === "localhost") {
-      baseUrl = "http://localhost:5000"; // Local environment
-    } else {
-      baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
+  const fetchVehicles = async (setVehicle) => {
+    try {
+      const currentHostname = window.location.hostname;
+      let baseUrl = "";
+      if (currentHostname === "localhost") {
+        baseUrl = "http://localhost:5000"; // Local environment
+      } else {
+        baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
+      }
+  
+      const getVehicleEndpoint = "/getVehicle";
+      const getVehicleUrl = `${baseUrl}${getVehicleEndpoint}`;
+  
+      const response = await fetch(getVehicleUrl);
+      const data = await response.json();
+  
+      console.log(data.vehicle, "vehicle");
+      console.log(data); // Log the data to see its structure
+  
+      setVehicle(data.vehicle); // Assuming data.vehicle is an array of vehicles
+    } catch (error) {
+      console.error("Error fetching vehicles:", error);
+    }
+  };
+  const addVehicle = async (
+    e,
+    user,
+    vehicleName,
+    parkingNo,
+    plateNo,
+    brand,
+    description,
+    date,
+    image,
+  ) => {
+    e.preventDefault();
+    if (!user || !vehicleName || !parkingNo || !plateNo || !brand || !description || !date ) {
+      alert("All fields are required");
+      return;
     }
   
-    const getVehiclesEndpoint = "/getVehicle";
-    const getVehiclesUrl = `${baseUrl}${getVehiclesEndpoint}`;
+    const newVehicle = {
+      user,
+      vehicleName,
+      parkingNo,
+      plateNo,
+      brand,
+      description,
+      date,
+      image,
+      token: localStorage.getItem("token"),
+    };
   
-    fetch(getVehiclesUrl)
-      .then((res) => res.json())
-      .then((data) => {
-        if (callback && typeof callback === "function") {
-          callback(data); // Call the callback function with the fetched data
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching vehicles:", error);
+    try {
+      const currentHostname = window.location.hostname;
+      let baseUrl = "";
+      if (currentHostname === "localhost") {
+        baseUrl = "http://localhost:5000"; // Local environment
+      } else {
+        baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
+      }
+      const addVehicleEndpoint = "/addVehicle";
+      const addVehicleUrl = `${baseUrl}${addVehicleEndpoint}`;
+      const response = await fetch(addVehicleUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify(newVehicle),
       });
+  
+      const data = await response.json();
+  
+      if (data.status === "ok") {
+        alert("Vehicle added successfully");
+      } else {
+        alert("Failed to add vehicle");
+      }
+    } catch (error) {
+      console.error("Error adding vehicle: ", error);
+      alert("An error occurred while adding vehicle");
+    }
   };
   
-  const addVehicle = (vehicleData) => {
+ /* const addVehicle = (vehicleData) => {
     const currentHostname = window.location.hostname;
     let baseUrl = "";
     if (currentHostname === "localhost") {
@@ -84,7 +146,7 @@ const fetchData = (callback) => {
       .catch((error) => {
         console.error("Error adding vehicle:", error);
       });
-  };
+  }; */
 
 export { fetchData, fetchVehicles, addVehicle };
 
