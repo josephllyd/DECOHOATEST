@@ -11,11 +11,13 @@ import {
   Popover,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import FlexBetween from "components/FlexBetween";
-import { Search } from "@mui/icons-material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { useTheme } from "@mui/material/styles";
+import FlexBetween from "components/FlexBetween";
+import VehicleDialog from "./addVehicleDialog";
 import { fetchUsers, handleEditUser, useUserData } from "api/usersApi";
+import { fetchVehicles, fetchData, addVehicle } from "api/vehiclesApi";
+import { Search } from "@mui/icons-material";
+import { useTheme } from "@mui/material/styles";
 
 const Vehicle = () => {
   const userData = useUserData();
@@ -25,8 +27,12 @@ const Vehicle = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const [openDialog, setOpenDialog] = useState(false); 
+  const [vehicleData, setVehicleData] = useState({});
+
   useEffect(() => {
     fetchUsers(setUsers);
+    fetchVehicles();
   }, []);
 
   const handleCardClick = (event, user) => {
@@ -59,6 +65,22 @@ const Vehicle = () => {
       });
   }, []);
 
+  const handleAddVehicleClick = () => {
+    setOpenDialog(true);
+  };
+
+  const handleDialogClose = () => {
+    setOpenDialog(false);
+  };
+
+  const handleAddVehicle = (newVehicleData) => {
+    // Call the API to add a new vehicle
+    addVehicle(newVehicleData);
+    // Close the dialog
+    setOpenDialog(false);
+  };
+
+
   const handleSearch = () => {
     const filteredUsers = users.filter((user) => {
       const firstName = user.fname ? user.fname.toLowerCase() : '';
@@ -79,7 +101,8 @@ const Vehicle = () => {
   return (
     <div style={{ flex: 1, padding: "20px", fontSize: "20px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Fab variant="extended" size="small" color="primary" style={{ background: `#F2643D`, padding: "20px" }} onClick={() => { }}>
+        <Fab variant="extended" size="small" color="primary" style={{ background: `#F2643D`, padding: "20px" }}  
+            onClick={handleAddVehicleClick}>
           <AddIcon /> Vehicle
         </Fab>
         <FlexBetween
@@ -149,6 +172,13 @@ const Vehicle = () => {
           </div>
         )}
       </Popover>
+
+       {/* Pop-up dialog for vehicle details */}
+       <VehicleDialog
+        open={openDialog}
+        onClose={handleDialogClose}
+        onSave={handleAddVehicle}
+      />
 
   
     </div>
