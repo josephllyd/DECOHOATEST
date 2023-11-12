@@ -488,10 +488,8 @@ async (req, res) => {
       image,
       owner: user._id,
     });
-    // Send a response indicating success
     res.status(201).json({ status: "ok", vehicle });
   } catch (error) {
-    // Handle errors
     res.status(500).json({ status: "error", error: error.message });
   }
 });
@@ -510,9 +508,8 @@ const Updates = mongoose.model('Updates');
 
 app.post("/addUpdates", authenticateUser,
 async (req, res) => {
-  const { updateSubj, updateType, description, image, token } = req.body;
+  const { updateSubj, updateType, description, date, image, token } = req.body;
   try {
-    // Verify the user's token to get their email
     const { email } = jwt.verify(token, JWT_SECRET);
     const user = await User.findOne({ email });
     const updates = await Updates.create({
@@ -520,12 +517,11 @@ async (req, res) => {
       updateType,
       description,
       image,
+      date,
       owner: user._id,
     });
-    // Send a response indicating success
     res.status(201).json({ status: "ok", updates });
   } catch (error) {
-    // Handle errors
     res.status(500).json({ status: "error", error: error.message });
   }
 });

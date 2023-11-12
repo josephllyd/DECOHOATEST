@@ -9,18 +9,14 @@ import {
 } from "@mui/material";
 import UploadImage from "components/UploadImage";
 
-const VehicleDialog = ( props) => {
+const AddUpdatesDialog = ( props) => {
     const {
-        isAddVehicleDialogOpen,
-        handleCloseAddVehicleDialog,
-        vehicleName,
-        setVehicleName,
-        parkingNo,
-        setParkingNo,
-        plateNo,
-        setPlateNo,
-        brand,
-        setBrand,
+        isAddUpdateDialogOpen,
+        handleCloseAddUpdateDialog,
+        updateSubj,
+        setUpdateSubj,
+        updateType,
+        setUpdateType,
         description,
         setDescription,
         date,
@@ -30,15 +26,23 @@ const VehicleDialog = ( props) => {
         users,
         user,
         setUser,
-        addVehicle,
+        addUpdates,
       } = props;
   
 
   return (
-    <Dialog open={isAddVehicleDialogOpen} onClose={handleCloseAddVehicleDialog}>
-        <DialogTitle>Add Vehicle Data</DialogTitle>
+    <Dialog open={isAddUpdateDialogOpen} onClose={handleCloseAddUpdateDialog}>
+        <DialogTitle>Add Update Data</DialogTitle>
         <DialogContent>
-            <form onSubmit={(e) => addVehicle(e, user, vehicleName, parkingNo, plateNo, brand, description, date, image)}>
+            <form onSubmit={(e) => addUpdates( 
+                e,
+                user,
+                updateSubj,
+                updateType,
+                description,
+                date,
+                image,
+                )}>
                 <TextField
                     select
                     label="User"
@@ -62,39 +66,24 @@ const VehicleDialog = ( props) => {
                     ))}
                 </TextField><br/><br/>
                 <TextField
-                    label="Vehicle Name"
+                    label="Update Subject"
                     name="name"
                     type="name"
-                    value={vehicleName}
-                    onChange={(e) => setVehicleName(e.target.value)}
+                    value={updateSubj}
+                    onChange={(e) => setUpdateSubj(e.target.value)}
                     fullWidth required
                 /><br/><br/>
-                <TextField
-                    label="Parking Number"
-                    name="parking number"
+                  <TextField
+                    label="Update Type"
+                    name="name"
                     type="name"
-                    value={parkingNo}
-                    onChange={(e) => setParkingNo(e.target.value)}
+                    value={updateType}
+                    onChange={(e) => setUpdateType(e.target.value)}
                     fullWidth required
                 /><br/><br/>
                 <TextField
-                    label="Plate Number"
-                    name="plate number"
-                    value={plateNo}
-                    onChange={(e) => setPlateNo(e.target.value)}
-                    fullWidth required
-                /><br/><br/>
-                <TextField
-                    label="Vehicle Brand"
-                    name="brand"
-                    type="name"
-                    value={brand}
-                    onChange={(e) => setBrand(e.target.value)}
-                    fullWidth required
-                /><br/><br/>
-                <TextField
-                    label="Vehicle Description"
-                    name="Vehicle Description"
+                    label="Update Description"
+                    name="Update Description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     fullWidth required
@@ -113,7 +102,7 @@ const VehicleDialog = ( props) => {
                 />
         
             <DialogActions>
-            <Button onClick={handleCloseAddVehicleDialog}>Cancel</Button>
+            <Button onClick={handleCloseAddUpdateDialog}>Cancel</Button>
             <Button type="submit" variant="contained" color="primary">
                 Add 
             </Button>
@@ -124,4 +113,4 @@ const VehicleDialog = ( props) => {
   );
 };
 
-export default VehicleDialog;
+export default AddUpdatesDialog;

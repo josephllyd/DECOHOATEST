@@ -9,6 +9,7 @@ const SupportSchema = new mongoose.Schema(
     supportSubj: String,
     supportType: String,
     description: String,
+    date: Date,
     image: String,
   },
   { 

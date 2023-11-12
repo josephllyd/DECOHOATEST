@@ -9,6 +9,7 @@ const UpdatesSchema = new mongoose.Schema(
     updateSubj: String,
     updateType: String,
     description: String,
+    date: Date,
     image: String,
   },
   { 
