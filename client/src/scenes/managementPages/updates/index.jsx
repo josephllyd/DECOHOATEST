@@ -133,7 +133,7 @@ const Update = () => {
       <Grid container spacing={2}>
         {update &&
          handleSearch().map((updates, index) => (
-            <Grid item key={index} xs={12} sm={4} md={2}>
+            <Grid item key={index} xs={12} sm={4} md={4}>
               <Card style={{ marginBottom: "20px", fontSize: 13 }}>
                 <CardMedia
                   component="img"
