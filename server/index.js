@@ -475,7 +475,6 @@ app.post("/addVehicle", authenticateUser,
 async (req, res) => {
   const {  vehicleName, parkingNo, plateNo, brand, description, date, image, token } = req.body;
   try {
-    // Verify the user's token to get their email
     const { email } = jwt.verify(token, JWT_SECRET);
     const user = await User.findOne({ email });
     const vehicle = await Vehicle.create({
@@ -498,6 +497,19 @@ app.get("/getVehicle", async (req, res) => {
   try {
     const vehicle = await Vehicle.find();
     res.status(200).json({ status: "ok", vehicle });
+  } catch (error) {
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
+
+app.delete("/deleteVehicle/:vehicleId", async (req, res) => {
+  const { vehicleId } = req.params;
+  try {
+    const deletedVehicle = await Vehicle.findByIdAndDelete(vehicleId);
+    if (!deletedVehicle) {
+      return res.status(404).json({ status: "Vehicle not found" });
+    }
+    res.status(200).json({ status: "ok", vehicle: deletedVehicle });
   } catch (error) {
     res.status(500).json({ status: "error", error: error.message });
   }
@@ -535,6 +547,18 @@ app.get("/getUpdates", async (req, res) => {
   }
 });
 
+app.delete("/deleteUpdate/:updateId", async (req, res) => {
+  const { updateId } = req.params;
+  try {
+    const deletedUpdate = await Updates.findByIdAndDelete(updateId);
+    if (!deletedUpdate) {
+      return res.status(404).json({ status: "Update not found" });
+    }
+    res.status(200).json({ status: "ok", updates: deletedUpdate });
+  } catch (error) {
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
 
 const Support = mongoose.model('Support');
 
@@ -562,6 +586,19 @@ app.get("/getSupport", async (req, res) => {
   try {
     const support = await Support.find();
     res.status(200).json({ status: "ok", support });
+  } catch (error) {
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
+
+app.delete("/deleteSupport/:supportId", async (req, res) => {
+  const { supportId } = req.params;
+  try {
+    const deletedSupport = await Support.findByIdAndDelete(supportId);
+    if (!deletedSupport) {
+      return res.status(404).json({ status: "Support not found" });
+    }
+    res.status(200).json({ status: "ok", support: deletedSupport });
   } catch (error) {
     res.status(500).json({ status: "error", error: error.message });
   }

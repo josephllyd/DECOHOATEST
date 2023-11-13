@@ -139,18 +139,6 @@ const handleEditFinanceSubmit = (
     .then((data) => {
       if (data.status === "ok") {
         alert("Finance edited successfully");
-        // Update the finance details in the frontend (state)
-       {/* const updatedFinance = {
-          fUser: editedUser,
-          name: editedName,
-          property: editedProperty,
-          amount: editedAmount,
-          paymentType: editedPaymentType,
-          date: editedDate,
-          receipt: editedReceipt,
-          image: editedImage,
-          _id: financeId,
-        }; */}
         const updatedFinances = finance.map((financeItem) => { // 'finance' is not defined here
           if (financeItem._id === financeId) {
             return {

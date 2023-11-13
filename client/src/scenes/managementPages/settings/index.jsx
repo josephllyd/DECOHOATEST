@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import {
+  Alert,
   IconButton,
   useTheme,
-  AppBar,
-  Toolbar,
 } from "@mui/material";
 import { LightModeOutlined, DarkModeOutlined, ExitToApp, DeleteForever } from "@mui/icons-material";
 import FlexBetween from "components/FlexBetween";
@@ -14,11 +13,28 @@ const Settings = () => {
   const dispatch = useDispatch();
   const theme = useTheme();
   const [userData, setUserData] = useState({ fname: "" });
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const logOut = () => {
     window.localStorage.clear();
     window.location.href = "./signin";
   };
+
+  const handleDeleteAccount = () => {
+    setConfirmDelete(true); // Step 2
+  };
+
+  const confirmDeleteAction = async () => {
+    // Perform the deletion action from the database here
+    // You can make a fetch request to your server to delete the account
+    // After successful deletion, clear local storage and navigate to the sign-in page
+    // Example: const deleteResponse = await fetch(deleteEndpoint, deleteOptions);
+    // Handle the response and perform actions accordingly
+
+    window.localStorage.clear();
+    window.location.href = "./signin";
+  };
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,10 +78,9 @@ const Settings = () => {
     };
 
     fetchData();
-  }, []); // Empty dependency array means this effect runs once, similar to componentDidMount
+  }, []); 
 
   return (
-   
             <div style={{ flex: 1, padding: "40px", fontSize: "16px" }}>
               <b> Welcome to Settings Page {userData.fname}! </b>
               <br />
@@ -84,13 +99,24 @@ const Settings = () => {
                 Log Out
               </IconButton>
               <br />  
-              <IconButton onClick={logOut} style={{ textAlign: "left" }}>
+              <IconButton onClick={handleDeleteAccount} style={{ textAlign: "left" }}>
                 <DeleteForever fontSize="large" />
                 Delete Account
               </IconButton>
               <br />
+                {confirmDelete && (
+                  <alert>
+                  
+                    <div>
+                    <p>Are you sure you want to delete your account?</p>
+                    <button onClick={confirmDeleteAction}>Yes, delete</button>
+                    <button onClick={() => setConfirmDelete(false)}>Cancel</button>
+                  </div>
+                
+                  </alert>
+                
+                )}
             </div>
-      
   );
 };
 
