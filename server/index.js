@@ -536,10 +536,39 @@ app.get("/getUpdates", async (req, res) => {
 });
 
 
+const Support = mongoose.model('Support');
+
+app.post("/addSupport", authenticateUser,
+async (req, res) => {
+  const { supportSubj, supportType, description, date, image, token } = req.body;
+  try {
+    const { email } = jwt.verify(token, JWT_SECRET);
+    const user = await User.findOne({ email });
+    const support = await Support.create({
+      supportSubj,
+      supportType,
+      description,
+      date,
+      image,
+      owner: user._id,s
+    });
+    res.status(201).json({ status: "ok", support });
+  } catch (error) {
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
+
+app.get("/getSupport", async (req, res) => {
+  try {
+    const support = await Support.find();
+    res.status(200).json({ status: "ok", support });
+  } catch (error) {
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
 
 
-
-
+//add image
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
