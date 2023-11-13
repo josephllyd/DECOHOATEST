@@ -1,67 +1,97 @@
-import { IconButton } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import {
+  IconButton,
+  useTheme,
+  AppBar,
+  Toolbar,
+} from "@mui/material";
+import { LightModeOutlined, DarkModeOutlined, ExitToApp, DeleteForever } from "@mui/icons-material";
 import FlexBetween from "components/FlexBetween";
-import React, { Component } from "react";
+import { setMode } from "state";  
+import { useDispatch } from "react-redux";
 
-export default class Settings extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      userData: "",
-    };
-  }
-  
-  logOut = () => {
+const Settings = () => {
+  const dispatch = useDispatch();
+  const theme = useTheme();
+  const [userData, setUserData] = useState({ fname: "" });
+
+  const logOut = () => {
     window.localStorage.clear();
     window.location.href = "./signin";
-  }
+  };
 
-  componentDidMount() {
-    const currentHostname = window.location.hostname;
-    let baseUrl = "";
-    if (currentHostname === "localhost") {
-      baseUrl = "http://localhost:5000"; // Local environment
-    } else {
-      baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
-    }
+  useEffect(() => {
+    const fetchData = async () => {
+      const currentHostname = window.location.hostname;
+      let baseUrl = "";
+      if (currentHostname === "localhost") {
+        baseUrl = "http://localhost:5000"; // Local environment
+      } else {
+        baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
+      }
 
-    const userDataEndpoint = "/userData";
-    const userDataUrl = `${baseUrl}${userDataEndpoint}`;
+      const userDataEndpoint = "/userData";
+      const userDataUrl = `${baseUrl}${userDataEndpoint}`;
 
-    fetch(userDataUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({
-        token: window.localStorage.getItem("token"),
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
+      try {
+        const response = await fetch(userDataUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+          body: JSON.stringify({
+            token: window.localStorage.getItem("token"),
+          }),
+        });
+
+        const data = await response.json();
         console.log(data, "userData");
-        this.setState({ userData: data.data });
-        if (data.data === 'token expired') {
+
+        if (data.data === "token expired") {
           alert("Token expired! Log in again.");
           window.localStorage.clear();
           window.location.href = "./signin";
+        } else {
+          setUserData({ fname: data.data.fname });
         }
-      });
-  }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
 
-  render() {
-    return (
-        <FlexBetween>
-            <div style={{ flex: 1, padding: "40px", fontSize: '20px' }}>
-                Welcome to Settings Page {this.state.userData.fname}! 
-                <br/><br/>
-                <IconButton onClick={this.logOut} style={{ textAlign:'left'}}>
-                    Log Out
-                </IconButton>
+    fetchData();
+  }, []); // Empty dependency array means this effect runs once, similar to componentDidMount
+
+  return (
+   
+            <div style={{ flex: 1, padding: "40px", fontSize: "16px" }}>
+              <b> Welcome to Settings Page {userData.fname}! </b>
+              <br />
+              <br />
+              <IconButton onClick={() => dispatch(setMode())}>
+                {theme.palette.mode === "dark" ? (
+                  <DarkModeOutlined sx={{ fontSize: "25px" }} />
+                ) : (
+                  <LightModeOutlined sx={{ fontSize: "25px" }} />
+                )}
+                 Dark Mode/Light Mode 
+              </IconButton>
+              <br />
+              <IconButton onClick={logOut} style={{ textAlign: "left" }}>
+                <ExitToApp fontSize="large" />
+                Log Out
+              </IconButton>
+              <br />  
+              <IconButton onClick={logOut} style={{ textAlign: "left" }}>
+                <DeleteForever fontSize="large" />
+                Delete Account
+              </IconButton>
+              <br />
             </div>
-            
-        </FlexBetween>
-    );
-  }
-}
+      
+  );
+};
+
+export default Settings;
