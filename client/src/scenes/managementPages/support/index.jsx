@@ -11,22 +11,48 @@ import {
   Popover,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import FlexBetween from "components/FlexBetween";
-import { Search } from "@mui/icons-material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { useTheme } from "@mui/material/styles";
+import FlexBetween from "components/FlexBetween";
+import AddSupportDialog from "./addSupport";
 import { fetchUsers, handleEditUser, useUserData } from "api/usersApi";
+import { fetchSupport, addSupport } from "api/supportApi";
+import { Search } from "@mui/icons-material";
+import { useTheme } from "@mui/material/styles";
 
-const Support = () => {
+const Support= () => {
   const userData = useUserData();
   const theme = useTheme();
   const [users, setUsers] = useState([]);
+  const [user, setUser] = useState({ _id: "", name: "" }); 
+  const [supportSubj, setSupportSubj] = useState("");
+  const [supportType, setSupportType] = useState("");
+  const [date, setDate] = useState("");
+  const [description, setDescription] = useState("");
+  const [image, setImage] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isAddSupportDialogOpen, setIsAddSupportDialogOpen] = useState(false);
+  const [support, setSupport] = useState([]); 
+
+  const handleOpenAddSupportDialog = () => {
+    setIsAddSupportDialogOpen(true);
+  };
+
+  const handleCloseAddSupportDialog = () => {
+    setIsAddSupportDialogOpen(false);
+    setUser({ _id: "", name: "" });
+    setSupportSubj("");
+    setSupportType("");
+    setDate("");
+    setDescription("");
+    setImage("");
+  };
+
 
   useEffect(() => {
-    fetchUsers(setUsers);
+    //fetchUsers(setUsers);
+    fetchSupport(setSupport);
   }, []);
 
   const handleCardClick = (event, user) => {
@@ -59,27 +85,32 @@ const Support = () => {
       });
   }, []);
 
+
   const handleSearch = () => {
-    const filteredUsers = users.filter((user) => {
-      const firstName = user.fname ? user.fname.toLowerCase() : '';
-      const lastName = user.lname ? user.lname.toLowerCase() : '';
-      const email = user.email ? user.email.toLowerCase() : '';
-      const userType = user.userType ? user.userType.toLowerCase() : '';
+  
+    const filteredSupport = support.filter((support) => {
+      const supportSubj = support.supportSubj ? support.supportSubj.toLowerCase() : '';
+      const supportType = support.supportType ? support.supportType.toLowerCase() : '';
+      const supportDescription = support.description ? support.description.toLowerCase() : '';
+      const supportDate = support.date ? support.date.toLowerCase() : '';
       return (
-        firstName.includes(searchQuery.toLowerCase()) ||
-        lastName.includes(searchQuery.toLowerCase()) ||
-        email.includes(searchQuery.toLowerCase()) ||
-        userType.includes(searchQuery.toLowerCase())
+        supportSubj.includes(searchQuery.toLowerCase()) ||
+        supportType.includes(searchQuery.toLowerCase()) ||
+        supportDate.includes(searchQuery.toLowerCase()) ||
+        supportDescription.includes(searchQuery.toLowerCase())
       );
     });
-    return filteredUsers;
-  };
+  
+    return filteredSupport;
+  }; 
+  
 
 
   return (
     <div style={{ flex: 1, padding: "20px", fontSize: "20px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Fab variant="extended" size="small" color="primary" style={{ background: `#F2643D`, padding: "20px" }} onClick={() => { }}>
+        <Fab variant="extended" size="small" color="primary" style={{ background: `#F2643D`, padding: "20px" }}  
+            onClick={handleOpenAddSupportDialog}>
           <AddIcon /> Support
         </Fab>
         <FlexBetween
@@ -100,33 +131,41 @@ const Support = () => {
       </div>
       <br />
       <Grid container spacing={2}>
-        {handleSearch().map((user) => (
-          <Grid item key={user.id} xs={12} sm={4} md={2}>
-            <Card style={{ marginBottom: "20px", fontSize: 13 }}>
-              <CardMedia component="img" height="140" image={user.photo} alt="user photo" />
-              <CardContent style={{ fontSize: 13 }}>
-                <div>
-                  <strong>First Name: </strong> {user.fname}
+        {support &&
+         handleSearch().map((support, index) => (
+            <Grid item key={index} xs={12} sm={4} md={2}>
+              <Card style={{ marginBottom: "20px", fontSize: 13 }}>
+                <CardMedia
+                  component="img"
+                  height="140"
+                  src={support.image}
+                  alt="support photo"
+                  onClick={(e) => handleCardClick(e, support)}
+                />
+                <CardContent style={{ fontSize: 13 }}>
+                  <div>
+                    <strong>Support Subject: </strong> {support.supportSubj}
+                  </div>
+                  <div>
+                    <strong> Support Type: </strong> {support.supportType}
+                  </div>
+                  <div>
+                    <strong>Support Description: </strong> {support.description}
+                  </div>
+                  <div>
+                    <strong>Date: </strong> {support.date}
+                  </div>
+                </CardContent>
+                <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", padding: "5px", paddingLeft: "13px" }}>
+                  <IconButton onClick={(e) => handleCardClick(e, user)}>
+                    <MoreHorizIcon />
+                  </IconButton>
                 </div>
-                <div>
-                  <strong>Last Name: </strong> {user.lname}
-                </div>
-                <div>
-                  <strong>Email: </strong> {user.email}
-                </div>
-              </CardContent>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px", paddingLeft: "13px" }}>
-                <div>
-                  <strong>Role: </strong> {user.userType}
-                </div>
-                <IconButton onClick={(e) => handleCardClick(e, user)}>
-                  <MoreHorizIcon />
-                </IconButton>
-              </div>
-            </Card>
-          </Grid>
-        ))}
+              </Card>
+            </Grid>
+          ))}
       </Grid>
+
       <Popover
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
@@ -150,7 +189,26 @@ const Support = () => {
         )}
       </Popover>
 
-  
+       {/* Pop-up dialog for support details */}
+       <AddSupportDialog
+          isAddSupportDialogOpen={isAddSupportDialogOpen}
+          handleOpenAddSupportDialog={handleOpenAddSupportDialog}
+          handleCloseAddSupportDialog={handleCloseAddSupportDialog}
+          users={users}
+          user={user}
+          setUser={setUser}
+          supportSubj={supportSubj}
+          setSupportSubj={setSupportSubj}
+          supportType={supportType}
+          setSupportType={setSupportType}
+          description={description}
+          setDescription={setDescription}
+          date={date}
+          setDate={setDate}
+          image={image}
+          setImage={setImage}
+          addSupport={addSupport}
+      />
     </div>
   );
 };

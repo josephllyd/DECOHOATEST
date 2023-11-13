@@ -550,7 +550,7 @@ async (req, res) => {
       description,
       date,
       image,
-      owner: user._id,s
+      owner: user._id,
     });
     res.status(201).json({ status: "ok", support });
   } catch (error) {
