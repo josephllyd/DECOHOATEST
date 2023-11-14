@@ -516,6 +516,8 @@ app.delete("/deleteVehicle/:vehicleId", async (req, res) => {
 });
 
 
+
+
 const Updates = mongoose.model('Updates');
 
 app.post("/addUpdates", authenticateUser,

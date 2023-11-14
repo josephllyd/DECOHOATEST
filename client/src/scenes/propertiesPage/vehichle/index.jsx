@@ -15,7 +15,7 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import FlexBetween from "components/FlexBetween";
 import VehicleDialog from "./addVehicleDialog";
 import { fetchUsers, handleEditUser, useUserData } from "api/usersApi";
-import { fetchVehicles, fetchData, addVehicle } from "api/vehiclesApi";
+import { fetchVehicles, deleteVehicle, addVehicle } from "api/vehiclesApi";
 import { Search } from "@mui/icons-material";
 import { useTheme } from "@mui/material/styles";
 
@@ -36,6 +36,9 @@ const Vehicle = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddVehicleDialogOpen, setIsAddVehicleDialogOpen] = useState(false);
   const [vehicles, setVehicles] = useState([]); 
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [vehicle, setVehicle] = useState([]);
+
 
   const handleOpenAddVehicleDialog = () => {
     setIsAddVehicleDialogOpen(true);
@@ -59,9 +62,9 @@ const Vehicle = () => {
     fetchVehicles(setVehicles);
   }, []);
 
-  const handleCardClick = (event, user) => {
+  const handleCardClick = (event, selectedVehicle) => {
     setAnchorEl(event.currentTarget);
-    setSelectedUser(user);
+    setSelectedVehicle(selectedVehicle);
   };
 
   const handleClose = () => {
@@ -69,6 +72,16 @@ const Vehicle = () => {
     setSelectedUser(null);
   };
 
+  const handleDeleteVehicle = async () => {
+    console.log("Selected Vehicle:", selectedVehicle);
+    if (selectedVehicle) {
+        deleteVehicle(selectedVehicle, setSelectedVehicle, setVehicles);
+        setAnchorEl(null); // Close the popover after deleting the vehicle
+    }
+  };
+
+
+  
   useEffect(() => {
     const currentHostname = window.location.hostname;
     let baseUrl = "";
@@ -171,7 +184,7 @@ const Vehicle = () => {
                   </div>
                 </CardContent>
                 <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", padding: "5px", paddingLeft: "13px" }}>
-                  <IconButton onClick={(e) => handleCardClick(e, user)}>
+                  <IconButton onClick={(e) => handleCardClick(e, vehicle)}>
                     <MoreHorizIcon />
                   </IconButton>
                 </div>
@@ -193,12 +206,12 @@ const Vehicle = () => {
           horizontal: "center",
         }}
       >
-        {selectedUser && (
+        {selectedVehicle && (
           <div>
-            <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>Edit</MenuItem>
-            <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>Delete</MenuItem>
-            <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>Disable User</MenuItem>
-            <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>View User</MenuItem>
+            <MenuItem onClick={() => handleEditUser(selectedVehicle.id, {})}>Edit</MenuItem>
+            <MenuItem onClick={handleDeleteVehicle}>Delete</MenuItem>
+            <MenuItem onClick={() => handleEditUser(selectedVehicle.id, {})}>Disable User</MenuItem>
+            <MenuItem onClick={() => handleEditUser(selectedVehicle.id, {})}>View User</MenuItem>
           </div>
         )}
       </Popover>

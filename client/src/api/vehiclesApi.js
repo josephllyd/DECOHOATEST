@@ -113,42 +113,56 @@ const fetchData = (callback) => {
     }
   };
   
- /* const addVehicle = (vehicleData) => {
-    const currentHostname = window.location.hostname;
-    let baseUrl = "";
-    if (currentHostname === "localhost") {
-      baseUrl = "http://localhost:5000"; // Local environment
-    } else {
-      baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
-    }
-  
-    const addVehicleEndpoint = "/addVehicle";
-    const addVehicleUrl = `${baseUrl}${addVehicleEndpoint}`;
-  
-    fetch(addVehicleUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify(vehicleData),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === "ok") {
-          console.log("Vehicle added successfully");
-          // Optionally, you can perform additional actions after adding the vehicle
-        } else {
-          console.error("Failed to add vehicle");
-        }
-      })
-      .catch((error) => {
-        console.error("Error adding vehicle:", error);
-      });
-  }; */
 
-export { fetchData, fetchVehicles, addVehicle };
+  const deleteVehicle = async (selectedVehicle, setSelectedVehicle, setVehicles) => {
+    const vehicleId = selectedVehicle._id;
+    if (!vehicleId) {
+      return;
+    }
+    const confirmation = window.confirm("Are you sure you want to delete this vehicle?");
+  
+    if (confirmation) {
+      const vehicleId = selectedVehicle._id;
+      const currentHostname = window.location.hostname;
+      let baseUrl = "";
+      if (currentHostname === "localhost") {
+        baseUrl = "http://localhost:5000"; // Local environment
+      } else {
+        baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
+      }
+  
+      const deleteVehicleEndpoint = `/deleteVehicle/${vehicleId}`; // Include vehicleId in the URL
+      const deleteVehicleUrl = `${baseUrl}${deleteVehicleEndpoint}`;
+  
+      fetch(deleteVehicleUrl, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+          token: localStorage.getItem("token"),
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "ok") {
+            alert("Vehicle deleted successfully");
+            setSelectedVehicle(null);
+            fetchVehicles(setVehicles);
+          } else {
+            alert("Failed to delete vehicle");
+          }
+        })
+        .catch((error) => {
+          console.error("Error deleting vehicle:", error);
+        });
+    }
+  };
+  
+  
+  export { fetchData, fetchVehicles, addVehicle, deleteVehicle };
 
 
   
