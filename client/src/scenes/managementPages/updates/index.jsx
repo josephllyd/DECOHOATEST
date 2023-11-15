@@ -15,7 +15,7 @@
   import FlexBetween from "components/FlexBetween";
   import AddUpdatesDialog from "./addUpdates";
   import { fetchUsers, handleEditUser, useUserData } from "api/usersApi";
-  import {fetchUpdates, addUpdates} from "api/updatesApi"
+  import {fetchUpdates, addUpdates, deleteUpdate} from "api/updatesApi"
   import { Search } from "@mui/icons-material";
   import { useTheme } from "@mui/material/styles";
 
@@ -34,6 +34,7 @@
     const [searchQuery, setSearchQuery] = useState("");
     const [isAddUpdateDialogOpen, setIsAddUpdateDialogOpen] = useState(false);
     const [update, setUpdates] = useState([]); 
+    const [selectedUpdate, setSelectedUpdate] = useState(null);
 
     const handleOpenAddUpdateDialog = () => {
       setIsAddUpdateDialogOpen(true);
@@ -55,14 +56,23 @@
       fetchUpdates(setUpdates);
     }, []);
 
-    const handleCardClick = (event, user) => {
+    const handleCardClick = (event, selectedUpdate) => {
       setAnchorEl(event.currentTarget);
       setSelectedUser(user);
+      setSelectedUpdate(selectedUpdate);
     };
 
     const handleClose = () => {
       setAnchorEl(null);
       setSelectedUser(null);
+    };
+
+    const handleDeleteUpdate = async () => {
+      console.log("Selected Update:", selectedUpdate);
+      if (selectedUpdate) {
+          deleteUpdate(selectedUpdate, setSelectedUpdate, setUpdates);
+          setAnchorEl(null); 
+      }
     };
 
     useEffect(() => {
@@ -157,7 +167,7 @@
                     </div>
                   </CardContent>
                   <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", padding: "5px", paddingLeft: "13px" }}>
-                    <IconButton onClick={(e) => handleCardClick(e, user)}>
+                    <IconButton onClick={(e) => handleCardClick(e, updates)}>
                       <MoreHorizIcon />
                     </IconButton>
                   </div>
@@ -179,10 +189,10 @@
             horizontal: "center",
           }}
         >
-          {selectedUser && (
+          {selectedUpdate && (
             <div>
               <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>Edit</MenuItem>
-              <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>Delete</MenuItem>
+              <MenuItem onClick={handleDeleteUpdate}>Delete</MenuItem>
               <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>Disable User</MenuItem>
               <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>View User</MenuItem>
             </div>

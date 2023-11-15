@@ -562,6 +562,8 @@ app.delete("/deleteUpdate/:updateId", async (req, res) => {
   }
 });
 
+
+
 const Support = mongoose.model('Support');
 
 app.post("/addSupport", authenticateUser,

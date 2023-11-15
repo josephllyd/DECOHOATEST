@@ -15,7 +15,7 @@
   import FlexBetween from "components/FlexBetween";
   import AddSupportDialog from "./addSupport";
   import { fetchUsers, handleEditUser, useUserData } from "api/usersApi";
-  import { fetchSupport, addSupport } from "api/supportApi";
+  import { fetchSupport, addSupport, deleteSupport } from "api/supportApi";
   import { Search } from "@mui/icons-material";
   import { useTheme } from "@mui/material/styles";
 
@@ -34,6 +34,8 @@
     const [searchQuery, setSearchQuery] = useState("");
     const [isAddSupportDialogOpen, setIsAddSupportDialogOpen] = useState(false);
     const [support, setSupport] = useState([]); 
+    const [supports, setSupports] = useState([]); 
+    const [selectedSupport, setSelectedSupport] = useState(null);
 
     const handleOpenAddSupportDialog = () => {
       setIsAddSupportDialogOpen(true);
@@ -55,14 +57,23 @@
       fetchSupport(setSupport);
     }, []);
 
-    const handleCardClick = (event, user) => {
+    const handleCardClick = (event, selectedSupport) => {
       setAnchorEl(event.currentTarget);
       setSelectedUser(user);
+      setSelectedSupport(selectedSupport);
     };
 
     const handleClose = () => {
       setAnchorEl(null);
       setSelectedUser(null);
+    };
+
+    const handleDeleteSupport = async () => {
+      console.log("Selected Support:", selectedSupport);
+      if (selectedSupport) {
+          deleteSupport(selectedSupport, setSelectedSupport, setSupport);
+          setAnchorEl(null); 
+      }
     };
 
     useEffect(() => {
@@ -157,7 +168,7 @@
                     </div>
                   </CardContent>
                   <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", padding: "5px", paddingLeft: "13px" }}>
-                    <IconButton onClick={(e) => handleCardClick(e, user)}>
+                    <IconButton onClick={(e) => handleCardClick(e, support)}>
                       <MoreHorizIcon />
                     </IconButton>
                   </div>
@@ -179,10 +190,10 @@
             horizontal: "center",
           }}
         >
-          {selectedUser && (
+          {selectedSupport && (
             <div>
               <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>Edit</MenuItem>
-              <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>Delete</MenuItem>
+              <MenuItem onClick={handleDeleteSupport}>Delete</MenuItem>
               <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>Disable User</MenuItem>
               <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>View User</MenuItem>
             </div>

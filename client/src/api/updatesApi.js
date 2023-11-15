@@ -81,4 +81,52 @@ const fetchUpdates = async (setUpdates) => {
     }
   };
 
-  export { fetchUpdates, addUpdates};
+  const deleteUpdate = async (selectedUpdate, setSelectedUpdate, setUpdates) => {
+    const updateId = selectedUpdate._id;
+    if (!updateId) {
+      return;
+    }
+    const confirmation = window.confirm("Are you sure you want to delete this Update?");
+  
+    if (confirmation) {
+      const updateId = selectedUpdate._id;
+      const currentHostname = window.location.hostname;
+      let baseUrl = "";
+      if (currentHostname === "localhost") {
+        baseUrl = "http://localhost:5000"; // Local environment
+      } else {
+        baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
+      }
+  
+      const deleteUpdateEndpoint = `/deleteUpdate/${updateId}`; // Include UpdateId in the URL
+      const deleteUpdateUrl = `${baseUrl}${deleteUpdateEndpoint}`;
+  
+      fetch(deleteUpdateUrl, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+          token: localStorage.getItem("token"),
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "ok") {
+            alert("Update deleted successfully");
+            setSelectedUpdate(null);
+            fetchUpdates(setUpdates);
+          } else {
+            alert("Failed to delete Update");
+          }
+        })
+        .catch((error) => {
+          console.error("Error deleting Update:", error);
+        });
+    }
+  };
+  
+
+  export { fetchUpdates, addUpdates, deleteUpdate};

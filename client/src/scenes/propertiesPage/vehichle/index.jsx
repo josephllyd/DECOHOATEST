@@ -76,7 +76,7 @@ const Vehicle = () => {
     console.log("Selected Vehicle:", selectedVehicle);
     if (selectedVehicle) {
         deleteVehicle(selectedVehicle, setSelectedVehicle, setVehicles);
-        setAnchorEl(null); // Close the popover after deleting the vehicle
+        setAnchorEl(null); 
     }
   };
 

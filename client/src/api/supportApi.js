@@ -81,4 +81,51 @@ const fetchSupport = async (setSupport) => {
     }
   };
 
-  export { fetchSupport, addSupport};
+  const deleteSupport = async (selectedSupport, setSelectedSupport, setSupport) => {
+    const supportId = selectedSupport._id;
+    if (!supportId) {
+      return;
+    }
+    const confirmation = window.confirm("Are you sure you want to delete this Support?");
+  
+    if (confirmation) {
+      const supportId = selectedSupport._id;
+      const currentHostname = window.location.hostname;
+      let baseUrl = "";
+      if (currentHostname === "localhost") {
+        baseUrl = "http://localhost:5000"; // Local environment
+      } else {
+        baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
+      }
+  
+      const deleteSupportEndpoint = `/deleteSupport/${supportId}`; // Include SupportId in the URL
+      const deleteSupportUrl = `${baseUrl}${deleteSupportEndpoint}`;
+  
+      fetch(deleteSupportUrl, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+          token: localStorage.getItem("token"),
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "ok") {
+            alert("Support deleted successfully");
+            setSelectedSupport(null);
+            fetchSupport(setSupport);
+          } else {
+            alert("Failed to delete Support");
+          }
+        })
+        .catch((error) => {
+          console.error("Error deleting Support:", error);
+        });
+    }
+  };
+  
+  export { fetchSupport, addSupport, deleteSupport};
