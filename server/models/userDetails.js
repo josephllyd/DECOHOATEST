@@ -1,12 +1,13 @@
 import mongoose from "mongoose";
 
-const UserDetailsScehma = new mongoose.Schema(
+const UserDetailsSchema = new mongoose.Schema(
   {
     fname: String,
     lname: String,
-    email: { 
-      type: String, 
-      unique: true },
+    email: {
+      type: String,
+      unique: true,
+    },
     password: {
       type: String,
       required: true,
@@ -23,8 +24,10 @@ const UserDetailsScehma = new mongoose.Schema(
     },
     userType: String,
   },
-  {collection: "UserInfo"},
-  { timestamps: true}
+  {
+    timestamps: true,
+    collection: "UserInfo", 
+  }
 );
 
-mongoose.model("UserInfo", UserDetailsScehma);
+mongoose.model("UserInfo", UserDetailsSchema);

@@ -247,6 +247,19 @@ app.put("/editUser/:userId", async (req, res) => {
   }
 });
 
+app.delete("/deleteUser/:userId", async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const deletedUser = await User.findByIdAndDelete(userId);
+    if (!deletedUser) {
+      return res.status(404).json({ status: "User not found" });
+    }
+    res.status(200).json({ status: "ok", user: deletedUser });
+  } catch (error) {
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
+
 
 // Import your Property model
 const Property = mongoose.model('Properties');

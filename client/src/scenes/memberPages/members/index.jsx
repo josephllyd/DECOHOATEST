@@ -30,9 +30,11 @@ const Members = () => {
   }, []);
 
   const handleCardClick = (event, user) => {
+    console.log("Clicked User:", user);
     setAnchorEl(event.currentTarget);
     setSelectedUser(user);
   };
+  
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -74,6 +76,64 @@ const Members = () => {
     });
     return filteredUsers;
   };
+
+  useEffect(() => {
+    console.log("Selected User:", selectedUser);
+    if (selectedUser && selectedUser.id) {
+      // The user has been selected, you can perform actions here
+      // For example, you can fetch additional data or update the UI
+    }
+  }, [selectedUser]);
+  
+  
+
+  const handleDeleteUser = () => {
+    if (!selectedUser || !selectedUser._id) {
+      console.error("Invalid user or user ID");
+      return;
+    }
+
+    const confirmation = window.confirm("Are you sure you want to delete this vehicle?");
+    
+    if (confirmation) {
+      const currentHostname = window.location.hostname;
+      let baseUrl = "";
+      if (currentHostname === "localhost") {
+        baseUrl = "http://localhost:5000"; // Local environment
+      } else {
+        baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
+      }
+    
+      const deleteUserEndpoint = `/deleteUser/${selectedUser._id}`;
+      const deleteUserUrl = `${baseUrl}${deleteUserEndpoint}`;
+    
+      fetch(deleteUserUrl, {
+        method: "DELETE",
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! Status: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then((data) => {
+          console.log(data); // Handle the response data accordingly
+          // Fetch the updated list of users after deletion
+          fetchUsers(setUsers);
+          // Reset the selected user after deletion
+          setSelectedUser(null);
+        })
+        .catch((error) => {
+          console.error("Error:", error.message);
+          // Handle the error, show a message to the user, or log it for debugging
+      });
+    }
+  };
+  
+
+  
+  
+  
 
 
   return (
@@ -143,7 +203,8 @@ const Members = () => {
         {selectedUser && (
           <div>
             <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>Edit</MenuItem>
-            <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>Delete</MenuItem>
+            <MenuItem onClick={() => handleDeleteUser(selectedUser._id)}>Delete</MenuItem>
+
             <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>Disable User</MenuItem>
             <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>View User</MenuItem>
           </div>
