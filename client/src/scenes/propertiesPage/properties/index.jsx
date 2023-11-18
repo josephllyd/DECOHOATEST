@@ -52,7 +52,6 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 const Properties = () => {
   const [isAddPropertyDialogOpen, setIsAddPropertyDialogOpen] = useState(false);
   const [users, setUsers] = useState([]);
-  //const [user, setUser] = useState({ _id: "", name: "" }); 
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
@@ -113,10 +112,6 @@ const Properties = () => {
     setCategory("");
     setImage("");
   };
-
-  {/* const handleSubmit = (e) => {
-    handleSubmit(name, price, description, category, image);
-  }; */}
 
    const handleSubmit = (e) => {
     e.preventDefault();

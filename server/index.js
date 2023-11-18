@@ -149,7 +149,6 @@ app.post("/forgot-password", async (req, res) => {
           process.env.NODE_ENV === 'production'
             ? `${vercelEnvironment}/reset-password/${oldUser._id}/${token}`
             : `${localEnvironment}/reset-password/${oldUser._id}/${token}`;
-    //const link = `http://localhost:5000/reset-password/${oldUser._id}/${token}`;
     var transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -261,10 +260,8 @@ app.delete("/deleteUser/:userId", async (req, res) => {
 });
 
 
-// Import your Property model
 const Property = mongoose.model('Properties');
 
-// Middleware to extract user information from JWT
 const authenticateUser = (req, res, next) => {
   const { token } = req.body;
   if (token) {
@@ -285,7 +282,6 @@ app.post("/addProperty", authenticateUser,
 async (req, res) => {
   const { name, price, description, category, image, token } = req.body;
   try {
-    // Verify the user's token to get their email
     const { email } = jwt.verify(token, JWT_SECRET);
     const user = await User.findOne({ email });
     const property = await Property.create({
@@ -296,10 +292,8 @@ async (req, res) => {
       image,
       owner: user._id,
     });
-    // Send a response indicating success
     res.status(201).json({ status: "ok", property });
   } catch (error) {
-    // Handle errors
     res.status(500).json({ status: "error", error: error.message });
   }
 });
@@ -327,8 +321,6 @@ app.delete("/deleteProperty/:propertyId", async (req, res) => {
   }
 });
 
-
-
 app.get("/getUsers", async (req, res) => {
   try {
     const users = await User.find();
@@ -340,7 +332,6 @@ app.get("/getUsers", async (req, res) => {
     res.status(500).json({ status: "error", error: error.message });
   }
 });
-
 
 app.get("/searchProperties", async (req, res) => {
   try {
@@ -372,20 +363,16 @@ app.put("/editProperty/:propertyId", authenticateUser, async (req, res) => {
       return res.status(404).json({ status: "Property not found" });
     }
 
-    // Update the property details
     property.name = name;
     property.price = price;
     property.description = description;
     property.category = category;
     property.image = image;
 
-    // Save the updated property
     await property.save();
 
-    // Send a response indicating success
     res.status(200).json({ status: "ok", property });
   } catch (error) {
-    // Handle errors
     res.status(500).json({ status: "error", error: error.message });
   }
 });
@@ -661,21 +648,18 @@ const uploadMultipleImages = (images) => {
 };
  
 app.use(bodyParser.json());
-
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   next();
 });
 
 app.post("/uploadImage", (req, res) => {
-  // Implement the uploadImage function to handle the image upload
   uploadImage(req.body.image)
     .then((url) => res.json({ url })) // Return a JSON response with the URL
     .catch((err) => res.status(500).json({ error: err.message })); // Return a JSON error response
 });
 
 app.post("/uploadMultipleImages", (req, res) => {
-  // Implement the uploadMultipleImages function to handle multiple image uploads
   uploadMultipleImages(req.body.images)
     .then((urls) => res.json({ urls })) // Return a JSON response with the URLs
     .catch((err) => res.status(500).json({ error: err.message })); // Return a JSON error response

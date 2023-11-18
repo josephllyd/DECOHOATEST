@@ -130,12 +130,6 @@ const Members = () => {
     }
   };
   
-
-  
-  
-  
-
-
   return (
     <div style={{ flex: 1, padding: "20px", fontSize: "20px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
