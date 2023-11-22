@@ -121,7 +121,7 @@ const Members = () => {
           // Fetch the updated list of users after deletion
           fetchUsers(setUsers);
           // Reset the selected user after deletion
-          setSelectedUser(null);
+         // setSelectedUser(null);
         })
         .catch((error) => {
           console.error("Error:", error.message);
@@ -211,26 +211,3 @@ const Members = () => {
 };
 
 export default Members;
-
-   /* <TableContainer component={Card} style={{ background: "none" }}>
-        <Table>
-          <TableHead>
-            <TableRow style={{ background: "#333" }}>
-              <TableCell style={{ fontWeight: 'bold', color: 'white' }}>First Name</TableCell>
-              <TableCell style={{ fontWeight: 'bold', color: 'white' }}>Last Name</TableCell>
-              <TableCell style={{ fontWeight: 'bold', color: 'white' }}>Email</TableCell>
-              <TableCell style={{ fontWeight: 'bold', color: 'white' }}>User Type</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {handleSearch().map((user, index) => (
-              <TableRow key={index}>
-                <TableCell>{user.fname}</TableCell>
-                <TableCell>{user.lname}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.userType}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer> */
