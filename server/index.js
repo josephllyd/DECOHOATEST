@@ -515,7 +515,37 @@ app.delete("/deleteVehicle/:vehicleId", async (req, res) => {
   }
 });
 
+app.put("/editVehicle/:vehicleId", authenticateUser, async (req, res) => {
+  const { vehicleId } = req.params;
+  const {  vehicleName, parkingNo, plateNo, brand, description, date, image, token } = req.body;
 
+  try {
+    // Verify the user's token to get their email
+    const { email } = jwt.verify(token, JWT_SECRET);s
+    const user = await User.findOne({ email });
+
+    // Find the vehicle by ID and owner
+    const vehicle = await Vehicle.findOne({ _id: vehicleId, owner: user._id });
+
+    if (!vehicle) {
+      return res.status(404).json({ status: "Vehicle not found" });
+    }
+
+    vehicle.vehicleName = vehicleName;
+    vehicle.parkingNo = parkingNo;
+    vehicle.plateNo = plateNo;
+    vehicle.brand = brand;
+    vehicle.description = description;
+    vehicle.date = date;
+    vehicle.image = image;
+
+    await vehicle.save();
+
+    res.status(200).json({ status: "ok", vehicle });
+  } catch (error) {
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
 
 
 const Updates = mongoose.model('Updates');
@@ -561,6 +591,37 @@ app.delete("/deleteUpdate/:updateId", async (req, res) => {
     res.status(500).json({ status: "error", error: error.message });
   }
 });
+
+app.put("/editUpdate/:updateId", authenticateUser, async (req, res) => {
+  const { updateId } = req.params;
+  const {updateSubj, updateType, description, date, image, token } = req.body;
+
+  try {
+    // Verify the user's token to get their email
+    const { email } = jwt.verify(token, JWT_SECRET);s
+    const user = await User.findOne({ email });
+
+    // Find the update by ID and owner
+    const update = await Updates.findOne({ _id: updateId, owner: user._id });
+
+    if (!update) {
+      return res.status(404).json({ status: "update not found" });
+    }
+
+    update.updateSubj = updateSubj;
+    update.updateType = updateType;
+    update.description = description;
+    update.date = date;
+    update.image = image;
+
+    await update.save();
+
+    res.status(200).json({ status: "ok", update });
+  } catch (error) {
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
+
 
 
 
@@ -608,6 +669,35 @@ app.delete("/deleteSupport/:supportId", async (req, res) => {
   }
 });
 
+app.put("/editSupport/:supportId", authenticateUser, async (req, res) => {
+  const { supportId } = req.params;
+  const { supportSubj, supportType, description, date, image, token } = req.body;
+
+  try {
+    // Verify the user's token to get their email
+    const { email } = jwt.verify(token, JWT_SECRET);s
+    const user = await User.findOne({ email });
+
+    // Find the support by ID and owner
+    const support = await Support.findOne({ _id: supportId, owner: user._id });
+
+    if (!support) {
+      return res.status(404).json({ status: "Support not found" });
+    }
+
+    support.supportSubj = supportSubj;
+    support.supportType = supportType;
+    support.description = description;
+    support.date = date;
+    support.image = image;
+
+    await support.save();
+
+    res.status(200).json({ status: "ok", support });
+  } catch (error) {
+    res.status(500).json({ status: "error", error: error.message });
+  }
+});
 
 //add image
 import { v2 as cloudinary } from "cloudinary";

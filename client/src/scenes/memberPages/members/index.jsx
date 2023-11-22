@@ -77,13 +77,13 @@ const Members = () => {
     return filteredUsers;
   };
 
-  useEffect(() => {
+  /*useEffect(() => {
     console.log("Selected User:", selectedUser);
     if (selectedUser && selectedUser.id) {
       // The user has been selected, you can perform actions here
       // For example, you can fetch additional data or update the UI
     }
-  }, [selectedUser]);
+  }, [selectedUser]); */
   
   
 
@@ -117,15 +117,12 @@ const Members = () => {
           return res.json();
         })
         .then((data) => {
-          console.log(data); // Handle the response data accordingly
-          // Fetch the updated list of users after deletion
+          console.log(data); 
           fetchUsers(setUsers);
-          // Reset the selected user after deletion
          // setSelectedUser(null);
         })
         .catch((error) => {
           console.error("Error:", error.message);
-          // Handle the error, show a message to the user, or log it for debugging
       });
     }
   };
