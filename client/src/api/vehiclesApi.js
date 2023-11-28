@@ -160,9 +160,45 @@ const fetchData = (callback) => {
         });
     }
   };
+
   
-  
-  export { fetchData, fetchVehicles, addVehicle, deleteVehicle };
+const editVehicle = async (vehicleId, editedVehicle) => {
+  try {
+    const currentHostname = window.location.hostname;
+    let baseUrl = "";
+    if (currentHostname === "localhost") {
+      baseUrl = "http://localhost:5000"; // Local environment
+    } else {
+      baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
+    }
+
+    const editVehicleEndpoint = `/editVehicle/${vehicleId}`;
+    const editVehicleUrl = `${baseUrl}${editVehicleEndpoint}`;
+
+    const response = await fetch(editVehicleUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify(editedVehicle),
+    });
+
+    const data = await response.json();
+
+    if (data.status === "ok") {
+      alert("Vehicle updated successfully");
+    } else {
+      alert("Failed to update vehicle");
+    }
+  } catch (error) {
+    console.error("Error updating vehicle: ", error);
+    alert("An error occurred while updating vehicle");
+  }
+};
+
+  export { fetchData, fetchVehicles, addVehicle, deleteVehicle, editVehicle };
 
 
   

@@ -521,7 +521,7 @@ app.put("/editVehicle/:vehicleId", authenticateUser, async (req, res) => {
 
   try {
     // Verify the user's token to get their email
-    const { email } = jwt.verify(token, JWT_SECRET);s
+    const { email } = jwt.verify(token, JWT_SECRET);
     const user = await User.findOne({ email });
 
     // Find the vehicle by ID and owner
@@ -598,7 +598,7 @@ app.put("/editUpdate/:updateId", authenticateUser, async (req, res) => {
 
   try {
     // Verify the user's token to get their email
-    const { email } = jwt.verify(token, JWT_SECRET);s
+    const { email } = jwt.verify(token, JWT_SECRET);
     const user = await User.findOne({ email });
 
     // Find the update by ID and owner
@@ -675,7 +675,7 @@ app.put("/editSupport/:supportId", authenticateUser, async (req, res) => {
 
   try {
     // Verify the user's token to get their email
-    const { email } = jwt.verify(token, JWT_SECRET);s
+    const { email } = jwt.verify(token, JWT_SECRET);
     const user = await User.findOne({ email });
 
     // Find the support by ID and owner

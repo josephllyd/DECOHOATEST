@@ -9,17 +9,26 @@ import {
   IconButton,
   MenuItem,
   Popover,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  Button,
+  DialogActions,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import FlexBetween from "components/FlexBetween";
 import VehicleDialog from "./addVehicleDialog";
 import { fetchUsers, handleEditUser, useUserData } from "api/usersApi";
-import { fetchVehicles, deleteVehicle, addVehicle } from "api/vehiclesApi";
+import { fetchVehicles, deleteVehicle, addVehicle, editVehicle } from "api/vehiclesApi";
 import { Search } from "@mui/icons-material";
 import { useTheme } from "@mui/material/styles";
+import UploadImage from "components/UploadImage";
 
 const Vehicle = () => {
+
+  
   const userData = useUserData();
   const theme = useTheme();
   const [users, setUsers] = useState([]);
@@ -38,6 +47,8 @@ const Vehicle = () => {
   const [vehicles, setVehicles] = useState([]); 
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [vehicle, setVehicle] = useState([]);
+  const [isEditPropertyDialogOpen, setIsEditPropertyDialogOpen] = useState(false);
+
 
 
   const handleOpenAddVehicleDialog = () => {
@@ -56,15 +67,16 @@ const Vehicle = () => {
     setImage("");
   };
 
-
   useEffect(() => {
     //fetchUsers(setUsers);
     fetchVehicles(setVehicles);
   }, []);
 
   const handleCardClick = (event, selectedVehicle) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedVehicle(selectedVehicle);
+    if (selectedVehicle) {
+      setAnchorEl(event.currentTarget);
+      setSelectedVehicle(selectedVehicle);
+    }
   };
 
   const handleClose = () => {
@@ -73,13 +85,13 @@ const Vehicle = () => {
   };
 
   const handleDeleteVehicle = async () => {
-    console.log("Selected Vehicle:", selectedVehicle);
-    if (selectedVehicle) {
-        deleteVehicle(selectedVehicle, setSelectedVehicle, setVehicles);
-        setAnchorEl(null); 
+    if (selectedVehicle && selectedVehicle._id) {
+      console.log("Selected Vehicle:", selectedVehicle);
+      deleteVehicle(selectedVehicle, setSelectedVehicle, setVehicles);
+      setAnchorEl(null);
     }
   };
-
+  
 
   
   useEffect(() => {
@@ -124,9 +136,54 @@ const Vehicle = () => {
   
     return filteredVehicle;
   }; 
-  
 
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+    const [editedVehicleName, setEditedVehicleName] = useState("");
+    const [editedParkingNo, setEditedParkingNo] = useState("");
+    const [editedPlateNo, setEditedPlateNo] = useState("");
+    const [editedBrand, setEditedBrand] = useState("");
+    const [editedDate, setEditedDate] = useState("");
+    const [editedDescription, setEditedDescription] = useState("");
+    const [editedImage, setEditedImage] = useState("");
 
+    const handleOpenEditDialog = (selectedVehicle) => {
+      setIsEditDialogOpen(true);
+      setEditedVehicleName(selectedVehicle.vehicleName);
+      setEditedParkingNo(selectedVehicle.parkingNo);
+      setEditedPlateNo(selectedVehicle.plateNo);
+      setEditedBrand(selectedVehicle.brand);
+      setEditedDate(selectedVehicle.date);
+      setEditedDescription(selectedVehicle.description);
+      setEditedImage(selectedVehicle.image);
+      setSelectedVehicle(selectedVehicle);
+    };
+
+    const closeEditPropertyDialog = () => {
+      setIsEditDialogOpen(false);
+    };
+
+    const handleEditVehicle = async () => {
+      const editedVehicle = {
+        vehicleName: editedVehicleName,
+        parkingNo: editedParkingNo,
+        plateNo: editedPlateNo,
+        brand: editedBrand,
+        date: editedDate,
+        description: editedDescription,
+        image: editedImage,
+        token: localStorage.getItem("token"),
+      };
+    
+      await editVehicle(selectedVehicle._id, editedVehicle);
+    
+      // Close the edit dialog and update the vehicles list
+      setIsEditDialogOpen(false);
+      fetchVehicles(setVehicles);
+    };
+
+    const vehicleId = selectedVehicle ? selectedVehicle._id : null;
+    console.log("selectedVehicle:", selectedVehicle);
+    
   return (
     <div style={{ flex: 1, padding: "20px", fontSize: "20px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -183,11 +240,13 @@ const Vehicle = () => {
                     <strong>Date: </strong> {vehicle.date}
                   </div>
                 </CardContent>
-                <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", padding: "5px", paddingLeft: "13px" }}>
-                  <IconButton onClick={(e) => handleCardClick(e, vehicle)}>
-                    <MoreHorizIcon />
-                  </IconButton>
-                </div>
+                  <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", padding: "5px", paddingLeft: "13px" }}>
+                    {selectedVehicle && (
+                      <IconButton onClick={(e) => handleCardClick(e, vehicle)}>
+                        <MoreHorizIcon />
+                      </IconButton>
+                    )}
+                  </div>
               </Card>
             </Grid>
           ))}
@@ -208,7 +267,7 @@ const Vehicle = () => {
       >
         {selectedVehicle && (
           <div>
-            <MenuItem onClick={() => handleEditUser(selectedVehicle.id, {})}>Edit</MenuItem>
+            <MenuItem onClick={() => handleOpenEditDialog(selectedVehicle)}>Edit</MenuItem>
             <MenuItem onClick={handleDeleteVehicle}>Delete</MenuItem>
             <MenuItem onClick={() => handleEditUser(selectedVehicle.id, {})}>Disable User</MenuItem>
             <MenuItem onClick={() => handleEditUser(selectedVehicle.id, {})}>View User</MenuItem>
@@ -240,6 +299,92 @@ const Vehicle = () => {
           setImage={setImage}
           addVehicle={addVehicle}
       />
+
+      {/* Edit vehicle dialog 
+        <VehicleDialog
+          selectedVehicle={selectedVehicle}
+          isOpen={isEditDialogOpen}
+          handleClose={() => setIsEditDialogOpen(false)}
+          handleSave={handleEditVehicle}
+          // Pass the edited values to the dialog
+          vehicleName={editedVehicleName}
+          setVehicleName={setEditedVehicleName}
+          parkingNo={editedParkingNo}
+          setParkingNo={setEditedParkingNo}
+          plateNo={editedPlateNo}
+          setPlateNo={setEditedPlateNo}
+          brand={editedBrand}
+          setBrand={setEditedBrand}
+          description={editedDescription}
+          setDescription={setEditedDescription}
+          date={editedDate}
+          setDate={setEditedDate}
+          image={editedImage}
+          setImage={setEditedImage}
+        /> */}
+
+          {/*Edit property diaglog*/}
+      <Dialog
+        open={isEditDialogOpen}
+        onClose={closeEditPropertyDialog}
+      >
+        <DialogTitle sx={{ fontWeight: 'bold' }}>Edit Property</DialogTitle>
+        <DialogContent>
+          <form onSubmit={handleEditVehicle}>
+          <TextField
+                    label="Vehicle Name"
+                    name="name"
+                    type="name"
+                    value={editedVehicleName}
+                    onChange={(e) => setEditedVehicleName(e.target.value)}
+                    fullWidth required
+                /><br/><br/>
+                <TextField
+                    label="Parking Number"
+                    name="parking number"
+                    type="name"
+                    value={editedParkingNo}
+                    onChange={(e) => setEditedParkingNo(e.target.value)}
+                    fullWidth required
+                /><br/><br/>
+                <TextField
+                    label="Plate Number"
+                    name="plate number"
+                    value={editedPlateNo}
+                    onChange={(e) => setEditedPlateNo(e.target.value)}
+                    fullWidth required
+                /><br/><br/>
+                <TextField
+                    label="Vehicle Brand"
+                    name="brand"
+                    type="name"
+                    value={editedBrand}
+                    onChange={(e) => setEditedBrand(e.target.value)}
+                    fullWidth required
+                /><br/><br/>
+                <TextField
+                    label="Vehicle Description"
+                    name="Vehicle Description"
+                    value={editedDescription}
+                    onChange={(e) => setEditedDescription(e.target.value)}
+                    fullWidth required
+                /><br/><br/>
+                <UploadImage 
+                    value={image}
+                    onImageChange={(url) => setImage(url)}
+                />
+            <DialogActions>
+              <Button onClick={closeEditPropertyDialog} color="primary">
+                Cancel
+              </Button>
+              <Button type="submit" color="primary">
+                Save Changes
+              </Button>
+            </DialogActions>
+          </form>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 };
