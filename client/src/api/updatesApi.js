@@ -127,6 +127,42 @@ const fetchUpdates = async (setUpdates) => {
         });
     }
   };
+
+  const editUpdate = async (updateId, editedUpdate) => {
+    try {
+      const currentHostname = window.location.hostname;
+      let baseUrl = "";
+      if (currentHostname === "localhost") {
+        baseUrl = "http://localhost:5000"; // Local environment
+      } else {
+        baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
+      }
+  
+      const editUpdateEndpoint = `/editUpdate/${updateId}`;
+      const editUpdateUrl = `${baseUrl}${editUpdateEndpoint}`;
+  
+      const response = await fetch(editUpdateUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify(editedUpdate),
+      });
+  
+      const data = await response.json();
+  
+      if (data.status === "ok") {
+        alert("Update updated successfully");
+      } else {
+        alert("Failed to update update");
+      }
+    } catch (error) {
+      console.error("Error updating update: ", error);
+      alert("An error occurred while updating update");
+    }
+  };
   
 
-  export { fetchUpdates, addUpdates, deleteUpdate};
+  export { fetchUpdates, addUpdates, deleteUpdate, editUpdate};

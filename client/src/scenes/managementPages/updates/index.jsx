@@ -9,15 +9,22 @@
     IconButton,
     MenuItem,
     Popover,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    TextField,
+    DialogActions,
+    Button,
   } from "@mui/material";
   import AddIcon from "@mui/icons-material/Add";
   import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
   import FlexBetween from "components/FlexBetween";
   import AddUpdatesDialog from "./addUpdates";
   import { fetchUsers, handleEditUser, useUserData } from "api/usersApi";
-  import {fetchUpdates, addUpdates, deleteUpdate} from "api/updatesApi"
+  import {fetchUpdates, addUpdates, deleteUpdate, editUpdate} from "api/updatesApi"
   import { Search } from "@mui/icons-material";
   import { useTheme } from "@mui/material/styles";
+import UploadImage from "components/UploadImage";
 
   const Update = () => {
     const userData = useUserData();
@@ -35,6 +42,43 @@
     const [isAddUpdateDialogOpen, setIsAddUpdateDialogOpen] = useState(false);
     const [update, setUpdates] = useState([]); 
     const [selectedUpdate, setSelectedUpdate] = useState(null);
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+    const [editedUpdateSubj, setEditedUpdateSubj] = useState("");
+    const [editedUpdateType, setEditedUpdateType] = useState("");
+    const [editedDate, setEditedDate] = useState("");
+    const [editedDescription, setEditedDescription] = useState("");
+    const [editedImage, setEditedImage] = useState("");
+
+    const handleOpenEditDialog = (selectedUpdate) => {
+      setIsEditDialogOpen(true);
+      setEditedUpdateSubj(selectedUpdate.updateSubj);
+      setEditedUpdateType(selectedUpdate.updateType);
+      setEditedDate(selectedUpdate.date);
+      setEditedDescription(selectedUpdate.description);
+      setEditedImage(selectedUpdate.image);
+      setSelectedUpdate(selectedUpdate);
+    };
+
+    const closeEditPropertyDialog = () => {
+      setIsEditDialogOpen(false);
+    };
+
+    const handleEditUpdate = async () => {
+      const editedUpdate = {
+        updateSubj: editedUpdateSubj,
+        updateType: editedUpdateType,
+        date: editedDate,
+        description: editedDescription,
+        image: editedImage,
+        token: localStorage.getItem("token"),
+      };
+    
+      await editUpdate(selectedUpdate._id, editedUpdate);
+    
+      // Close the edit dialog and update the Updates list
+      setIsEditDialogOpen(false);
+      fetchUpdates(setUpdates);
+    };
 
     const handleOpenAddUpdateDialog = () => {
       setIsAddUpdateDialogOpen(true);
@@ -191,7 +235,7 @@
         >
           {selectedUpdate && (
             <div>
-              <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>Edit</MenuItem>
+              <MenuItem onClick={() => handleOpenEditDialog(selectedUpdate)}>Edit</MenuItem>
               <MenuItem onClick={handleDeleteUpdate}>Delete</MenuItem>
               <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>Disable User</MenuItem>
               <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>View User</MenuItem>
@@ -219,6 +263,53 @@
             setImage={setImage}
             addUpdates={addUpdates}
         />
+
+             {/*Edit property diaglog*/}
+      <Dialog
+        open={isEditDialogOpen}
+        onClose={closeEditPropertyDialog}
+      >
+        <DialogTitle sx={{ fontWeight: 'bold' }}>Edit Property</DialogTitle>
+        <DialogContent>
+          <form onSubmit={handleEditUpdate}>
+          <TextField
+                    label="Update Subject"
+                    name="name"
+                    type="name"
+                    value={editedUpdateSubj}
+                    onChange={(e) => setEditedUpdateSubj(e.target.value)}
+                    fullWidth required
+                /><br/><br/>
+                <TextField
+                    label="Update Type"
+                    name="name"
+                    type="name"
+                    value={editedUpdateType}
+                    onChange={(e) => setEditedUpdateType(e.target.value)}
+                    fullWidth required
+                /><br/><br/>
+                <TextField
+                    label="Update Description"
+                    name="Update Description"
+                    value={editedDescription}
+                    onChange={(e) => setEditedDescription(e.target.value)}
+                    fullWidth required
+                /><br/><br/>
+                <UploadImage 
+                    value={image}
+                    onImageChange={(url) => setImage(url)}
+                />
+            <DialogActions>
+              <Button onClick={closeEditPropertyDialog} color="primary">
+                Cancel
+              </Button>
+              <Button type="submit" color="primary">
+                Save Changes
+              </Button>
+            </DialogActions>
+          </form>
+        </DialogContent>
+      </Dialog>
       </div>
     );
   };

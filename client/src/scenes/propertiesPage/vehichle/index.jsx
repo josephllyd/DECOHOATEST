@@ -300,29 +300,6 @@ const Vehicle = () => {
           addVehicle={addVehicle}
       />
 
-      {/* Edit vehicle dialog 
-        <VehicleDialog
-          selectedVehicle={selectedVehicle}
-          isOpen={isEditDialogOpen}
-          handleClose={() => setIsEditDialogOpen(false)}
-          handleSave={handleEditVehicle}
-          // Pass the edited values to the dialog
-          vehicleName={editedVehicleName}
-          setVehicleName={setEditedVehicleName}
-          parkingNo={editedParkingNo}
-          setParkingNo={setEditedParkingNo}
-          plateNo={editedPlateNo}
-          setPlateNo={setEditedPlateNo}
-          brand={editedBrand}
-          setBrand={setEditedBrand}
-          description={editedDescription}
-          setDescription={setEditedDescription}
-          date={editedDate}
-          setDate={setEditedDate}
-          image={editedImage}
-          setImage={setEditedImage}
-        /> */}
-
           {/*Edit property diaglog*/}
       <Dialog
         open={isEditDialogOpen}
