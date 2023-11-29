@@ -165,4 +165,9 @@ const fetchUpdates = async (setUpdates) => {
   };
   
 
-  export { fetchUpdates, addUpdates, deleteUpdate, editUpdate};
+  export { 
+    fetchUpdates, 
+    addUpdates, 
+    deleteUpdate, 
+    editUpdate
+  };

@@ -567,7 +567,7 @@ const Properties = () => {
                 <MenuItem value="1 Bedroom Unit">1 Bedroom Unit</MenuItem>
                 <MenuItem value="Studio Unit">Studio Unit</MenuItem>
               </Select>
-            </FormControl>
+            </FormControl><br/><br/>
             <TextField
               label="Name"
               type="text"
@@ -576,7 +576,7 @@ const Properties = () => {
               onChange={(e) => setEditedName(e.target.value)}
               fullWidth
               required
-            />
+            /><br/><br/>
             <TextField
               label="Price"
               type="number"
@@ -585,7 +585,7 @@ const Properties = () => {
               onChange={(e) => setEditedPrice(e.target.value)}
               fullWidth
               required
-            />
+            /><br/><br/>
             <TextField
               label="Description"
               type="text"
@@ -594,11 +594,11 @@ const Properties = () => {
               onChange={(e) => setEditedDescription(e.target.value)}
               fullWidth
               required
-            />
+            /><br/><br/>
                <UploadImage  
                 value={editedImage}
                 onImageChange={(url) => setEditedImage(url)}
-              />
+              /><br/><br/>
             <DialogActions>
               <Button onClick={closeEditPropertyDialog} color="primary">
                 Cancel

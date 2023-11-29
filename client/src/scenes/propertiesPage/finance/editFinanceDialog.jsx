@@ -58,7 +58,7 @@ const EditFinanceDialog = (props) => {
             finance,
             setFinance,
             )}>
-        <TextField
+        {/*<TextField
             select
             label="User"
             name="user"
@@ -84,7 +84,7 @@ const EditFinanceDialog = (props) => {
         </TextField>
 
           <br />
-          <br />
+            <br /> */}
           <TextField
             label="Property Name"
             name="name"
@@ -133,7 +133,7 @@ const EditFinanceDialog = (props) => {
           />
           <br />
           <br />
-          <TextField
+        {/*  <TextField
             label="Date"
             name="date"
             type="date"
@@ -143,7 +143,7 @@ const EditFinanceDialog = (props) => {
             required
           />
           <br />
-          <br />
+          <br /> */}  
           <TextField
             label="Receipt Name"
             name="receipt"

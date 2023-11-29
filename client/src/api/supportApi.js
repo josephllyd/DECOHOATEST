@@ -165,4 +165,10 @@ const fetchSupport = async (setSupport) => {
   };
   
   
-  export { fetchSupport, addSupport, deleteSupport, editSupport};
+  export { 
+    fetchSupport, 
+    addSupport, 
+    deleteSupport, 
+    editSupport
+  };
+

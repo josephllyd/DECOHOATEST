@@ -43,10 +43,6 @@ export default class Dashboard extends Component {
       });
   }
 
-  logOut = () => {
-    window.localStorage.clear();
-    window.location.href = "./signin";
-  }
   render() {
     return (
       <div style={{ flex: 1, padding: "40px", fontSize: '20px' }}>

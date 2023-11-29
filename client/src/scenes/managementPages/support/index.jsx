@@ -75,8 +75,6 @@ import UploadImage from "components/UploadImage";
       };
     
       await editSupport(selectedSupport._id, editedSupport);
-    
-      // Close the edit dialog and Support the Supports list
       setIsEditDialogOpen(false);
       fetchSupport(setSupport);
     };

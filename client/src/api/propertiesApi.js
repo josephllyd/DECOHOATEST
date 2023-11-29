@@ -56,5 +56,10 @@ const fetchProperties = () => {
     // Your edit property submit function implementation
   };
   
-  export { fetchProperties, handleSubmit, handleDeleteProperty, handleEditPropertySubmit };
+  export { 
+    fetchProperties, 
+    handleSubmit,
+    handleDeleteProperty, 
+    handleEditPropertySubmit 
+  };
   

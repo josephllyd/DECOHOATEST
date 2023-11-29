@@ -198,7 +198,13 @@ const editVehicle = async (vehicleId, editedVehicle) => {
   }
 };
 
-  export { fetchData, fetchVehicles, addVehicle, deleteVehicle, editVehicle };
+  export { 
+    fetchData, 
+    fetchVehicles, 
+    addVehicle, 
+    deleteVehicle, 
+    editVehicle 
+  };
 
 
   

@@ -41,21 +41,21 @@ app.listen(PORT, () => {
   console.log(`Server Started on port ${PORT}`);
 });
 
-
-  app.post("/post", async(req, res) => {
-    console.log(req.body);
-    const {data} = req.body;
-
-    try {
-      if (data == 'adash') {
-        res.send({status:"ok"});
-      } else {
-        res.send({status :"User not found"})
-      }
-    } catch (error) {
-      res.send({status: "Something went wrong try again"})
+  const authenticateUser = (req, res, next) => {
+    const { token } = req.body;
+    if (token) {
+      jwt.verify(token, JWT_SECRET, (err, decodedToken) => {
+        if (err) {
+          return res.status(401).json({ error: "Token expired or invalid" });
+        }
+        // Attach user information to the request
+        req.user = decodedToken;
+        next();
+      });
+    } else {
+      res.status(401).json({ error: "Token not provided" });
     }
-  })
+  };
 
 
   const User = mongoose.model('UserInfo');
@@ -195,38 +195,71 @@ app.get("/reset-password/:id/:token", async (req, res) => {
   }
 });
 
-app.post("/reset-password/:id/:token", async (req, res) => {
-  const { id, token } = req.params;
-  const { password } = req.body;
-  const oldUser = await User.findOne({ _id: id });
-  if (!oldUser) {
-    return res.json({ status: "User Not Exists!!" });
-  }
-  const secret = JWT_SECRET + oldUser.password;
-  try {
-    const verify = jwt.verify(token, secret);
-    if (!verify) {
-      return res.json({ status: "Token expired or invalid" });
+app.post("/reset-password/:id/:token", 
+  async (req, res) => {
+    const { id, token } = req.params;
+    const { password } = req.body;
+    const oldUser = await User.findOne({ _id: id });
+    if (!oldUser) {
+      return res.json({ status: "User Not Exists!!" });
     }
-    const encryptedPassword = await bcrypt.hash(password, 10);
-    await User.updateOne(
-      {
-        _id: id,
-      },
-      {
-        $set: {
-          password: encryptedPassword,
-        },
+    const secret = JWT_SECRET + oldUser.password;
+    try {
+      const verify = jwt.verify(token, secret);
+      if (!verify) {
+        return res.json({ status: "Token expired or invalid" });
       }
-    );
-    res.render("index", { email: verify.email, status: "verified" });
-  } catch (error) {
-    console.error(error);
-    res.json("Something Went Wrong");
-  }
-});
+      const encryptedPassword = await bcrypt.hash(password, 10);
+      await User.updateOne(
+        {
+          _id: id,
+        },
+        {
+          $set: {
+            password: encryptedPassword,
+          },
+        }
+      );
+      res.render("index", { email: verify.email, status: "verified" });
+    } catch (error) {
+      console.error(error);
+      res.json("Something Went Wrong");
+    }
+  });
 
-app.put("/editUser/:userId", async (req, res) => {
+  app.put("/editCurrentUser/:currentUserId", authenticateUser, 
+  async (req, res) => {
+    const { currentUserId } = req.params;
+    const {  fname, lname, email: memberEmail, password, userType, image } = req.body;
+
+    try {
+      // Verify the user's token to get their email
+      const { email } = jwt.verify(token, JWT_SECRET);
+      const user = await User.findOne({ email });
+      const currentUser = await User.findOne({ _id: currentUserId, owner: user._id });
+
+      if (!currentUser) {
+        return res.status(404).json({ status: "currentUser not found" });
+      }
+
+      currentUser.fname = fname;
+      currentUser.lname = lname;
+      currentUser.email = memberEmail;
+      currentUser.password = password;
+      currentUser.userType = userType;
+      currentUser.image = image;
+
+      await currentUser.save();
+
+      res.status(200).json({ status: "ok", currentUser });
+    } catch (error) {
+      res.status(500).json({ status: "error", error: error.message });
+    }
+  });
+
+
+
+app.put("/editUser/:userId", authenticateUser, async (req, res)=> {
   const { userId } = req.params;
   const newData = req.body;
 
@@ -261,22 +294,6 @@ app.delete("/deleteUser/:userId", async (req, res) => {
 
 
 const Property = mongoose.model('Properties');
-
-const authenticateUser = (req, res, next) => {
-  const { token } = req.body;
-  if (token) {
-    jwt.verify(token, JWT_SECRET, (err, decodedToken) => {
-      if (err) {
-        return res.status(401).json({ error: "Token expired or invalid" });
-      }
-      // Attach user information to the request
-      req.user = decodedToken;
-      next();
-    });
-  } else {
-    res.status(401).json({ error: "Token not provided" });
-  }
-};
 
 app.post("/addProperty", authenticateUser,
 async (req, res) => {

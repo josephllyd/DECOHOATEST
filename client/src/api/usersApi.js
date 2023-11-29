@@ -83,6 +83,42 @@ const handleEditUser = (userId, newData, setUsers) => {
     .catch((error) => console.error("Error:", error));
 };
 
+const editUser = async (currentUserId, editedUser) => {
+  try {
+    const currentHostname = window.location.hostname;
+    let baseUrl = "";
+    if (currentHostname === "localhost") {
+      baseUrl = "http://localhost:5000"; // Local environment
+    } else {
+      baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
+    }
+
+    const editUserEndpoint = `/editCurrentUser/${currentUserId}`;
+    const editUserUrl = `${baseUrl}${editUserEndpoint}`;
+
+    const response = await fetch(editUserUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify(editedUser),
+    });
+
+    const data = await response.json();
+
+    if (data.status === "ok") {
+      alert("User updated successfully");
+    } else {
+      alert("Failed to update User");
+    }
+  } catch (error) {
+    console.error("Error updating User: ", error);
+    alert("An error occurred while updating User");
+  }
+};
+
 const useUserData = () => {
   const [userData, setUserData] = useState(null);
 
@@ -123,4 +159,10 @@ const useUserData = () => {
 
   return userData;
 };
-export { fetchUsers, componentDidMount, handleEditUser, useUserData };
+export { 
+  fetchUsers, 
+  componentDidMount, 
+  handleEditUser, 
+  useUserData,
+  editUser 
+};
