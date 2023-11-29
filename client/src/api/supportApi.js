@@ -127,5 +127,42 @@ const fetchSupport = async (setSupport) => {
         });
     }
   };
+
+  const editSupport = async (supportId, editedSupport) => {
+    try {
+      const currentHostname = window.location.hostname;
+      let baseUrl = "";
+      if (currentHostname === "localhost") {
+        baseUrl = "http://localhost:5000"; // Local environment
+      } else {
+        baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
+      }
   
-  export { fetchSupport, addSupport, deleteSupport};
+      const editSupportEndpoint = `/editSupport/${supportId}`;
+      const editSupportUrl = `${baseUrl}${editSupportEndpoint}`;
+  
+      const response = await fetch(editSupportUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify(editedSupport),
+      });
+  
+      const data = await response.json();
+  
+      if (data.status === "ok") {
+        alert("Support updated successfully");
+      } else {
+        alert("Failed to update support");
+      }
+    } catch (error) {
+      console.error("Error updating Support: ", error);
+      alert("An error occurred while updating Support");
+    }
+  };
+  
+  
+  export { fetchSupport, addSupport, deleteSupport, editSupport};

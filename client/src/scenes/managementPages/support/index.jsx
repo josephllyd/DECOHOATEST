@@ -9,15 +9,22 @@
     IconButton,
     MenuItem,
     Popover,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    TextField,
+    DialogActions,
+    Button,
   } from "@mui/material";
   import AddIcon from "@mui/icons-material/Add";
   import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
   import FlexBetween from "components/FlexBetween";
   import AddSupportDialog from "./addSupport";
   import { fetchUsers, handleEditUser, useUserData } from "api/usersApi";
-  import { fetchSupport, addSupport, deleteSupport } from "api/supportApi";
+  import { fetchSupport, addSupport, deleteSupport, editSupport } from "api/supportApi";
   import { Search } from "@mui/icons-material";
   import { useTheme } from "@mui/material/styles";
+import UploadImage from "components/UploadImage";
 
   const Support= () => {
     const userData = useUserData();
@@ -36,6 +43,43 @@
     const [support, setSupport] = useState([]); 
     const [supports, setSupports] = useState([]); 
     const [selectedSupport, setSelectedSupport] = useState(null);
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+    const [editedSupportSubj, setEditedSupportSubj] = useState("");
+    const [editedSupportType, setEditedSupportType] = useState("");
+    const [editedDate, setEditedDate] = useState("");
+    const [editedDescription, setEditedDescription] = useState("");
+    const [editedImage, setEditedImage] = useState("");
+
+    const handleOpenEditDialog = (selectedSupport) => {
+      setIsEditDialogOpen(true);
+      setEditedSupportSubj(selectedSupport.supportSubj);
+      setEditedSupportType(selectedSupport.supportType);
+      setEditedDate(selectedSupport.date);
+      setEditedDescription(selectedSupport.description);
+      setEditedImage(selectedSupport.image);
+      setSelectedSupport(selectedSupport);
+    };
+
+    const closeEditPropertyDialog = () => {
+      setIsEditDialogOpen(false);
+    };
+
+    const handleEditSupport = async () => {
+      const editedSupport = {
+        supportSubj: editedSupportSubj,
+        supportType: editedSupportType,
+        date: editedDate,
+        description: editedDescription,
+        image: editedImage,
+        token: localStorage.getItem("token"),
+      };
+    
+      await editSupport(selectedSupport._id, editedSupport);
+    
+      // Close the edit dialog and Support the Supports list
+      setIsEditDialogOpen(false);
+      fetchSupport(setSupport);
+    };
 
     const handleOpenAddSupportDialog = () => {
       setIsAddSupportDialogOpen(true);
@@ -192,7 +236,7 @@
         >
           {selectedSupport && (
             <div>
-              <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>Edit</MenuItem>
+              <MenuItem onClick={() => handleOpenEditDialog(selectedSupport)}>Edit</MenuItem>
               <MenuItem onClick={handleDeleteSupport}>Delete</MenuItem>
               <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>Disable User</MenuItem>
               <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>View User</MenuItem>
@@ -220,6 +264,53 @@
             setImage={setImage}
             addSupport={addSupport}
         />
+
+                 {/*Edit property diaglog*/}
+      <Dialog
+        open={isEditDialogOpen}
+        onClose={closeEditPropertyDialog}
+      >
+        <DialogTitle sx={{ fontWeight: 'bold' }}>Edit Property</DialogTitle>
+        <DialogContent>
+          <form onSubmit={handleEditSupport}>
+          <TextField
+                    label="Support Subject"
+                    name="name"
+                    type="name"
+                    value={editedSupportSubj}
+                    onChange={(e) => setEditedSupportSubj(e.target.value)}
+                    fullWidth required
+                /><br/><br/>
+                <TextField
+                    label="Support Type"
+                    name="name"
+                    type="name"
+                    value={editedSupportType}
+                    onChange={(e) => setEditedSupportType(e.target.value)}
+                    fullWidth required
+                /><br/><br/>
+                <TextField
+                    label="Support Description"
+                    name="Support Description"
+                    value={editedDescription}
+                    onChange={(e) => setEditedDescription(e.target.value)}
+                    fullWidth required
+                /><br/><br/>
+                <UploadImage 
+                    value={image}
+                    onImageChange={(url) => setImage(url)}
+                />
+            <DialogActions>
+              <Button onClick={closeEditPropertyDialog} color="primary">
+                Cancel
+              </Button>
+              <Button type="submit" color="primary">
+                Save Changes
+              </Button>
+            </DialogActions>
+          </form>
+        </DialogContent>
+      </Dialog>
       </div>
     );
   };
