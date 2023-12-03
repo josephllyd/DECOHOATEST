@@ -82,7 +82,6 @@ const Profile = () => {
   };
 
   const handleEditProfile = async () => {
-    // Make API call to update user information
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(`/editUser/${user._id}`, {
@@ -93,7 +92,7 @@ const Profile = () => {
         },
         body: JSON.stringify(selectedUser),
       });
-
+  
       if (response.ok) {
         // Update the local user state
         setUser(selectedUser);
@@ -106,9 +105,9 @@ const Profile = () => {
       console.error("Error updating user data", error);
     }
   };
+  
 
   const handlePasswordChange = async () => {
-    // Make API call to update user password
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(`/editUser/${user._id}`, {
@@ -119,7 +118,7 @@ const Profile = () => {
         },
         body: JSON.stringify({ password: newPassword }),
       });
-
+  
       if (response.ok) {
         // Password updated successfully
         setNewPassword("");
@@ -131,6 +130,7 @@ const Profile = () => {
       console.error("Error updating password", error);
     }
   };
+  
 
   return (
     <div style={{ flex: 1, padding: "40px", fontSize: "20px", display: "flex", flexDirection: "column", alignItems: "center", alignContent: "center" }}>

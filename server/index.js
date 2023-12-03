@@ -230,11 +230,12 @@ app.post("/reset-password/:id/:token",
   app.put("/editCurrentUser/:currentUserId", authenticateUser, 
   async (req, res) => {
     const { currentUserId } = req.params;
+    //const { token } = req.body;
     const {  fname, lname, email: memberEmail, password, userType, image } = req.body;
 
     try {
       // Verify the user's token to get their email
-      const { email } = jwt.verify(token, JWT_SECRET);
+     // const { email } = jwt.verify(token, JWT_SECRET);
       const user = await User.findOne({ email });
       const currentUser = await User.findOne({ _id: currentUserId, owner: user._id });
 
@@ -259,26 +260,26 @@ app.post("/reset-password/:id/:token",
 
 
 
-app.put("/editUser/:userId", authenticateUser, async (req, res)=> {
-  const { userId } = req.params;
-  const newData = req.body;
-
-  try {
-    // Find the user by ID and update their data
-    const user = await User.findOneAndUpdate({ _id: userId }, newData, { new: true });
-
-    if (!user) {
-      return res.status(404).json({ status: "User not found" });
+  app.put("/editUser/:userId", authenticateUser, async (req, res) => {
+    const { userId } = req.params;
+    const newData = req.body;
+  
+    try {
+      // Find the user by ID and update their data
+      const user = await User.findOneAndUpdate({ _id: userId }, newData, { new: true });
+  
+      if (!user) {
+        return res.status(404).json({ status: "User not found" });
+      }
+  
+      // Send a response indicating success
+      res.status(200).json({ status: "ok", user });
+    } catch (error) {
+      // Handle errors
+      res.status(500).json({ status: "error", error: error.message });
     }
-
-    // Send a response indicating success
-    res.status(200).json({ status: "ok", user });
-  } catch (error) {
-    // Handle errors
-    res.status(500).json({ status: "error", error: error.message });
-  }
-});
-
+  });
+  
 app.delete("/deleteUser/:userId", async (req, res) => {
   const { userId } = req.params;
   try {

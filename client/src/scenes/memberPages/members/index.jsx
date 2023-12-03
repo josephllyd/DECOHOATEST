@@ -68,12 +68,17 @@ const Members = () => {
       password: editedpassword,
       userType: editedUserType,
       image: editedImage,
-      token: localStorage.getItem("token"),
+      //token: localStorage.getItem("token"),
     };
   
-    await editUser(selectedUser._id, editedUser);
-    setIsEditDialogOpen(false);
-    fetchUsers(setUsers);
+    try {
+      const response = await editUser(selectedUser._id, editedUser, localStorage.getItem("token"));
+      console.log("Edit User Response:", response);
+      setIsEditDialogOpen(false);
+      fetchUsers(setUsers);
+    } catch (error) {
+      console.error("Error editing user:", error);
+    }
   };
 
 
