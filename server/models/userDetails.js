@@ -24,9 +24,10 @@ const UserDetailsSchema = new mongoose.Schema(
     },
     userType: {
       type: String,
-      enum: ["user", "admin"],
+      enum: ["user", "admin", "User", "Admin"], 
       default: "user",
     },
+ 
   },
   {
     timestamps: true,

@@ -11,16 +11,35 @@ export default class SignUp extends Component {
       email: "",
       password: "",
       cpassword: "",
+      userType: "",
+      adminPassword: "",
     };
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   handleSubmit(e) {
     e.preventDefault();
-    const { fname, lname, email, password, cpassword } = this.state;
-    if (!fname || !lname || !email || !password || !cpassword) {
+    const {
+      fname,
+      lname,
+      email,
+      password,
+      cpassword,
+      userType,
+      adminPassword
+    } = this.state;
+
+    if (
+      !fname ||
+      !lname ||
+      !email ||
+      !password ||
+      !cpassword ||
+      !userType 
+     // Admin password required if userType is Admin
+    ) {
       alert("All fields are required");
-      return; 
+      return;
     }
   
     if (password.length < 6) {
@@ -31,6 +50,11 @@ export default class SignUp extends Component {
     if (password !== cpassword) {
       alert("Passwords do not match");
       return; 
+    }
+
+    if (userType === "Admin" && adminPassword !== "adminpass") {
+      alert("Incorrect admin password");
+      return;
     }
   
     // Get the current hostname
@@ -43,10 +67,10 @@ export default class SignUp extends Component {
       baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
     }
 
-
     const signupEndpoint = "/signup";
     const signupUrl = `${baseUrl}${signupEndpoint}`;
-    console.log(fname, lname, email, password, cpassword);
+    const formattedUserType = userType.toLowerCase();
+    console.log(fname, lname, email, password, cpassword, formattedUserType, adminPassword);
     fetch(signupUrl, {
       method: "POST",
       headers: {
@@ -60,6 +84,8 @@ export default class SignUp extends Component {
         lname,
         password,
         cpassword,
+        userType: formattedUserType, 
+        adminPassword,
       }),
     })
       .then((res) => res.json())
@@ -94,9 +120,51 @@ export default class SignUp extends Component {
             </ul>
           </div>
         </div>
-        <div style={{flex: 1, padding: "80px"}}>
+        <div 
+          style={{
+            flex: 1, 
+            paddingTop: "10px",
+            paddingLeft: "80px",
+            paddingRight: "80px",
+            paddingBottom: "80px"}}>
           <form onSubmit={this.handleSubmit}>
             <h3>Sign Up</h3>
+         {/* New input field for user type as radio buttons */}
+         <div className="mb-3">
+          <label >Choose User Type: </label>
+            <label style={{ padding: "5px"}}>
+              <input
+                type="radio"
+                value="User"
+                checked={this.state.userType === "User"}
+                onChange={() => this.setState({ userType: "User" })}
+              />
+              User
+            </label>
+            <label style={{ padding: "5px"}}>
+              <input
+                type="radio"
+                value="Admin"
+                checked={this.state.userType === "Admin"}
+                onChange={() => this.setState({ userType: "Admin" })}
+              />
+              Admin
+            </label>
+          
+        </div>
+
+        {/* New input field for admin password if user type is Admin */}
+        {this.state.userType === "Admin" && (
+          <div className="mb-3">
+            <label>Admin Password</label>
+            <input
+              type="password"
+              className="form-control"
+              placeholder="Enter admin password"
+              onChange={(e) => this.setState({ adminPassword: e.target.value })}
+            />
+          </div>
+        )}
             <div className="mb-3">
               <label>First name</label>
               <input
@@ -106,7 +174,6 @@ export default class SignUp extends Component {
                 onChange={(e) => this.setState({ fname: e.target.value })}
               />
             </div>
-
             <div className="mb-3">
               <label>Last name</label>
               <input

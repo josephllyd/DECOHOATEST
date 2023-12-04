@@ -61,7 +61,7 @@ app.listen(PORT, () => {
   const User = mongoose.model('UserInfo');
 
   app.post("/signup", async (req, res) => {
-    const { fname, lname, email, password, userType } = req.body;
+    const { fname, lname, email, password, userType, adminPassword } = req.body;
 
   const encryptedPassword = await bcrypt.hash(password, 10);
   try {
@@ -76,6 +76,7 @@ app.listen(PORT, () => {
       email,
       password: encryptedPassword,
       userType,
+      adminPassword,
     });
     res.send({ status: "ok" });
   } catch (error) {
