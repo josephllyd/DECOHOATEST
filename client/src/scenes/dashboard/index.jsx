@@ -9,6 +9,8 @@ import decoMap from "../../assets/Screenshot 2023-12-05 025416.png"
 import { fetchSupport } from "../../api/supportApi";
 import { fetchFinance } from "api/financeApi";
 import { fetchUpdates } from "api/updatesApi";
+import Members from "scenes/memberPages/members";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [userData, setUserData] = useState({});
@@ -17,6 +19,7 @@ const Dashboard = () => {
   const [updateData, setUpdateData] = useState([]);
   const [mapModalOpen, setMapModalOpen] = useState(false);
   const [imageModalOpen, setImageModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const currentHostname = window.location.hostname;
@@ -112,7 +115,9 @@ const Dashboard = () => {
           </Card>
           <Card style={{ display: "flex", flex: 1, padding: "5px", margin: "10px", 
             flexDirection: "column", justifyContent: "center", alignItems: "center", backgroundColor: 'transparent'   }}>
-            <CardMedia component="img" height="140" image={fam} alt="image" style={{padding: "5px"}}/>
+            <CardMedia component="img" height="140" image={fam} alt="image" style={{padding: "5px"}}
+              onClick={() => navigate("/members")} 
+            />
             <p style={{margin: "0px", marginTop: "10px"}}> 72 Homeowners</p>
           </Card>
           <Card style={{ display: "flex", flex: 1, padding: "5px", margin: "10px", 
@@ -129,7 +134,8 @@ const Dashboard = () => {
         </div>
         <div style={{padding: "10px"}}>
           <h5>Maintenance Requests</h5>
-          <TableContainer component={Paper} sx={{ backgroundColor: "transparent", boxShadow: 'none'}}>
+          <TableContainer component={Paper} sx={{ backgroundColor: "transparent", boxShadow: 'none'}}
+             onClick={() => navigate("/support")}>
               <Table sx={{ border: 'none' }}>
                 <TableBody sx={{ border: 'none' }}>
                   {limitedSupportData.map((request) => (
@@ -149,7 +155,8 @@ const Dashboard = () => {
         <div style={{padding: "10px"}}>
           <h5>Payment History</h5> 
           <div style={{ display: "flex", flex: 1, flexDirection: "row", padding: "0px", flexWrap: "wrap" }}>
-            <Card style={{ display: "flex", flex: 1,  flexDirection: "column", margin: "0px", marginRight: "15px", flexGrow: 1, padding: "10px", backgroundColor: 'transparent'}}>
+            <Card style={{ display: "flex", flex: 1,  flexDirection: "column", margin: "0px", marginRight: "15px", flexGrow: 1, padding: "10px", backgroundColor: 'transparent'}}
+              onClick={() => navigate("/finance")}>
               {limitedFinanceData.map((finance) => (
                 <TableRow key={finance._id} sx={{ border: 'none' }} >
                  <TableCell style={{ padding: "10px", border: 'none', color: 'white', justifyContent: "center", alignItems: "center" }}>
@@ -167,7 +174,8 @@ const Dashboard = () => {
       </div>
       <div style={{ display: "flex", flex: 1, padding: "10px", flexGrow: 1, paddingRight: "40px" }}>
         <Card style={{ display: "flex", flexDirection: "column", flex: 1, padding: "5px", margin: "10px", 
-          justifyContent: "center", backgroundColor: 'transparent' }}>
+          justifyContent: "center", backgroundColor: 'transparent' }}
+          onClick={() => navigate("/updates")}>
           <h5 style={{ display: "flex", margin: "10px", justifyContent: "center", alignItems: "center"}}>Announcements</h5>
           <div style={{ display: "flex", flex: 1, flexDirection: "row", padding: "0px", flexWrap: "wrap", alignContent: "flex-start" }}>
               {limitedUpdateData.map((update) => (
@@ -215,5 +223,6 @@ const Dashboard = () => {
   </div>
   );
 };
+
 
 export default Dashboard;
