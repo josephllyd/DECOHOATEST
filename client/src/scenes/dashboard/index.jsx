@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardMedia, Table, TableBody, TableCell, TableContainer, TableRow, Paper } from "@mui/material";
+import { Card, CardMedia, Table, TableBody, TableCell, TableContainer, TableRow, Paper, Modal } from "@mui/material";
 import resHome from "../../assets/resHomes.jpg";
 import occup from "../../assets/occup.jpg";
 import fam from "../../assets/fam.jpg";
 import amne from "../../assets/amne.jpg"
+import fullamne from "../../assets/sv-village-map.jpg"
+import decoMap from "../../assets/Screenshot 2023-12-05 025416.png"
 import { fetchSupport } from "../../api/supportApi";
 import { fetchFinance } from "api/financeApi";
 import { fetchUpdates } from "api/updatesApi";
@@ -13,6 +15,8 @@ const Dashboard = () => {
   const [supportData, setSupportData] = useState([]);
   const [financeData, setfinanceData] = useState([]);
   const [updateData, setUpdateData] = useState([]);
+  const [mapModalOpen, setMapModalOpen] = useState(false);
+  const [imageModalOpen, setImageModalOpen] = useState(false);
 
   useEffect(() => {
     const currentHostname = window.location.hostname;
@@ -69,6 +73,21 @@ const Dashboard = () => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
+  const handleMapModalOpen = () => {
+    setMapModalOpen(true);
+  };
+
+  const handleMapModalClose = () => {
+    setMapModalOpen(false);
+  };
+  const handleImageModalOpen = () => {
+    setImageModalOpen(true);
+  };
+
+  const handleImageModalClose = () => {
+    setImageModalOpen(false);
+  };
+
 
 
 
@@ -84,11 +103,12 @@ const Dashboard = () => {
     <div style={{ display: "flex", flex: 1, flexGrow: 2, flexDirection: "row" }} >
       <div style={{ display: "flex", flex: 1, padding: "10px", flexGrow: 3,  paddingLeft: "40px", 
         flexDirection: "column",flexWrap: "wrap", alignItems: "stretch" }}>
-        <div style={{ display: "flex", flex: 1, flexDirection: "row", padding: "10px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", flex: 1, flexDirection: "row", padding: "0px", flexWrap: "wrap" }}>
           <Card style={{ display: "flex", flex: 1, padding: "5px", margin: "10px", 
             flexDirection: "column", justifyContent: "center", alignItems: "center", backgroundColor: 'transparent'  }}>
-            <CardMedia component="img" height="140" src={resHome} alt="image" style={{padding: "5px"}} />
-            <p style={{margin: "0px", marginTop: "10px"}}>100 Residential Homes</p>
+            <CardMedia component="img" height="140" src={resHome} alt="image" style={{padding: "5px"}} 
+              onClick={handleMapModalOpen} />
+              <p style={{margin: "0px", marginTop: "10px"}}>100 Residential Homes</p>
           </Card>
           <Card style={{ display: "flex", flex: 1, padding: "5px", margin: "10px", 
             flexDirection: "column", justifyContent: "center", alignItems: "center", backgroundColor: 'transparent'   }}>
@@ -102,8 +122,9 @@ const Dashboard = () => {
           </Card>
           <Card style={{ display: "flex", flex: 1, padding: "5px", margin: "10px", 
             flexDirection: "column", justifyContent: "center", alignItems: "center", backgroundColor: 'transparent'   }}>
-            <CardMedia component="img" height="140" image={amne} alt="image" style={{padding: "5px"}}/>
-            <p style={{margin: "0px", marginTop: "10px"}}>8 Amazing Amneties</p>
+            <CardMedia component="img" height="140" image={amne} alt="image" style={{padding: "5px"}} 
+              onClick={handleImageModalOpen}/>
+              <p style={{margin: "0px", marginTop: "10px"}}>8 Amazing Amneties</p>
           </Card>
         </div>
         <div style={{padding: "10px"}}>
@@ -161,7 +182,36 @@ const Dashboard = () => {
           </div>
         </Card>
       </div>
-    </div>  
+    </div> 
+
+     <Modal
+        open={mapModalOpen}
+        onClose={handleMapModalClose}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+         <iframe
+            title="Google Maps"
+            width="850"
+            height="650"
+            loading="lazy"
+            allowFullScreen
+            src="https://maps.google.com/maps?width=852&amp;height=615&amp;hl=en&amp;q=Deca Homes Baywalk Talisay Phase 1 Cebu&amp;t=h&amp;z=8&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
+          /> 
+          {/*<img src={decoMap} alt="Another Image" style={{ width: "850px", height: "650px" }} />*/} 
+        </div>
+      </Modal>
+      <Modal
+        open={imageModalOpen}
+        onClose={handleImageModalClose}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+          <img src={fullamne} alt="Another Image" style={{ width: "800px", height: "650px" }} />
+        </div>
+      </Modal> 
   </div>
   );
 };
