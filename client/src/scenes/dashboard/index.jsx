@@ -106,7 +106,8 @@ const Dashboard = () => {
     <div style={{ display: "flex", flex: 1, flexGrow: 2, flexDirection: "row" }} >
       <div style={{ display: "flex", flex: 1, padding: "10px", flexGrow: 3,  paddingLeft: "40px", 
         flexDirection: "column",flexWrap: "wrap", alignItems: "stretch" }}>
-        <div style={{ display: "flex", flex: 1, flexDirection: "row", padding: "0px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex",  padding: "0px", justifyContent: "space-evenly",
+          flexWrap: "wrap", flexGrow: 1,  alignItems: "center" }}>
           <Card style={{ display: "flex", flex: 1, padding: "5px", margin: "10px", 
             flexDirection: "column", justifyContent: "center", alignItems: "center", backgroundColor: 'transparent'  }}>
             <CardMedia component="img" height="140" src={resHome} alt="image" style={{padding: "5px"}} 
@@ -116,13 +117,14 @@ const Dashboard = () => {
           <Card style={{ display: "flex", flex: 1, padding: "5px", margin: "10px", 
             flexDirection: "column", justifyContent: "center", alignItems: "center", backgroundColor: 'transparent'   }}>
             <CardMedia component="img" height="140" image={fam} alt="image" style={{padding: "5px"}}
-              onClick={() => navigate("/members")} 
+              onClick={() => navigate("/profile")} 
             />
             <p style={{margin: "0px", marginTop: "10px"}}> 72 Homeowners</p>
           </Card>
           <Card style={{ display: "flex", flex: 1, padding: "5px", margin: "10px", 
             flexDirection: "column", justifyContent: "center", alignItems: "center", backgroundColor: 'transparent'   }}>
-            <CardMedia component="img" height="140" image={occup} alt="image" style={{padding: "5px"}} />
+            <CardMedia component="img" height="140" image={occup} alt="image" style={{padding: "5px"}} 
+            onClick={() => navigate("/members")} />
             <p style={{margin: "0px", marginTop: "10px"}}>382 Total Population</p>
           </Card>
           <Card style={{ display: "flex", flex: 1, padding: "5px", margin: "10px", 
