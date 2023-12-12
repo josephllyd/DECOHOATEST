@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import logoImage from "../../assets/homelogo.png";
 import "../../assets/unsplash_uB2iZgZSQtQ.png"
+import signUpImage from "../../assets/undraw_sign_up_n6im.svg"
 
 export default class ForgotPassword extends Component {
   constructor(props) {
@@ -102,6 +103,14 @@ export default class ForgotPassword extends Component {
                 </ul>
               </div>
             </div>
+            <div style={{ display: "flex", flex: 1, flexGrow: 2, flexDirection: "row" }}>
+            <div style={{ flex: 1, display: window.innerWidth > 768 ? 'block' : 'none', alignItems: 'center', justifyContent: 'center', 
+                          paddingTop: "10px",
+                          paddingLeft: "80px",
+                          paddingRight: "0px",
+                          paddingBottom: "80px"}}>
+              <img src={signUpImage} alt="Sign Up" style={{ maxWidth: '100%', height: 'auto' }} />
+            </div>
             <div style={{ flex: 1, padding: "80px" }}>
               <form onSubmit={this.handleSubmit}>
                 <h3>Forgot Password</h3>
@@ -128,6 +137,7 @@ export default class ForgotPassword extends Component {
                 </p>
               </form>
             </div>
+          </div>
           </div>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import signUpImage from "../../../assets/undraw_sign_up_n6im.svg"
 import {
   Alert,
   IconButton,
@@ -81,6 +82,14 @@ const Settings = () => {
   }, []); 
 
   return (
+    <div style={{ display: "flex", flex: 1, flexGrow: 2, flexDirection: "row" }}>
+    <div style={{ flex: 1, display: window.innerWidth > 768 ? 'block' : 'none', alignItems: 'center', justifyContent: 'center', 
+                  paddingTop: "10px",
+                  paddingLeft: "80px",
+                  paddingRight: "0px",
+                  paddingBottom: "80px"}}>
+      <img src={signUpImage} alt="Sign Up" style={{ maxWidth: '100%', height: 'auto' }} />
+    </div>
             <div style={{ flex: 1, padding: "40px", fontSize: "16px" }}>
               <b> Welcome to Settings Page {userData.fname}! </b>
               <br />
@@ -117,6 +126,7 @@ const Settings = () => {
                 
                 )}
             </div>
+          </div>
   );
 };
 
