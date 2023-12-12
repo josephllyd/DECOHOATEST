@@ -4,6 +4,7 @@ import logoImage from "../../assets/homelogo.png";
 import "../../assets/unsplash_uB2iZgZSQtQ.png";
 import ForgotPassword from "./forgotPassword";
 import signUpImage from "../../assets/undraw_sign_up_n6im.svg"
+import signInImage from "../../assets/undraw_my_personal_files_re_3q0p.svg"
 
 export default class Login extends Component {
   constructor(props) {
@@ -121,7 +122,7 @@ export default class Login extends Component {
                           paddingLeft: "80px",
                           paddingRight: "0px",
                           paddingBottom: "80px"}}>
-              <img src={signUpImage} alt="Sign Up" style={{ maxWidth: '100%', height: 'auto' }} />
+              <img src={signInImage} alt="Sign Up" style={{ maxWidth: '100%', height: 'auto' }} />
             </div>
         <div style={{flex: 1, padding: "80px"}}>
           <form onSubmit={this.handleSubmit}>

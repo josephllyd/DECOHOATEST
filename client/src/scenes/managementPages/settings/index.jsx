@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import signUpImage from "../../../assets/undraw_sign_up_n6im.svg"
+import settingImage from "../../../assets/undraw_undraw_selectoption_y9cm_mx7w.svg"
 import {
   Alert,
   IconButton,
@@ -88,7 +89,7 @@ const Settings = () => {
                   paddingLeft: "80px",
                   paddingRight: "0px",
                   paddingBottom: "80px"}}>
-      <img src={signUpImage} alt="Sign Up" style={{ maxWidth: '100%', height: 'auto' }} />
+      <img src={settingImage} alt="Sign Up" style={{ maxWidth: '100%', height: 'auto' }} />
     </div>
             <div style={{ flex: 1, padding: "40px", fontSize: "16px" }}>
               <b> Welcome to Settings Page {userData.fname}! </b>
