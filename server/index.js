@@ -227,7 +227,7 @@ app.post("/reset-password/:id/:token",
       res.json("Something Went Wrong");
     }
   });
-
+{/**
   app.put("/editCurrentUser/:currentUserId", authenticateUser, 
   async (req, res) => {
     const { currentUserId } = req.params;
@@ -293,7 +293,7 @@ app.delete("/deleteUser/:userId", async (req, res) => {
     res.status(500).json({ status: "error", error: error.message });
   }
 });
-
+ */}
 
 const Property = mongoose.model('Properties');
 

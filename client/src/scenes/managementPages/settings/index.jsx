@@ -92,7 +92,7 @@ const Settings = () => {
       <img src={settingImage} alt="Sign Up" style={{ maxWidth: '100%', height: 'auto' }} />
     </div>
             <div style={{ flex: 1, padding: "40px", fontSize: "16px" }}>
-              <b> Welcome to Settings Page {userData.fname}! </b>
+                <h4><b> Welcome to Settings Page {userData.fname}! </b></h4>
               <br />
               <br />
               <IconButton onClick={() => dispatch(setMode())}>

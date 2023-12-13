@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { CardMedia } from "@mui/material";
 import UploadImage from "components/UploadImage";
+import profileImage from "../../../assets/undraw_profile_data_re_v81r.svg";
 
 const Profile = () => { 
   const theme = useTheme();
@@ -133,6 +134,8 @@ const Profile = () => {
   
 
   return (
+    <div style={{ display: "flex", flex: 1, flexGrow: 2, flexDirection: "row" }}>
+    
     <div style={{ flex: 1, padding: "40px", fontSize: "20px", display: "flex", flexDirection: "column", alignItems: "center", alignContent: "center" }}>
       {user && (
         <div style={{ fontSize: 15 }}>
@@ -173,14 +176,17 @@ const Profile = () => {
               <Button onClick={handleEditProfile}>Save</Button>
             </DialogActions>
           </Dialog>
-          <div style={{ marginTop: "20px" }}>
-            <TextField label="New Password" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-            <Button variant="outlined" onClick={handlePasswordChange} style={{ marginLeft: "10px" }}>
-              Change Password
-            </Button>
-          </div>
+         
         </div>
       )}
+    </div>
+    <div style={{ flex: 1, display: window.innerWidth > 768 ? 'block' : 'none', alignItems: 'center', justifyContent: 'center', 
+                  paddingTop: "10px",
+                  paddingLeft: "0px",
+                  paddingRight: "80px",
+                  paddingBottom: "80px"}}>
+      <img src={profileImage} alt="Sign Up" style={{ maxWidth: '100%', height: 'auto' }} />
+    </div>
     </div>
   );
   

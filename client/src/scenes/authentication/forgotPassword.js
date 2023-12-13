@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import logoImage from "../../assets/homelogo.png";
 import "../../assets/unsplash_uB2iZgZSQtQ.png"
-import signUpImage from "../../assets/undraw_sign_up_n6im.svg"
+import forgotPassImage from "../../assets/undraw_mobile_encryption_re_yw3o.svg"
 
 export default class ForgotPassword extends Component {
   constructor(props) {
@@ -104,40 +104,42 @@ export default class ForgotPassword extends Component {
               </div>
             </div>
             <div style={{ display: "flex", flex: 1, flexGrow: 2, flexDirection: "row" }}>
-            <div style={{ flex: 1, display: window.innerWidth > 768 ? 'block' : 'none', alignItems: 'center', justifyContent: 'center', 
-                          paddingTop: "10px",
-                          paddingLeft: "80px",
-                          paddingRight: "0px",
-                          paddingBottom: "80px"}}>
-              <img src={signUpImage} alt="Sign Up" style={{ maxWidth: '100%', height: 'auto' }} />
-            </div>
-            <div style={{ flex: 1, padding: "80px" }}>
-              <form onSubmit={this.handleSubmit}>
-                <h3>Forgot Password</h3>
-                <div className="mb-3">
-                  <label>Email address</label>
-                  <input
-                    type="email"
-                    className="form-control"
-                    placeholder="Enter email"
-                    onChange={(e) => this.setState({ email: e.target.value })}
-                  />
+                
+                <div style={{ flex: 1, padding: "80px" }}>
+                  <form onSubmit={this.handleSubmit}>
+                    <h3>Forgot Password</h3>
+                    <div className="mb-3">
+                      <label>Email address</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        placeholder="Enter email"
+                        onChange={(e) => this.setState({ email: e.target.value })}
+                      />
+                    </div>
+                    <div className="d-grid">
+                      <button
+                        type="submit"
+                        className="btn"
+                        style={{ background: `#F2643D` }}
+                      >
+                        Submit
+                      </button>
+                    </div>
+                    <p className="forgot-password text-right">
+                      Dont have an account? <a href="/signup">Sign Up</a>
+                    </p>
+                  </form>
                 </div>
-                <div className="d-grid">
-                  <button
-                    type="submit"
-                    className="btn"
-                    style={{ background: `#F2643D` }}
-                  >
-                    Submit
-                  </button>
+                <div style={{ flex: 1, display: window.innerWidth > 768 ? 'block' : 'none', alignItems: 'center', justifyContent: 'center', 
+                              paddingTop: "10px",
+                              paddingLeft: "80px",
+                              paddingRight: "0px",
+                              paddingBottom: "80px"}}>
+                  <img src={forgotPassImage} alt="Sign Up" style={{ maxWidth: '100%', height: 'auto' }} />
                 </div>
-                <p className="forgot-password text-right">
-                  Dont have an account? <a href="/signup">Sign Up</a>
-                </p>
-              </form>
-            </div>
-          </div>
+              </div>
+              
           </div>
         </div>
       </div>

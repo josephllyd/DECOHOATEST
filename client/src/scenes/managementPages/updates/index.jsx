@@ -24,8 +24,8 @@
   import {fetchUpdates, addUpdates, deleteUpdate, editUpdate} from "api/updatesApi"
   import { Search } from "@mui/icons-material";
   import { useTheme } from "@mui/material/styles";
-import UploadImage from "components/UploadImage";
-
+  import UploadImage from "components/UploadImage";
+  import updateImage from "../../../assets/undraw_ideas_flow_re_bmea.svg"
   const Update = () => {
     const userData = useUserData();
     const theme = useTheme();
@@ -161,6 +161,8 @@ import UploadImage from "components/UploadImage";
 
 
     return (
+      <div style={{ display: "flex", flex: 1, flexGrow: 2, flexDirection: "row" }}>
+     
       <div style={{ flex: 1, padding: "20px", fontSize: "20px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Fab variant="extended" size="small" color="primary" style={{ background: `#F2643D`, padding: "20px" }}  
@@ -310,6 +312,14 @@ import UploadImage from "components/UploadImage";
           </form>
         </DialogContent>
       </Dialog>
+      </div>
+      <div style={{ flex: 1, display: window.innerWidth > 768 ? 'block' : 'none', alignItems: 'center', justifyContent: 'center', 
+                    paddingTop: "10px",
+                    paddingLeft: "40px",
+                    paddingRight: "0px",
+                    paddingBottom: "0px"}}>
+        <img src={updateImage} alt="Sign Up" style={{ maxWidth: '100%', height: 'auto' }} />
+      </div>
       </div>
     );
   };

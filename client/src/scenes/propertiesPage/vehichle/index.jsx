@@ -25,6 +25,10 @@ import { fetchVehicles, deleteVehicle, addVehicle, editVehicle } from "api/vehic
 import { Search } from "@mui/icons-material";
 import { useTheme } from "@mui/material/styles";
 import UploadImage from "components/UploadImage";
+import settingImage from "../../../assets/undraw_undraw_selectoption_y9cm_mx7w.svg"
+import car2Image from "../../../assets/undraw_city_driver_re_9xyv.svg"
+import carImage from "../../../assets/undraw_order_a_car_-3-tww.svg"
+
 
 const Vehicle = () => {
 
@@ -185,6 +189,15 @@ const Vehicle = () => {
     console.log("selectedVehicle:", selectedVehicle);
     
   return (
+    
+    <div style={{ display: "flex", flex: 1, flexGrow: 2, flexDirection: "row" }}>
+    <div style={{ flex: 1, display: window.innerWidth > 768 ? 'block' : 'none', alignItems: 'center', justifyContent: 'center', 
+                  paddingTop: "10px",
+                  paddingLeft: "20px",
+                  paddingRight: "0px",
+                  paddingBottom: "0px"}}>
+      <img src={carImage} alt="Sign Up" style={{ maxWidth: '100%', height: 'auto' }} />
+    </div>
     <div style={{ flex: 1, padding: "20px", fontSize: "20px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <Fab variant="extended" size="small" color="primary" style={{ background: `#F2643D`, padding: "20px" }}  
@@ -362,6 +375,7 @@ const Vehicle = () => {
         </DialogContent>
       </Dialog>
 
+    </div>
     </div>
   );
 };

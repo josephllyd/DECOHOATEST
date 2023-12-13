@@ -23,8 +23,10 @@
   import { fetchUsers, handleEditUser, useUserData } from "api/usersApi";
   import { fetchSupport, addSupport, deleteSupport, editSupport } from "api/supportApi";
   import { Search } from "@mui/icons-material";
-  import { useTheme } from "@mui/material/styles";
-import UploadImage from "components/UploadImage";
+  import { useTheme } from "@mui/material/styles";  
+  import UploadImage from "components/UploadImage";
+  import supportImage from "../../../assets/undraw_maintenance_re_59vn.svg"
+
 
   const Support= () => {
     const userData = useUserData();
@@ -160,6 +162,8 @@ import UploadImage from "components/UploadImage";
 
 
     return (
+      <div style={{ display: "flex", flex: 1, flexGrow: 2, flexDirection: "row" }}>
+     
       <div style={{ flex: 1, padding: "20px", fontSize: "20px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Fab variant="extended" size="small" color="primary" style={{ background: `#F2643D`, padding: "20px" }}  
@@ -186,7 +190,7 @@ import UploadImage from "components/UploadImage";
         <Grid container spacing={2}>
           {support &&
           handleSearch().map((support, index) => (
-              <Grid item key={index} xs={12} sm={4} md={2}>
+              <Grid item key={index} xs={12} sm={4} md={4}>
                 <Card style={{ marginBottom: "20px", fontSize: 13 }}>
                   <CardMedia
                     component="img"
@@ -309,6 +313,14 @@ import UploadImage from "components/UploadImage";
           </form>
         </DialogContent>
       </Dialog>
+      </div>
+      <div style={{ flex: 1, display: window.innerWidth > 768 ? 'block' : 'none', alignItems: 'center', justifyContent: 'center', 
+                    paddingTop: "40px",
+                    paddingLeft: "10px",
+                    paddingRight: "10px",
+                    paddingBottom: "0px"}}>
+        <img src={supportImage} alt="Sign Up" style={{ maxWidth: '100%', height: 'auto' }} />
+      </div>
       </div>
     );
   };
