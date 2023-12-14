@@ -72,7 +72,8 @@ const Properties = () => {
   const [editedDescription, setEditedDescription] = useState("");
   const [editedCategory, setEditedCategory] = useState("");
   const [editedImage, setEditedImage] = useState("");
-  
+  const [userData, setUserData] = useState({ userType: "", id: "" , fname: ""});
+
   const theme = useTheme();
 
   const handleRowClick = (property) => {
@@ -97,6 +98,50 @@ const Properties = () => {
   useEffect(() => {
     fetchProperties();
     fetchUsers(setUsers);
+    const fetchData = async () => {
+      const currentHostname = window.location.hostname;
+      let baseUrl = "";
+      if (currentHostname === "localhost") {
+        baseUrl = "http://localhost:5000"; // Local environment
+      } else {
+        baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
+      }
+
+      const userDataEndpoint = "/userData";
+      const userDataUrl = `${baseUrl}${userDataEndpoint}`;
+
+      try {
+        const response = await fetch(userDataUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+          body: JSON.stringify({
+            token: window.localStorage.getItem("token"),
+          }),
+        });
+
+        const data = await response.json();
+        console.log(data, "userData");
+
+        if (data.data === "token expired") {
+          alert("Token expired! Log in again.");
+          window.localStorage.clear();
+          window.location.href = "./signin";
+        } else {
+          setUserData({ 
+            fname: data.data.fname, 
+            id: data.data._id, // Assuming the ID is available as '_id' in the response
+            role: data.data.userType });
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const openAddPropertyDialog = () => {
@@ -159,28 +204,33 @@ const Properties = () => {
    };
 
 
-    const fetchProperties = () => {
-      const currentHostname = window.location.hostname;
-      let baseUrl = "";
-      if (currentHostname === "localhost") {
-        baseUrl = "http://localhost:5000"; // Local environment
-      } else {
-        baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
-      }
-
-      const getPropertiesEndpoint = "/getProperties";
-      const getPropertiesUrl = `${baseUrl}${getPropertiesEndpoint}`;
-
-      fetch(getPropertiesUrl)
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data.properties, "properties");
-          setProperties(data.properties); // Use setProperties to update the state
-        })
-        .catch((error) => {
-          console.error("Error fetching properties:", error);
-        });
-    };
+   const fetchProperties = () => {
+    const currentHostname = window.location.hostname;
+    let baseUrl = "";
+    if (currentHostname === "localhost") {
+      baseUrl = "http://localhost:5000"; // Local environment
+    } else {
+      baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
+    }
+  
+    const getPropertiesEndpoint = "/getProperties";
+    const getPropertiesUrl = `${baseUrl}${getPropertiesEndpoint}`;
+  
+    fetch(getPropertiesUrl)
+      .then((res) => res.json())
+      .then((data) => {
+        let filteredProperties = data.properties;
+        if (userData.role === "admin") { // Check if user is not an admin
+          console.log("User ID:", userData.id); 
+          // Filter properties where the owner ID matches the user's ID
+          filteredProperties = filteredProperties.filter(property => property.owner === userData.id);
+        }
+        setProperties(filteredProperties);
+      })
+      .catch((error) => {
+        console.error("Error fetching properties:", error);
+      });
+  };
 
     const handleDeleteProperty = () => {
       if (!selectedProperty) {
@@ -246,7 +296,9 @@ const Properties = () => {
 
   const handleSearchAndSort = () => {
     let filteredProperties = [...properties];
-
+    if (userData.role !== 'admin') {
+      filteredProperties = filteredProperties.filter(property => property.owner === userData.id);
+    }
     if (searchQuery) {
       const lowerCaseQuery = searchQuery.toLowerCase();
       filteredProperties = filteredProperties.filter((property) => {
