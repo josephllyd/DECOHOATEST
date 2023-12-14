@@ -22,6 +22,7 @@ const Finance = () => {
   const [image, setImage] = useState("");
   const [finance, setFinance] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [userData, setUserData] = useState({ userType: "", id: "" , fname: ""});
   
   const handleOpenAddFinanceDialog = () => {
     setIsAddFinanceDialogOpen(true);
@@ -41,8 +42,67 @@ const Finance = () => {
     useEffect(() => {
       fetchFinance(setFinance);
       fetchUsers(setUsers);
+      const fetchData = async () => {
+        const currentHostname = window.location.hostname;
+        let baseUrl = "";
+        if (currentHostname === "localhost") {
+          baseUrl = "http://localhost:5000"; // Local environment
+        } else {
+          baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
+        }
+        const userDataEndpoint = "/userData";
+        const userDataUrl = `${baseUrl}${userDataEndpoint}`;
+       
+        try {
+          const response = await fetch(userDataUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              "Access-Control-Allow-Origin": "*",
+            },
+            body: JSON.stringify({
+              token: window.localStorage.getItem("token"),
+            }),
+          });
+  
+          const data = await response.json();
+          console.log(data, "userData");
+          
+          if (data.data === "token expired") {
+            alert("Token expired! Log in again.");
+            window.localStorage.clear();
+            window.location.href = "./signin";
+          } else {
+            setUserData({ 
+              fname: data.data.fname, 
+              id: data.data._id,
+              role: data.data.userType });
+          }
+          
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      };
+      
+  
+      fetchData();
     }, []);
 
+    useEffect(() => {
+      if (userData.id) { // Check if userData is populated
+        if (userData.role === 'admin') {
+          fetchFinance(setFinance);
+        } else {
+          fetchFinance(setFinance, userData.id);
+        }
+      }
+    }, [userData]);
+
+    useEffect(() => {
+      console.log("Current User:", userData);
+      console.log("Finance Records:", finance);
+    }, [userData, finance]);
 
     const [sortColumn, setSortColumn] = useState(null);
     const [sortOrder, setSortOrder] = useState("asc");
@@ -56,18 +116,39 @@ const Finance = () => {
         setSortColumn(column);
         setSortOrder("asc");
       }
+    }
+    const handleSearchAndSort = () => {
+      let filteredFinanceData = finance;
+      if (userData.role !== 'admin') {
+        filteredFinanceData = finance.filter(item => item.userId === userData.id);
+      }
+    
+      if (searchQuery) {
+        const lowerCaseQuery = searchQuery.toLowerCase();
+        filteredFinanceData = filteredFinanceData.filter((item) => {
+          // Check for undefined values before calling toLowerCase()
+          return (
+            (item.name && item.name.toLowerCase().includes(lowerCaseQuery)) ||
+            (item.property && item.property.toLowerCase().includes(lowerCaseQuery)) ||
+            (item.paymentType && item.paymentType.toLowerCase().includes(lowerCaseQuery)) ||
+            (item.amount && item.amount.toString().toLowerCase().includes(lowerCaseQuery)) ||
+            (item.date && item.date.toLowerCase().includes(lowerCaseQuery))
+          );
+        });
+      }
+    
+      if (sortColumn) {
+        filteredFinanceData.sort((a, b) => {
+          const valueA = a[sortColumn];
+          const valueB = b[sortColumn];
+          return sortOrder === 'asc' ? (valueA < valueB ? -1 : 1) : (valueA > valueB ? -1 : 1);
+        });
+      }
+      return filteredFinanceData;
     };
-  
-    // Function to filter the finance data based on search query
-    const filteredFinance = finance.filter((item) => {
-    return (
-      (item.category && item.category.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (item.name && item.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (item.owner && item.owner.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (item.price && item.price.toString().toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
-  });
+    
+    
+  const filteredFinance = handleSearchAndSort();
 
 
   return (
@@ -119,7 +200,7 @@ const Finance = () => {
       <FinanceTable 
        finance={filteredFinance}
        users={users}
-       handleSort={handleSort}
+       handleSearchAndSort={handleSort}
        sortColumn={sortColumn}
        sortOrder={sortOrder}
        searchQuery={searchQuery}

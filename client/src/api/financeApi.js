@@ -60,16 +60,20 @@ const addFinance = async (
   }
 };
 
-const fetchFinance = async (setFinance) => {
+const fetchFinance = async (setFinance, userId = null) => {
   const currentHostname = window.location.hostname;
   let baseUrl = "";
   if (currentHostname === "localhost") {
-    baseUrl = "http://localhost:5000"; // Local environment
+    baseUrl = "http://localhost:5000";
   } else {
-    baseUrl = "https://decohoatest-server.vercel.app"; // Vercel environment
+    baseUrl = "https://decohoatest-server.vercel.app";
   }
 
-  const getFinanceEndpoint = "/getFinance";
+  let getFinanceEndpoint = "/getFinance";
+  if (userId) {
+    getFinanceEndpoint += `?userId=${userId}`; // Modify the endpoint to include the userId if provided
+  }
+
   const getFinanceUrl = `${baseUrl}${getFinanceEndpoint}`;
 
   fetch(getFinanceUrl)
