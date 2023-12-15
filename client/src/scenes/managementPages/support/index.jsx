@@ -210,7 +210,8 @@
                       <strong>Support Description: </strong> {support.description}
                     </div>
                     <div>
-                      <strong>Date: </strong> {support.date}
+                      <strong>Date: </strong>
+                      {new Date(support.date).toLocaleDateString()}
                     </div>
                   </CardContent>
                   <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", padding: "5px", paddingLeft: "13px" }}>
@@ -240,8 +241,7 @@
             <div>
               <MenuItem onClick={() => handleOpenEditDialog(selectedSupport)}>Edit</MenuItem>
               <MenuItem onClick={handleDeleteSupport}>Delete</MenuItem>
-              <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>Disable User</MenuItem>
-              <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>View User</MenuItem>
+            
             </div>
           )}
         </Popover>

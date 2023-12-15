@@ -170,7 +170,7 @@ const Dashboard = () => {
                </TableRow>   
               ))}
             </Card>
-            <Card style={{ display: "flex", flex: 1, margin: "0px", flexGrow: 1, padding: "10px" }}>yeah</Card>
+            <Card style={{ display: "flex", flex: 1, margin: "0px", flexGrow: 1, padding: "10px" }}>Loading . . .</Card>
           </div>
         </div>
       </div>

@@ -250,7 +250,7 @@ const Vehicle = () => {
                     <strong>Description: </strong> {vehicle.description}
                   </div>
                   <div>
-                    <strong>Date: </strong> {vehicle.date}
+                    <strong>Date: </strong> {new Date(vehicle.date).toLocaleDateString()}
                   </div>
                 </CardContent>
                   <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", padding: "5px", paddingLeft: "13px" }}>

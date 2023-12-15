@@ -278,8 +278,6 @@ const Members = () => {
           <div>
             <MenuItem onClick={() => handleOpenEditDialog(selectedUser.id)}>Edit User</MenuItem>
             <MenuItem onClick={() => handleDeleteUser(selectedUser._id)}>Delete</MenuItem>
-            <MenuItem onClick={() => handleOpenEditDialog(selectedUser.id)}>Edit User</MenuItem>
-            <MenuItem onClick={() => handleEditUser(selectedUser.id, {})}>View User</MenuItem>
           </div>
         )}
       </Popover>

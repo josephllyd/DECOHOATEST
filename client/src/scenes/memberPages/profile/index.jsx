@@ -152,11 +152,11 @@ const Profile = () => {
           <strong>Last Name: </strong> {user.lname} <br />
           <strong>Email: </strong> {user.email} <br />
           <strong>Role: </strong> {user.userType} <br />
-          <div style={{ marginTop: "20px", display: "flex", justifyContent: "center", alignItems: "center", alignContent: "center" }}>
+         {/* <div style={{ marginTop: "20px", display: "flex", justifyContent: "center", alignItems: "center", alignContent: "center" }}>
             <Button variant="outlined" onClick={handleOpen}>
               Edit Profile
             </Button>
-          </div>
+          </div> */}
           <Dialog open={open} onClose={handleClose}>
             <DialogTitle>Edit Details</DialogTitle>
             <DialogContent>

@@ -91,7 +91,7 @@ const Finance = () => {
 
     useEffect(() => {
       if (userData.id) { // Check if userData is populated
-        if (userData.role === 'admin') {
+        if (userData.role === '!user') {
           fetchFinance(setFinance);
         } else {
           fetchFinance(setFinance, userData.id);
@@ -119,7 +119,7 @@ const Finance = () => {
     }
     const handleSearchAndSort = () => {
       let filteredFinanceData = finance;
-      if (userData.role !== 'admin') {
+      if (userData.role !== 'user') {
         filteredFinanceData = finance.filter(item => item.userId === userData.id);
       }
     
