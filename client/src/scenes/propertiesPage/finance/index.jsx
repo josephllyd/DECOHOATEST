@@ -147,6 +147,8 @@ const Finance = () => {
       return filteredFinanceData;
     };
     
+
+    
     
   const filteredFinance = handleSearchAndSort();
 

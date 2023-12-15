@@ -52,25 +52,21 @@ const Home = () => {
         
       </div>
       
-
       <div id="about" className="inspi-q">
-        
         <div className="inspi-q__inside">
-
-            <div className="AboutDECO">
-           <div className="quote">
-            About DECO
-        
-              </div> 
-              <div className="thor-name">
-              -Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt 
-              ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea 
-              commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-              Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                  </div>
+          <div className="AboutDECO">
+                <div className="quote">
+                  About DECO
+                </div> 
+                <div className="thor-name">
+                The Homeowners Association System is a comprehensive platform designed to manage and organize information related to individuals living within a residential community, 
+                which could include subdivisions, condominiums, townhouses, and standalone houses. It captures essential details such as announcements, specific unit occupied, 
+                financing arrangements (fully paid, bank-financed, or through Pag-ibig), and even vehicle information including the presence of cars along with their plate numbers 
+                and parking details.
                 </div>
-              </div>
-              <div className="border-inspi">
+          </div>
+        </div>
+        <div className="border-inspi">
               </div>
               <div className="inside-border">
                   <div className="number-1">
