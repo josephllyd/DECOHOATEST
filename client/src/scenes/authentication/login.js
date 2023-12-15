@@ -147,7 +147,7 @@ export default class Login extends Component {
               />
             </div>
   
-              <div className="mb-3">
+             {/*  <div className="mb-3">
                 <div className="custom-control custom-checkbox">
                   <input
                     type="checkbox"
@@ -160,7 +160,7 @@ export default class Login extends Component {
                     Remember me
                   </label>
                 </div>
-              </div>
+              </div> */}
   
             <div className="d-grid">
               <button type="submit" className="btn" style={{background: `#F2643D`}}>
