@@ -43,8 +43,10 @@ const FinanceTable = ({ finance, users }) => {
          <Table>
             <TableHead>
               <TableRow style={{ background: "#333" }}>
-                <TableCell style={{ fontWeight: "bold", color: "white" }}>Owner Name</TableCell>
-                <TableCell style={{ fontWeight: "bold", color: "white" }}>Property Name</TableCell>
+               {/**  <TableCell style={{ fontWeight: "bold", color: "white" }}>Owner Name</TableCell>
+                *  <TableCell>{finance.name}</TableCell>
+                */}
+                <TableCell style={{ fontWeight: "bold", color: "white" }}>Payer</TableCell>
                 <TableCell style={{ fontWeight: "bold", color: "white" }}>Property Type</TableCell>
                 <TableCell style={{ fontWeight: "bold", color: "white" }}>Amount</TableCell>
                 <TableCell style={{ fontWeight: "bold", color: "white" }}>Payment Type</TableCell>
@@ -61,7 +63,7 @@ const FinanceTable = ({ finance, users }) => {
                     {users.find((user) => user._id === finance.user)?.fname}{" "}
                     {users.find((user) => user._id === finance.user)?.lname}
                   </TableCell>
-                  <TableCell>{finance.name}</TableCell>
+                  
                   <TableCell>{finance.property}</TableCell>
                   <TableCell>Php {finance.amount}</TableCell>
                   <TableCell>{finance.paymentType}</TableCell>
